@@ -1,6 +1,6 @@
 # HybridOps.Studio — Hero + Mermaid (GTV ready)
 
-> Use this snippet in your README to present a 10/10 elevator architecture view with one‑click evidence.
+> Use this snippet in your README to present a 10/10 elevator architecture view with one-click evidence.
 
 ## Hero (PNG)
 
@@ -23,21 +23,21 @@ flowchart LR
   subgraph A_BAND[Band A — Sites]
     direction LR
 
-    %% --- Site A (On‑Prem / Proxmox) ---
+    %% --- Site A (On-Prem / Proxmox) ---
     subgraph SITE_A[Site A — Proxmox]
       direction LR
-      PF_HA[pfSense HA [HA]]
+      PF_HA[pfSense HA (HA)]
       CSR[CSR1000v (IPsec)]
-      PX[Proxmox Cluster [HA]]
-      KCP[K8s Control‑Plane (x3) + Workers [HA]]
+      PX[Proxmox Cluster (HA)]
+      KCP[K8s Control-Plane (x3) + Workers (HA)]
       CM_PRI[SCCM Primary]
-      SQL_WSFC[SQL Server WSFC [WSFC]]
+      SQL_WSFC[SQL Server WSFC (WSFC)]
       NAS[Synology NAS]
-      PROM_ON[Prometheus (On‑Prem)]
+      PROM_ON[Prometheus (On-Prem)]
     end
 
-    %% --- EVE‑NG Region with two sub‑sites ---
-    subgraph EVENG[EVE‑NG Region]
+    %% --- EVE-NG Region with two sub-sites ---
+    subgraph EVENG[EVE-NG Region]
       direction LR
 
       subgraph B1[EVE Site B1]
@@ -45,7 +45,7 @@ flowchart LR
         B1_RSW[B1 Routers/Switches]
         B1_K8W[B1 K8s Workers (join CP)]
         B1_CM[B1 SCCM Secondary]
-        B1_SEG[VRFs: Transit, Corp<br/>VLANs: 10/20/30]
+        B1_SEG[VRFs: Transit, Corp | VLANs: 10/20/30]
       end
 
       subgraph B2[EVE Site B2]
@@ -53,7 +53,7 @@ flowchart LR
         B2_RSW[B2 Routers/Switches]
         B2_K8W[B2 K8s Workers (join CP)]
         B2_CM[B2 SCCM Secondary]
-        B2_SEG[VRFs: Transit, Corp<br/>VLANs: 10/20/30]
+        B2_SEG[VRFs: Transit, Corp | VLANs: 10/20/30]
       end
     end
   end
@@ -61,7 +61,7 @@ flowchart LR
   %% ========== BAND B: HUB & OBSERVABILITY ==========
   subgraph B_BAND[Band B — Hub & Observability]
     direction LR
-    NCC[Google NCC (Hub‑and‑Spoke)]
+    NCC[Google NCC (Hub-and-Spoke)]
     PROM_FED[Prometheus Federation]
     GRAF[Grafana]
     ALERTS[Alerting / Webhooks]
@@ -74,9 +74,9 @@ flowchart LR
     %% --- Azure Spoke ---
     subgraph AZ[Microsoft Azure]
       AZ_CSR[CSR (Spoke)]
-      AZ_BURST[K8s Burst Workers [Burst]]
-      AZ_DR[Failover Compute [DR]]
-      AZ_SQLRO[Read‑Only DB Replica [RO]]
+      AZ_BURST[K8s Burst Workers (Burst)]
+      AZ_DR[Failover Compute (DR)]
+      AZ_SQLRO[Read-Only DB Replica (RO)]
       AZ_BLOB[Blob (Packer Images)]
       PROM_AZ[Prometheus (Azure)]
       AZ_MON[Azure Monitor]
@@ -84,7 +84,7 @@ flowchart LR
 
     %% --- GCP Spoke ---
     subgraph GCP[Google Cloud Platform]
-      GCP_BURST[K8s Burst Workers [Burst]]
+      GCP_BURST[K8s Burst Workers (Burst)]
       GCS[GCS (Packer Mirror)]
       PROM_G[Prometheus (GCP)]
     end
@@ -118,16 +118,16 @@ flowchart LR
   %% Spoke: NCC -> Azure CSR
   NCC -. Spoke .-> AZ_CSR
 
-  %% Federation: On‑prem → Federation → Azure/GCP Prom
+  %% Federation: On-prem → Federation → Azure/GCP Prom
   PROM_ON -. Federation .-> PROM_FED
   PROM_FED -.-> PROM_AZ
   PROM_FED -.-> PROM_G
 
-  %% Burst workers join on‑prem CP
+  %% Burst workers join on-prem CP
   KCP -. "K8s join (Burst)" .-> AZ_BURST
   KCP -. "K8s join (Burst)" .-> GCP_BURST
 
-  %% DB Read‑only replica
+  %% DB Read-only replica
   SQL_WSFC -. "DB Replica (RO)" .-> AZ_SQLRO
 
   %% Images pipeline
@@ -143,25 +143,25 @@ flowchart LR
     KPI1[RTO ≤ 15 min]
     KPI2[RPO ≤ 5 min]
     KPI3[Packer ≤ 12 min | TF ≤ 10 min]
-    KPI4[+2 workers @70% | scale‑in <40%]
+    KPI4[+2 workers @70% | scale-in <40%]
   end
 
   %% ==================== Claims & Evidence IDs ====================
   subgraph CLAIMS[Claims & Evidence (map to README anchors)]
-    C1[Product‑led blueprint [E1]]
-    C2[Impact: DR/burst drills [E2]]
-    C3[Recognition: Galaxy/YouTube [E3][E4]]
+    C1[Product-led blueprint (E1)]
+    C2[Impact: DR/burst drills (E2)]
+    C3[Recognition: Galaxy/YouTube (E3)(E4)]
   end
 
-  %% ==================== Micro‑flows (numbered) ====================
-  subgraph FLOWS[Micro‑flows]
+  %% ==================== Micro-flows (numbered) ====================
+  subgraph FLOWS[Micro-flows]
     F1[1) Autoscale → Burst to Azure]
-    F2[2) Failover drill (On‑Prem → Azure)]
+    F2[2) Failover drill (On-Prem → Azure)]
     F3[3) Images: Packer → Blob/GCS → TF]
     F4[4) Federated Observability → Grafana]
   end
 
-  %% Place KPIs/Claims/Flows “near” the right‑hand side by connecting to hub band (light solid)
+  %% Place KPIs/Claims/Flows “near” the right-hand side by connecting to hub band (light solid)
   NCC --- KPIS
   NCC --- CLAIMS
   NCC --- FLOWS
@@ -186,50 +186,3 @@ flowchart LR
   class CICD,JENK,GHA,PKR,TF panel;
   class KPIS,CLAIMS,FLOWS,URL panel;
 
-```
-
-## Operational Flow (Runbook)
-
-```mermaid
-%% HybridOps.Studio — Operational Flow (Runbook)
-flowchart LR
-  %% ------------------------------------------------------------
-  %% OPERATIONAL FLOW — Autoscale & Failover (Runbook excerpt)
-  %% ------------------------------------------------------------
-  subgraph BURST[Autoscale → Burst to Azure (Happy Path)]
-    S1[1) Prometheus ≥ 70% (5 min)]
-    S2[2) Azure Monitor rule evaluates/triggers]
-    S3[3) CI/CD → Terraform: provision burst workers]
-    S4[4) Workers join on‑prem K8s CP over VPN]
-    S5[5) (Optional) Packer images pulled from Blob/GCS]
-    S1 --> S2 --> S3 --> S4 --> S5
-  end
-
-  subgraph FAILBACK[Failback / Scale‑in]
-    R1[A) CPU < 40% (15 min)]
-    R2[B) Drain workloads; detach burst nodes]
-    R3[C) Terraform destroy burst]
-    R1 --> R2 --> R3
-  end
-
-  %% Evidence anchors (optional clickable labels)
-  E1[[Evidence: Jenkins/GHA logs]]
-  E2[[Evidence: Grafana dashboards]]
-  BURST --- E2
-  S3 --- E1
-
-  %% Legend
-  L[(Legend: boxes = steps; → = sequence)]
-
-```
-
----
-**Evidence quick-links**
-- [E1] Jenkins/GitHub Actions run (burst to Azure)
-- [E2] Grafana dashboard (CPU threshold, federation, drill traces)
-- [E3] Ansible Galaxy roles (HybridOps.*)
-- [E4] YouTube talk/demo — HybridOps.Studio DR/Burst
-
-**Short URL:** `hybridops.studio/gtv`
-
-*Legend*: Solid = primary • Dashed = VPN/Federation/Burst/Replication • Badges: `[HA]` `[WSFC]` `[RO]` `[DR]`
