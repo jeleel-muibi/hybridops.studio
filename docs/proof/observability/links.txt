@@ -1,0 +1,6 @@
+# Direct URLs — Observability (Prometheus/Grafana)
+Grafana — Federation dashboard (panel-level): (URL)
+Grafana — On-prem Prometheus targets: (URL)
+Prometheus — recording rules (read-only view): (URL)
+Alertmanager route/policy (optional): (URL)
+Time window (UTC): YYYY-MM-DD HH:MM–HH:MM

@@ -1,0 +1,27 @@
+---
+- name: Test Host Selector - Valid SSH Targets
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+  - name: Run env_guard
+    include_role:
+      name: common/env_guard
+
+  - name: Run host_selector
+    include_role:
+      name: common/host_selector
+    # When prompted for Method A, try: localhost,127.0.0.1
+
+- name: Test connectivity to selected hosts
+  hosts: targets_to_ping
+  gather_facts: false
+  connection: local # For localhost testing
+  tasks:
+  - name: Ping selected hosts (no SSH needed)
+    ping:
+
+
+  - name: Show success
+    debug:
+      msg: "✅ Successfully connected to {{ inventory_hostname }}"

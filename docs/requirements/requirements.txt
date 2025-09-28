@@ -1,0 +1,6 @@
+ansible
+paramiko
+netmiko
+ncclient
+pip install -r requirements.txt
+ansible-galaxy install -r requirements.yml

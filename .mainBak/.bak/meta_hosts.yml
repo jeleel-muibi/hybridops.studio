@@ -1,0 +1,11 @@
+# Keep this for complex group configurations
+# You can use either hosts.ini OR meta_hosts.yml
+
+all:
+  children:
+    homelab:
+      hosts:
+        localhost:
+          ansible_connection: local
+      vars:
+        ansible_user: jeleel-muibi

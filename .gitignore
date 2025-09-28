@@ -1,0 +1,76 @@
+# files to delete
+core/ansible/collections/ansible_collections/hybridops/common/roles/ansible_roles_for_job_applications.txt
+.mainBak
+
+# planning Ideas and notes
+plan/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Inventories: never commit generated or sensitive files
+core/ansible/inventories/*/hosts.ini
+core/ansible/inventories/*/group_vars/all/ip_addresses.yml
+core/ansible/inventories/*/host_vars/*-secret*.yml
+
+# Ansible retries & logs
+*.retry
+logs/
+
+# Terraform
+.terraform/
+*.tfstate.*
+crash.*.log
+# Keep provider lock file tracked
+!terraform.lock.hcl
+
+# Project-specific Terraform outputs
+core/terraform-infra/output/*.json
+
+# Scenario-specific TF outputs (now under showcases)
+showcases/**/terraform-scenarios/**/tf.plan
+showcases/**/terraform-scenarios/**/.terraform/
+
+# Variables (keep secrets out of git)
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.pkrvars.hcl
+
+# Packer
+packer_cache/
+
+# Node / Build
+node_modules/
+dist/
+build/
+
+# Env / Secrets
+.env*
+!.env.example
+.secrets/
+
+# Editor / OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archives & Logs
+*.zip
+*.log
+
+# Generated JSON (targeted; safe defaults)
+**/generated/*.json
+**/artifacts/*.json
+
+# uncomment if your pipelines emit JSON to these locations
+# **/outputs/*.json
+# **/reports/*.json
+deployment/netbox/volumes/*
+!deployment/netbox/volumes/.gitkeep

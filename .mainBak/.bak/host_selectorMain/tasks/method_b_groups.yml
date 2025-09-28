@@ -1,0 +1,29 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridhub.live)
+# Updated: 2025-08-30 15:33:28 UTC
+#
+# Purpose: Accept group names, validate existence, and expand to target_hosts.
+
+- name: Display available groups
+  debug:
+    msg: "Available groups: {{ groups.keys() | reject('match', '^(all|ungrouped)$') | list | join(', ') }}"
+
+- name: Prompt for group names
+  pause:
+    prompt: "Enter group name(s), comma-separated:"
+  register: group_names_input
+
+- name: Normalize group names
+  set_fact:
+    selected_group_names: "{{ group_names_input.user_input | default('') | split(',') | map('trim') | reject('equalto','') | list }}"
+
+- name: Validate each group exists
+  fail:
+    msg: "{{ messages.invalid_group_name }}: {{ item }}"
+  loop: "{{ selected_group_names }}"
+  when: item not in groups
+
+- name: Expand groups to hosts
+  set_fact:
+    target_hosts: "{{ selected_group_names | map('extract', groups) | flatten | select('defined') | list }}"

@@ -1,0 +1,9 @@
+# Direct links (replace with your live URLs)
+# Grafana: replication lag / AlwaysOn / log-shipping panel
+https://<grafana-host>/d/<DASH_UID>/<SLUG>?orgId=1&viewPanel=<PANEL_ID>&from=<FROM_EPOCH_MS>&to=<TO_EPOCH_MS>
+
+# SQL dashboard (read-only replica status)
+https://<sql-monitor-host>/dashboard/<DASH_ID>?from=<FROM_EPOCH_MS>&to=<TO_EPOCH_MS>
+
+# Optional: Terraform/CI run that provisioned the RO replica
+https://app.terraform.io/app/<ORG>/<WORKSPACE>/runs/<RUN_ID>

@@ -1,0 +1,84 @@
+---
+# =============================================================================
+# Environment Guard Framework - Test Suite (Updated)
+# Validates env selection, asserts correlation ID presence/format, and copies audit artifacts to test/output.
+# Author: Jeleel Muibi | Last Updated: 2025-09-10 21:22:00 UTC
+# =============================================================================
+# SPDX-License-Identifier: MIT-0
+
+- name: "Environment Guard Framework - Enterprise Validation"
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    valid_environments: [ "dev", "staging", "prod" ]
+    framework_version: "2.1.2"
+
+  tasks:
+  - name: Prompt for environment selection
+    pause:
+      prompt: |
+        Select target environment for validation:
+          - dev: Development (auto-approved)
+          - staging: Staging (conditional approval)
+          - prod: Production (manual approval required)
+        Enter environment
+    register: user_input
+
+  - name: Validate input
+    set_fact:
+      target_environment: "{{ user_input.user_input | trim | lower }}"
+
+  - name: Enforce environment restrictions
+    fail:
+      msg: "Invalid environment '{{ target_environment }}'. Valid options: {{ valid_environments | join(', ') }}"
+    when: target_environment not in valid_environments
+
+  - name: Execute environment guard framework
+    include_role:
+      name: common/env_guard
+    vars:
+      env: "{{ target_environment }}"
+
+  - name: Validate framework response
+    assert:
+      that:
+      - validated_env == target_environment
+      - env_guard_passed == true
+      - env_guard_correlation_id is defined
+      - env_guard_correlation_id is match("^[0-9a-f-]{36}$|^envguard-[0-9]+-[0-9a-f]{12}$")
+      fail_msg: "Framework validation failed"
+      success_msg: "Framework validation completed"
+
+  - name: Calculate paths
+    set_fact:
+      framework_log_path: "{{ (playbook_dir | regex_replace('/common/playbooks.*$', '') | regex_replace('/roles/.*$', '')) + '/common/logs/env_guard_logs' }}"
+      test_output_path: "{{ playbook_dir }}/output"
+
+  - name: Create test output directory
+    file:
+      path: "{{ test_output_path }}"
+      state: directory
+      mode: '0755'
+
+  - name: Find latest run folder
+    find:
+      paths: "{{ framework_log_path }}"
+      file_type: directory
+      patterns: "2025*"
+      use_regex: false
+    register: run_dirs
+
+  - name: Set latest run path
+    set_fact:
+      latest_run_path: "{{ (run_dirs.files | sort(attribute='path') | reverse)[0].path }}"
+
+  - name: Copy audit log and report to test output folder
+    copy:
+      remote_src: true
+      src: "{{ item }}"
+      dest: "{{ test_output_path }}/"
+      mode: '0644'
+    loop:
+    - "{{ latest_run_path }}/env_guard_audit.log"
+    - "{{ lookup('fileglob', latest_run_path + '/env_guard_report_*.md') }}"

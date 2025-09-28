@@ -1,0 +1,5 @@
+# Direct URLs — Images (runtime Packer builds)
+CI run — Packer build: (URL)
+Artifact image (e.g., Azure Blob/GCS object): (URL)
+Packer template (GitHub): (URL)
+Build timestamp (UTC): YYYY-MM-DD HH:MM

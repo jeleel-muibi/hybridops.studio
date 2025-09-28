@@ -1,0 +1,58 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridops.studio)
+# Created: 2025-09-10 21:35:00 UTC
+# Updated: 2025-09-10 — Initial implementation of Method B (group selection)
+#
+# Purpose: Accept group names, validate existence, and expand to target_hosts.
+
+- name: Method B | Start
+  when: host_selector_use_cid | default(false)
+  debug:
+    msg: "[cid={{ cid | default('') }}] Method B: group selection"
+    verbosity: 1
+
+- name: Build prompt with available groups (3 columns)
+  set_fact:
+    group_prompt: |-
+      {{ ('[cid=' ~ (cid | default('')) ~ '] ') if (host_selector_use_cid | default(false)) else '' }}Available groups:
+      {% for row in ((groups.keys() | reject('match','^(all|ungrouped)$') | list | sort) | batch(3, '')) %}
+      {{ "%-24s %-24s %-24s" | format(row[0] or '', row[1] or '', row[2] or '') }}
+      {% endfor %}
+
+      Enter group name(s), comma-separated:
+
+- name: Prompt for group names
+  pause:
+    prompt: "{{ group_prompt }}"
+  register: group_names_input
+
+- name: Normalize and validate input
+  set_fact:
+    selected_group_names: >-
+      {{
+        group_names_input.user_input
+        | default('')
+        | regex_replace('\\s+', ',')
+        | regex_replace(',+', ',')
+        | split(',')
+        | map('trim')
+        | reject('equalto','')
+        | list
+        | unique
+      }}
+  failed_when: >
+    (selected_group_names | length) == 0 or (selected_group_names | select('match','^(all|ungrouped)$') | list | length >
+    0) or (selected_group_names | difference(groups.keys()) | length > 0)
+  vars:
+    ansible_failed_result: "Invalid or empty group names entered."
+
+- name: Expand groups to hosts
+  set_fact:
+    target_hosts: "{{ selected_group_names | map('extract', groups) | flatten | select('defined') | unique | list }}"
+
+- name: Report selected groups and host count
+  debug:
+    msg: "{{ ('[cid=' ~ (cid | default('')) ~ '] ') if (host_selector_use_cid | default(false)) else '' }}Groups: {{ selected_group_names
+      | join(', ') }} → Hosts: {{ target_hosts | length }}"
+    verbosity: 1

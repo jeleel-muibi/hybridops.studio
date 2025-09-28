@@ -1,0 +1,16 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridops.studio)
+# Created: 2025-09-10 22:05:00 UTC
+# Updated: 2025-09-10 — Initial implementation of IP mapping flow
+#
+# Purpose: Execute IP mapping flow — validate prerequisites, resolve ansible_host, and verify mapping results.
+
+- name: Validate pipeline prerequisites
+  include_tasks: validate_prerequisites.yml
+
+- name: Set ansible_host from environment mappings
+  include_tasks: set_ansible_host.yml
+
+- name: Validate IP mapping results
+  include_tasks: validate_mapping.yml

@@ -1,0 +1,180 @@
+# Purpose: Define environment-specific hosts for dynamic inventory generation.
+# Context: Consumed by host.j2 to render INI inventory for Ansible.
+
+environments:
+  dev:
+    cisco_routers:
+    - { name: coreR-1-Tok, ip: 172.16.13.21 }
+    - { name: coreR-2-Lag, ip: 172.16.13.20 }
+
+    cisco_switches:
+    - { name: Asw-1-Tok, ip: 172.16.13.15 }
+    - { name: Dst-1-Tok, ip: 172.16.13.16 }
+    - { name: Dst-2-Tok, ip: 172.16.13.17 }
+    - { name: Asw-2-Lag, ip: 172.16.13.18 }
+
+    arista_switches:
+    - { name: Asw-1-Lag, ip: 172.16.13.19 }
+
+    vyos_routers:
+    - { name: vyos-router-1, ip: 0.0.0.0 }
+
+    pfsense_firewalls:
+    - { name: pf-Tok-3, ip: 20.147.10.3 }
+    - { name: pf-Lag-2, ip: 20.147.10.2 }
+
+    windows_servers:
+    - { name: dc-01, ip: 172.16.10.3 }
+    - { name: dc-02, ip: 172.16.10.2 }
+    - { name: MECM-01, ip: 172.16.10.10 }
+    - { name: MECM-02, ip: 172.16.10.11 }
+
+    linux_servers:
+    - { name: U-Dock-Managr-1, ip: 172.16.10.6 }
+    - { name: U-Dock-Managr-2, ip: 172.16.10.7 }
+
+    docker_hosts:
+    - { name: U-Dock-Worker-1, ip: 10.10.40.37 }
+    - { name: U-Dock-Worker-2, ip: 10.10.40.38 }
+
+    k8s_pods:
+    - { name: myapp-pod-1, ip: 0.0.0.0 }
+
+    nas_storage:
+    - { name: nas-01, ip: 172.16.10.11 }
+
+    prometheus_servers:
+    - { name: prometheus-01, ip: 172.16.10.100 }
+
+    grafana_servers:
+    - { name: grafana-01, ip: 172.16.10.101 }
+
+  staging:
+    cisco_routers:
+    - { name: coreR-1-Tok, ip: 172.16.30.21 }
+    - { name: coreR-2-Lag, ip: 172.16.30.20 }
+
+    cisco_switches:
+    - { name: Asw-1-Tok, ip: 172.16.30.15 }
+    - { name: Dst-1-Tok, ip: 172.16.30.16 }
+    - { name: Dst-2-Tok, ip: 172.16.30.17 }
+    - { name: Asw-2-Lag, ip: 172.16.30.18 }
+
+    arista_switches:
+    - { name: Asw-1-Lag, ip: 172.16.30.19 }
+
+    vyos_routers:
+    - { name: vyos-router-1, ip: 0.0.0.0 }
+
+    pfsense_firewalls:
+    - { name: pf-Tok-3, ip: 20.147.30.3 }
+    - { name: pf-Lag-2, ip: 20.147.30.2 }
+
+    windows_servers:
+    - { name: dc-01, ip: 172.16.30.3 }
+    - { name: dc-02, ip: 172.16.30.2 }
+    - { name: MECM-01, ip: 172.16.30.10 }
+    - { name: MECM-02, ip: 172.16.30.11 }
+
+    linux_servers:
+    - { name: U-Dock-Managr-1, ip: 172.16.30.6 }
+    - { name: U-Dock-Managr-2, ip: 172.16.30.7 }
+
+    docker_hosts:
+    - { name: U-Dock-Worker-1, ip: 10.10.50.37 }
+    - { name: U-Dock-Worker-2, ip: 10.10.50.38 }
+
+    k8s_pods:
+    - { name: myapp-pod-1, ip: 0.0.0.0 }
+
+    nas_storage:
+    - { name: nas-01, ip: 172.16.30.11 }
+
+    prometheus_servers:
+    - { name: prometheus-01, ip: 172.16.30.100 }
+
+    grafana_servers:
+    - { name: grafana-01, ip: 172.16.30.101 }
+
+  prod:
+    cisco_routers:
+    - { name: coreR-1-Tok, ip: 172.16.50.21 }
+    - { name: coreR-2-Lag, ip: 172.16.50.20 }
+    - { name: coreR-3-Backup, ip: 172.16.50.22 }
+
+    cisco_switches:
+    - { name: Asw-1-Tok, ip: 172.16.50.15 }
+    - { name: Dst-1-Tok, ip: 172.16.50.16 }
+    - { name: Dst-2-Tok, ip: 172.16.50.17 }
+    - { name: Asw-2-Lag, ip: 172.16.50.18 }
+    - { name: Asw-3-Backup, ip: 172.16.50.19 }
+
+    arista_switches:
+    - { name: Asw-1-Lag, ip: 172.16.50.25 }
+    - { name: Asw-2-Arista, ip: 172.16.50.26 }
+
+    vyos_routers:
+    - { name: vyos-router-1, ip: 172.16.50.30 }
+    - { name: vyos-router-2, ip: 172.16.50.31 }
+
+    pfsense_firewalls:
+    - { name: pf-Tok-3, ip: 20.147.50.3 }
+    - { name: pf-Lag-2, ip: 20.147.50.2 }
+    - { name: pf-Backup, ip: 20.147.50.4 }
+
+    windows_servers:
+    - { name: dc-01, ip: 172.16.50.3 }
+    - { name: dc-02, ip: 172.16.50.2 }
+    - { name: dc-03-backup, ip: 172.16.50.4 }
+    - { name: MECM-01, ip: 172.16.50.10 }
+    - { name: MECM-02, ip: 172.16.50.11 }
+    - { name: SQL-01, ip: 172.16.50.12 }
+    - { name: SQL-02, ip: 172.16.50.13 }
+
+    linux_servers:
+    - { name: U-Dock-Managr-1, ip: 172.16.50.6 }
+    - { name: U-Dock-Managr-2, ip: 172.16.50.7 }
+    - { name: Web-01, ip: 172.16.50.8 }
+    - { name: Web-02, ip: 172.16.50.9 }
+
+    docker_hosts:
+    - { name: U-Dock-Worker-1, ip: 10.10.60.37 }
+    - { name: U-Dock-Worker-2, ip: 10.10.60.38 }
+    - { name: U-Dock-Worker-3, ip: 10.10.60.39 }
+    - { name: U-Dock-Worker-4, ip: 10.10.60.40 }
+
+    k8s_pods:
+    - { name: myapp-pod-1, ip: 10.244.1.10 }
+    - { name: myapp-pod-2, ip: 10.244.1.11 }
+    - { name: database-pod-1, ip: 10.244.2.10 }
+
+    nas_storage:
+    - { name: nas-01, ip: 172.16.50.50 }
+    - { name: nas-02-backup, ip: 172.16.50.51 }
+
+    prometheus_servers:
+    - { name: prometheus-01, ip: 172.16.50.100 }
+    - { name: prometheus-02-backup, ip: 172.16.50.102 }
+
+    grafana_servers:
+    - { name: grafana-01, ip: 172.16.50.101 }
+    - { name: grafana-02-backup, ip: 172.16.50.103 }
+
+# ------------ Site Groups (for documentation/reference) ------------
+# NOTE: Lists of device names per site, used by the template to emit site groups.
+tokyo_devices:
+- Asw-1-Tok
+- Dst-1-Tok
+- Dst-2-Tok
+- coreR-1-Tok
+- pf-Tok-3
+- dc-02
+- MECM-01
+- U-Dock-Worker-1
+
+lagos_devices:
+- Asw-1-Lag
+- Asw-2-Lag
+- coreR-2-Lag
+- U-Dock-Worker-2
+- pf-Lag-2

@@ -1,0 +1,51 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridhub.live)
+# Updated: 2025-09-01 17:30:16 UTC
+#
+# Purpose: Creates dynamic inventory groups for selected hosts.
+
+- name: Validate target hosts exist
+  fail:
+    msg: "{{ messages.no_hosts }}"
+  when: target_hosts | length == 0
+
+- name: Display selected targets
+  debug:
+    msg: "Selected {{ target_hosts | length }} hosts: {{ target_hosts | join(', ') }}"
+
+- name: Create dynamic group for inventory hosts
+  add_host:
+    name: "{{ item }}"
+    groups: targets_to_ping
+    env: "{{ env }}"
+    ansible_host: "{{ hostvars[item].ansible_host | default(item) }}"
+    environments: "{{ hostvars[item].environments | default({}) }}"
+  loop: "{{ target_hosts }}"
+  when: item in groups['all']
+
+- name: Create dynamic group for manual entries
+  add_host:
+    name: "{{ item }}"
+    ansible_host: "{{ item }}"
+    groups: targets_to_ping
+    env: "{{ env }}"
+    gather_facts: false
+    environments: {}
+  loop: "{{ target_hosts }}"
+  when: item not in groups['all']
+
+- name: Set output variables
+  set_fact:
+    selected_hosts: "{{ target_hosts }}"
+    selected_count: "{{ target_hosts | length }}"
+    host_selector_success: true
+
+- name: Summary of created dynamic group
+  debug:
+    msg: |
+      Dynamic group 'targets_to_ping' created successfully
+      Environment: {{ env }}
+      Total hosts: {{ target_hosts | length }}
+      Inventory hosts: {{ target_hosts | select('in', groups['all']) | list | length }}
+      Manual entries: {{ target_hosts | reject('in', groups['all']) | list | length }}

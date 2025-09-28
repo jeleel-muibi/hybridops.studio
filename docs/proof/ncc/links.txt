@@ -1,0 +1,7 @@
+# Direct URLs — NCC (hub & spokes)
+# Replace each (URL) with a deep link.
+
+NCC Hub topology: (URL)
+Hub route table (export/JSON): (URL)
+Spoke connections (Azure/GCP): (URL), (URL)
+Capture window (UTC): YYYY-MM-DD HH:MM–HH:MM

@@ -1,0 +1,6 @@
+---
+collections:
+- cisco.ios
+- cisco.nxos
+- junipernetworks.junos
+- arista.eos

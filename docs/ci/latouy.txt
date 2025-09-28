@@ -1,0 +1,1 @@
+Short “how this CI is wired” doc + diagrams.

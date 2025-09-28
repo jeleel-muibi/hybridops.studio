@@ -1,0 +1,82 @@
+Jenkins Plan (parking lot notes)
+=================================
+
+Goal
+----
+Keep Jenkins out of the NetBox workstream for now, but capture a clear path to add it later.
+
+Why this order
+--------------
+1) Ship NetBox (Docker-first) to show working infrastructure inventory.
+2) Add Jenkins after NetBox is stable, to showcase CI/CD and job orchestration.
+3) If time remains, lift Jenkins to Kubernetes for the “scale + platform” story.
+
+Near-term (Docker-first)
+------------------------
+- Packaging:
+  - Use official `jenkins/jenkins:lts-jdk11` or LTS with JDK17, pinned by digest.
+  - Persist `/var/jenkins_home` to a named Docker volume.
+- Network:
+  - Expose 8080 (HTTP) and 50000 (JNLP) only on localhost or via reverse-proxy (traefik or nginx) if needed.
+- Secrets:
+  - Store admin password and credentials via env-file or Docker secrets (not in git).
+- Backups:
+  - Nightly tar of the volume + job configs (bind-mount optional).
+
+Later (Kubernetes path)
+-----------------------
+- Use Helm chart `jenkinsci/jenkins` with:
+  - StorageClass-backed PVC for `/var/jenkins_home`.
+  - Ingress with TLS (cert-manager), internal DNS.
+  - Separate Agent Pod template(s) with limited perms.
+- Secrets in Kubernetes via External Secrets or sealed-secrets.
+- Horizontal Pod Autoscaler (optional, not critical for demo).
+
+Repository layout (recommended)
+-------------------------------
+deployment/
+  netbox/               # current focus
+  jenkins/              # add later
+    docker-compose.yml  # simple local runner
+    README.md           # setup + usage
+    k8s/                # optional, later
+      values.yaml
+      ingress.yaml
+
+Minimal docker-compose for Jenkins (placeholder)
+-----------------------------------------------
+version: "3.9"
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk11
+    container_name: jenkins
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    # env_file:
+    #   - .env.jenkins
+
+volumes:
+  jenkins_home:
+
+Security / hardening checklist
+------------------------------
+- Do not commit initialAdminPassword or credentials.xml.
+- Lock down agent executors; run agents as non-root images.
+- Use role-based strategy plugin for fine-grained permissions.
+- Add backup/restore docs; test the restore process once.
+
+CI connections to showcases (later)
+-----------------------------------
+- Jobs that run Ansible playbooks from `core/ansible/` (unit smoke, idempotency checks).
+- Jobs that lint (yamllint, ansible-lint) on PRs before merge.
+- Optional: pipeline to update NetBox via API after successful infra changes.
+
+How to park this plan now
+-------------------------
+- Keep this file as a reference.
+- When NetBox is done, create `deployment/jenkins/docker-compose.yml` from the placeholder above.
+- Add a README with exact steps and screenshots for the demo.

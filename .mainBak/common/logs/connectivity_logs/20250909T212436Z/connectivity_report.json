@@ -1,0 +1,47 @@
+{
+    "github-web": {
+        "cid": "",
+        "env": "na",
+        "hostname": "github-web",
+        "http": true,
+        "http_head": false,
+        "https": true,
+        "https_head": false,
+        "icmp": true,
+        "ip": "140.82.112.3",
+        "ssh": true,
+        "telnet": true,
+        "tested_by": "user",
+        "ts_utc": "2025-09-09T21:24:21Z"
+    },
+    "google-dns": {
+        "cid": "",
+        "env": "na",
+        "hostname": "google-dns",
+        "http": false,
+        "http_head": false,
+        "https": true,
+        "https_head": false,
+        "icmp": true,
+        "ip": "8.8.8.8",
+        "ssh": false,
+        "telnet": true,
+        "tested_by": "user",
+        "ts_utc": "2025-09-09T21:24:21Z"
+    },
+    "localhost": {
+        "cid": "",
+        "env": "na",
+        "hostname": "localhost",
+        "http": false,
+        "http_head": false,
+        "https": false,
+        "https_head": false,
+        "icmp": true,
+        "ip": "127.0.0.1",
+        "ssh": true,
+        "telnet": true,
+        "tested_by": "user",
+        "ts_utc": "2025-09-09T21:24:21Z"
+    }
+}

@@ -1,0 +1,6 @@
+# Direct URLs — VPN (IPsec status)
+pfSense — IPsec status (Site-A): (URL)
+pfSense — IPsec status (B1/B2): (URL), (URL)
+Cisco CSR — Tunnel status: (URL)
+Grafana — tunnel graphs panel (optional): (URL)
+Capture window (UTC): YYYY-MM-DD HH:MM–HH:MM

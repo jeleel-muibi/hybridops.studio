@@ -1,0 +1,13 @@
+NOTICE — Branding & Trademarks
+
+- **HybridOps.Studio** name, wordmark, and associated branding assets (the "Branding")
+  are proprietary to Jeleel Muibi. The Branding is **not** licensed under MIT‑0 or CC BY 4.0.
+  No rights to use the Branding are granted except for nominative, descriptive references.
+- **Third‑party vendor names and logos** (e.g., Microsoft Azure, Google Cloud, Kubernetes,
+  Prometheus, HashiCorp Terraform/Packer, GitHub, Jenkins, Cisco, pfSense, Fortinet, Synology)
+  are trademarks of their respective owners and are **not** covered by the licenses in this repository.
+  Use of such marks must follow each vendor’s brand guidelines and **does not imply endorsement**.
+- Diagrams may visually depict third‑party marks strictly for descriptive purposes. When redistributing,
+  you are responsible for ensuring compliance with applicable trademark policies.
+
+For questions about branding usage, contact the maintainer.

@@ -1,0 +1,44 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridops.studio)
+# Created: 2025-08-30 11:27:47 UTC
+# Updated: 2025-09-10 — Metadata finalized for Galaxy publishing
+#
+# Purpose: Defines Ansible Galaxy metadata for the env_guard role, including
+# supported platforms, tags, and dependencies.
+
+galaxy_info:
+  role_name: env_guard
+  namespace: common
+  author: jeleel-muibi
+  description: |
+    Enterprise-grade environment validation framework for homelab and production.
+    Provides intelligent deployment governance, risk assessment, security controls,
+    and comprehensive audit trails. Built with DRY principles and scalable architecture.
+
+  company: "Homelab Infrastructure Engineering"
+  license: MIT
+  min_ansible_version: "2.9"
+
+  platforms:
+  - name: EL
+    versions: [ "8", "9" ]
+  - name: Ubuntu
+    versions: [ "focal", "jammy" ]
+  - name: Debian
+    versions: [ "bullseye", "bookworm" ]
+
+  galaxy_tags:
+  - environment
+  - validation
+  - security
+  - homelab
+  - production
+  - governance
+  - audit
+  - risk_assessment
+  - deployment
+  - dry
+  - enterprise
+
+dependencies: []

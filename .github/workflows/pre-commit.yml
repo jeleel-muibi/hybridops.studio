@@ -1,12 +1,28 @@
+---
 name: pre-commit
-on: [push, pull_request]
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-      - run: pip install pre-commit
-      - run: pre-commit run --all-files --config .config/pre-commit-config.yaml
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+      # Optional but helpful: cache pre-commit envs to speed up runs
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-${{ runner.os }}-${{ hashFiles('.config/pre-commit-config.yaml') }}
+        restore-keys: |
+          pre-commit-${{ runner.os }}-
+
+    - run: pip install pre-commit
+    - run: pre-commit run --all-files --config .config/pre-commit-config.yaml

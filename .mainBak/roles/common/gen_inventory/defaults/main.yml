@@ -1,0 +1,26 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridops.studio)
+# Created: 2025-01-09 19:05:54 UTC
+# Updated: 2025-09-10 — Style normalized to compact header
+#
+# Purpose: Defines core variables for inventory resolution and runtime configuration.
+
+# Python interpreter used for Ansible playbook execution
+ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+# File containing IP mappings for environment-specific inventory
+ip_data_filename: "ip_addresses.yml"
+
+# Default placeholder IP for unassigned hosts
+placeholder_ip: "XX.XX.XX.00"
+
+# Name of the inventory directory under the project root
+inventories_dir_name: "inventories"
+
+# Marker files used to identify the inventory root directory
+inventories_marker_candidates:
+- ".inventory-root"
+
+# Directory for test or CI artifacts (leave empty to disable output)
+test_output_dir: ""

@@ -1,0 +1,28 @@
+---
+# =============================================================================
+# Environment Guard Framework - Runtime Variables (Fixed)
+# =============================================================================
+
+# Environment resolution engine
+_environment_resolver: |
+  {%- set env_lookup = {} -%}
+  {%- for env_name, env_config in env_guard.environments.items() -%}
+    {%- for alias in env_config.aliases -%}
+      {%- set _ = env_lookup.update({alias: env_name}) -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {{ env_lookup }}
+
+# Security context computation
+_security_context:
+  user: "{{ ansible_user_id | default(ansible_env.USER | default('jeleel-muibi')) }}"
+  host: "{{ ansible_hostname | default(ansible_env.HOSTNAME | default('homelab')) }}"
+  method: "{{ 'key_based' if ansible_ssh_private_key_file is defined else 'password_based' }}"
+  timestamp: "{{ ansible_date_time.iso8601 }}"
+
+# Risk assessment weights
+_risk_factors:
+  environment_weight: 0.5
+  scope_weight: 0.2
+  timing_weight: 0.2
+  user_weight: 0.1

@@ -1,0 +1,6 @@
+# Container group variables
+# Credentials are sourced from Ansible Vault (see vault_default_* in all.yml)
+
+ansible_user: user
+ansible_password: "{{ vault_default_password }}"
+ansible_connection: ssh

@@ -1,0 +1,12 @@
+
+pipeline {
+  agent any
+  parameters { string(name: 'DIR', defaultValue: 'core/ansible/examples/basic', description: 'Ansible sample dir') }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Install') { steps { sh 'python3 -m pip install --upgrade pip ansible ansible-lint' } }
+    stage('Lint') { steps { dir(params.DIR) { sh 'ansible-lint -v .' } } }
+    stage('Syntax Check') { steps { dir(params.DIR) { sh 'ansible-playbook -i inventory.ini playbook.yml --syntax-check' } } }
+    stage('Dry Run') { steps { dir(params.DIR) { sh 'ansible-playbook -i inventory.ini playbook.yml --check -v' } } }
+  }
+}

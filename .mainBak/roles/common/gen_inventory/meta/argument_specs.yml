@@ -1,0 +1,35 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridops.studio)
+# Created: 2025-01-09 19:05:54 UTC
+# Updated: 2025-09-10 — Style normalized to compact header
+#
+# Purpose: Defines expected inputs for dynamic inventory generation role.
+
+argument_specs:
+  main:
+    short_description: "Generate environment-specific Ansible inventory"
+    options:
+      env:
+        type: str
+        required: true
+        description: "Environment key (e.g., dev, staging, prod)."
+
+      project_root:
+        type: str
+        required: false
+
+      inventories_dir_name:
+        type: str
+        required: false
+      ip_data_filename:
+        type: str
+        required: false
+
+      placeholder_ip:
+        type: str
+        required: false
+
+      test_output_dir:
+        type: str
+        required: false

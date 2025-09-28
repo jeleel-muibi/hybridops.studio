@@ -1,0 +1,47 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridhub.live)
+# Created: 2025-08-30 11:27:47 UTC
+# Updated: 2025-09-06 — Removed environments (managed by env_guard)
+#
+# Purpose: Defines canonical category mappings for inventory classification.
+# Note: Environment handling is delegated to env_guard. Uncomment the fallback
+# block below only for isolated local testing.
+
+categories:
+  device_types:
+    name: "Device Types"
+    groups:
+    - cisco_switches
+    - cisco_routers
+    - arista_switches
+    - vyos_routers
+    - pfsense_firewalls
+    - windows_servers
+    - linux_servers
+    - docker_hosts
+    - k8s_pods
+    - nas_storage
+    - prometheus_servers
+    - grafana_servers
+
+  infrastructure:
+    name: "Infrastructure"
+    groups:
+    - containers
+    - routers
+    - switches
+    - servers
+
+  locations:
+    name: "Sites"
+    groups:
+    - Tokyo
+    - Lagos
+
+# Optional: Uncomment for standalone testing without env_guard
+# environments:
+#   name: "Lab Environments"
+#   groups:
+#     - eveng_labs
+#     - eveng_lab_01_sites

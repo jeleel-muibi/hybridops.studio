@@ -1,0 +1,44 @@
+---
+# apply to all hooks
+exclude: >
+  ^(
+    \.mainBak/|
+    mainBak/|
+    .*/\.bak/|
+    .*/tests/|
+    docs/diagrams/|
+    .*\.zip$
+  )
+
+repos:
+- repo: https://github.com/adrienverge/yamllint
+  rev: v1.37.1
+  hooks:
+  - id: yamllint
+    args: [ "-c", ".config/yamllint.yaml" ]
+    types: [ yaml ]
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: check-yaml
+    types: [ yaml ]
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  - id: mixed-line-ending
+
+# NOTE — ansible-lint is paused so we can focus on NetBox.
+# It only runs when called manually:
+#   pre-commit run ansible-lint --all-files -c .config/pre-commit-config.yaml --hook-stage manual
+# Or run directly:
+#   ansible-lint -c .config/ansible-lint.yml core/ansible/
+# To re-enable on every commit, remove `stages: [manual]`.
+
+- repo: https://github.com/ansible/ansible-lint
+  rev: v25.9.0
+  hooks:
+  - id: ansible-lint
+    args: [ "-c", ".config/ansible-lint.yml" ]
+    additional_dependencies: [ "ansible==9.7.0" ]
+    files: ^core/ansible/
+    stages: [ manual ]

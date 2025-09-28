@@ -1,0 +1,96 @@
+---
+# =============================================================================
+# Intelligent Approval Workflow Engine (Simplified)
+# =============================================================================
+
+- name: "Determine approval requirements"
+  set_fact:
+    _approval_required: "{{ _resolved_environment.approval_required | default(false) }}"
+    _approval_timeout: "{{ 60 if _resolved_environment.canonical_name == 'production' else 30 }}"
+
+- name: "Debug approval requirements"
+  debug:
+    msg: |
+      🔍 APPROVAL DEBUG
+      ├── Environment: {{ _canonical_env }}
+      ├── Approval Required: {{ _approval_required }}
+      ├── User Authorized: {{ _user_authorized }}
+      └── Risk Score: {{ _computed_risk_score }}
+
+- name: "Execute approval workflow for production"
+  block:
+  - name: "Interactive production approval"
+    pause:
+      prompt: |
+        ⚠️  HOMELAB PRODUCTION DEPLOYMENT CONFIRMATION ⚠️
+
+        🏠 Environment: {{ _canonical_env | upper }}
+        👤 User: {{ _security_context.user }}
+        🎯 Target Hosts: {{ ansible_play_hosts | length }}
+        📊 Risk Score: {{ _computed_risk_score }}/10 ({{ _risk_category }})
+        ⏰ Timestamp: {{ ansible_date_time.iso8601 }}
+        🆔 Correlation ID: {{ _execution_context.correlation_id }}
+
+        🔴 This deployment will affect your homelab production environment!
+
+        Type 'DEPLOY' to proceed (case-sensitive, {{ _approval_timeout }}s timeout):
+      timeout: "{{ _approval_timeout }}"
+    register: _approval_input
+    when: _approval_required | bool
+
+  - name: "Validate production approval response"
+    fail:
+      msg: |
+        ❌ PRODUCTION DEPLOYMENT CANCELLED
+
+        Deployment approval failed.
+        ├── Required: 'DEPLOY'
+        ├── Received: '{{ _approval_input.user_input | default('timeout') }}'
+        └── Timeout: {{ _approval_timeout }}s
+
+        Deployment has been safely cancelled. No changes were made.
+    when:
+    - _approval_required | bool
+    - _approval_input.user_input | default('') != 'DEPLOY'
+
+  - name: "Production approval granted"
+    set_fact:
+      _approval_result:
+        status: "approved"
+        method: "interactive"
+        approver: "{{ _security_context.user }}"
+        timestamp: "{{ ansible_date_time.iso8601 }}"
+        duration: "{{ _approval_input.delta | default(0) }}"
+    when:
+    - _approval_required | bool
+    - _approval_input.user_input | default('') == 'DEPLOY'
+
+  when: _approval_required | bool
+
+- name: "Auto-approval for non-production"
+  set_fact:
+    _approval_result:
+      status: "auto_approved"
+      method: "automatic"
+      approver: "system"
+      timestamp: "{{ ansible_date_time.iso8601 }}"
+      duration: 0
+  when: not (_approval_required | bool)
+
+- name: "Set final approval status"
+  set_fact:
+    _final_status: >-
+      {{
+        'approved' if (_approval_result.status == 'approved') else
+        'auto_approved' if (_approval_result.status == 'auto_approved') else
+        'rejected'
+      }}
+
+- name: "Debug final status"
+  debug:
+    msg: |
+      🔍 APPROVAL WORKFLOW COMPLETE
+      ├── Final Status: {{ _final_status }}
+      ├── Approval Result: {{ _approval_result.status }}
+      ├── Method: {{ _approval_result.method }}
+      └── Duration: {{ _approval_result.duration }}s

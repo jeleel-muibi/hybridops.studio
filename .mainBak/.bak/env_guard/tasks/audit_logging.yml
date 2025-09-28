@@ -1,0 +1,105 @@
+---
+# =============================================================================
+# Comprehensive Audit Trail and State Persistence (Fixed)
+# =============================================================================
+
+- name: "Generate comprehensive audit record"
+  set_fact:
+    _audit_record:
+      # Metadata
+      timestamp: "{{ ansible_date_time.iso8601 }}"
+      execution_id: "{{ _execution_context.id }}"
+      correlation_id: "{{ _execution_context.correlation_id }}"
+      framework_version: "{{ _env_guard.version }}"
+      homelab: true
+
+      # Deployment context
+      deployment:
+        environment: "{{ _canonical_env }}"
+        original_input: "{{ _original_env }}"
+        risk_level: "{{ _resolved_environment.risk_level }}"
+        risk_score: "{{ _computed_risk_score }}"
+        risk_category: "{{ _risk_category }}"
+        target_hosts: "{{ ansible_play_hosts }}"
+        host_count: "{{ ansible_play_hosts | length }}"
+
+      # Security context
+      security:
+        user: "{{ _security_context.user }}"
+        source_host: "{{ _security_context.host }}"
+        auth_method: "{{ _security_context.method }}"
+        authorized: "{{ _user_authorized }}"
+        approval_required: "{{ _approval_required }}"
+        approval_status: "{{ _approval_result.status }}"
+        approval_method: "{{ _approval_result.method }}"
+        approval_duration: "{{ _approval_result.duration }}"
+
+      # Deployment controls
+      controls:
+        window_type: "{{ _resolved_environment.deployment_window }}"
+        window_permitted: "{{ _window_check.permitted }}"
+        current_time: "{{ _current_datetime.time }}"
+        current_day: "{{ _current_datetime.weekday_name }}"
+
+      # Result
+      result:
+        status: "{{ _final_status }}"
+        validation_duration: "{{ (ansible_date_time.epoch | int) - (_execution_context.start_time | int) }}"
+
+- name: "Set audit log path (user-writable)"
+  set_fact:
+    _audit_log_path: "{{ ansible_env.HOME }}/logs/env_guard_audit.log"
+
+- name: "Create user audit log directory"
+  file:
+    path: "{{ _audit_log_path | dirname }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+
+- name: "Write structured audit log"
+  lineinfile:
+    path: "{{ _audit_log_path }}"
+    line: "{{ _audit_record | to_json }}"
+    create: true
+    mode: '0644'
+  delegate_to: localhost
+  run_once: true
+
+- name: "Export metrics (console)"
+  debug:
+    msg: |
+      📊 HOMELAB METRICS EXPORT
+      ├── {{ env_guard.observability.metrics.namespace }}.deployments_total{environment="{{ _canonical_env }}"} 1
+      ├── {{ env_guard.observability.metrics.namespace }}.risk_score{environment="{{ _canonical_env }}"} {{ _computed_risk_score }}
+      ├── {{ env_guard.observability.metrics.namespace }}.approval_duration_seconds{environment="{{ _canonical_env }}"} {{ _approval_result.duration }}
+      └── {{ env_guard.observability.metrics.namespace }}.validation_duration_seconds{environment="{{ _canonical_env }}"} {{ _audit_record.result.validation_duration }}
+  when: env_guard.observability.metrics.enabled
+
+- name: "Set standard environment facts"
+  set_fact:
+    # Standard interface for consuming roles
+    env_validated: true
+    validated_env: "{{ _canonical_env }}"
+    environment_type: "{{ 'Production' if _canonical_env == 'production' else 'Non-Production' }}"
+
+    # Extended interface for advanced consumers
+    env_guard_execution_id: "{{ _execution_context.id }}"
+    env_guard_correlation_id: "{{ _execution_context.correlation_id }}"
+    env_guard_risk_score: "{{ _computed_risk_score }}"
+    env_guard_risk_category: "{{ _risk_category }}"
+    env_guard_approved: "{{ _final_status in ['approved', 'auto_approved'] }}"
+    env_guard_approval_duration: "{{ _approval_result.duration }}"
+    env_guard_homelab: true
+    env_guard_version: "{{ _env_guard.version }}"
+    env_guard_audit_log: "{{ _audit_log_path }}"
+
+- name: "Audit logging complete"
+  debug:
+    msg: |
+      📝 AUDIT SUMMARY
+      ├── Audit record logged: {{ _audit_log_path }}
+      ├── Correlation ID: {{ _execution_context.correlation_id }}
+      ├── Risk Score: {{ _computed_risk_score }}/10 ({{ _risk_category }})
+      └── Status: {{ _final_status | upper }}

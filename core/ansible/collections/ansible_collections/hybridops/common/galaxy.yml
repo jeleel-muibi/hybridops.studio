@@ -1,0 +1,7 @@
+---
+namespace: hybridops
+name: common
+version: 0.1.0
+readme: README.md
+license: MIT-0
+description: HybridOps common roles (env_guard, gen_inventory, host_selector, ip_mapper, connectivity_test)

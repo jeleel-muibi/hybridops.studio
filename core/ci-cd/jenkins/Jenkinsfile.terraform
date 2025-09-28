@@ -1,0 +1,13 @@
+
+pipeline {
+  agent any
+  parameters { string(name: 'DIR', defaultValue: 'core/terraform/examples/basic', description: 'Terraform working directory') }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Setup') { steps { sh 'terraform -version || true' } }
+    stage('Init') { steps { dir(params.DIR) { sh 'terraform init -input=false' } } }
+    stage('Fmt Check') { steps { dir(params.DIR) { sh 'terraform fmt -check' } } }
+    stage('Validate') { steps { dir(params.DIR) { sh 'terraform validate' } } }
+    stage('Plan') { steps { dir(params.DIR) { sh 'terraform plan -input=false -out=tf.plan' } } }
+  }
+}

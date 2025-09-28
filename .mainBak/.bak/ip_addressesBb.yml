@@ -1,0 +1,132 @@
+# ==========================
+# All group definitions + IP mapping for dynamic inventory
+# ==========================
+
+environments:
+  dev:
+    cisco_routers:
+    - name: coreR-1-Tok
+      ip: 172.16.13.21
+    - name: coreR-2-Lag
+      ip: 172.16.13.20
+    cisco_switches:
+    - name: Asw-1-Tok
+      ip: 172.16.13.15
+    - name: Dst-1-Tok
+      ip: 172.16.13.16
+    - name: Dst-2-Tok
+      ip: 172.16.13.17
+    - name: Asw-2-Lag
+      ip: 172.16.13.18
+    arista_switches:
+    - name: Asw-1-Lag
+      ip: 172.16.13.19
+    vyos_routers:
+    - name: vyos-router-1
+      ip: 0.0.0.0
+    pfsense_firewalls:
+    - name: pf-Tok-3
+      ip: 20.147.10.3
+    - name: pf-Lag-2
+      ip: 20.147.10.2
+    windows_servers:
+    - name: dc-01
+      ip: 172.16.10.3
+    - name: dc-02
+      ip: 172.16.10.2
+    - name: MECM-01
+      ip: 172.16.10.10
+    - name: MECM-02
+      ip: 172.16.10.10
+    linux_servers:
+    - name: U-Dock-Managr-1
+      ip: 172.16.10.6
+    - name: U-Dock-Managr-2
+      ip: 172.16.10.7
+    docker_hosts:
+    - name: U-Dock-Worker-1
+      ip: 10.10.40.37
+    - name: U-Dock-Worker-2
+      ip: 10.10.40.00
+    k8s_pods:
+    - name: myapp-pod-1
+      ip: 0.0.0.0
+    nas_storage:
+    - name: nas-01
+      ip: 172.16.10.11
+    zabbix_servers:
+    - name: zabbix-01
+      ip: 172.16.10.100
+
+  staging:
+    cisco_routers:
+    - name: coreR-1-Tok
+      ip: 172.16.30.21
+    - name: coreR-2-Lag
+      ip: 172.16.30.20
+    cisco_switches:
+    - name: Asw-1-Tok
+      ip: 172.16.30.15
+    - name: Dst-1-Tok
+      ip: 172.16.30.16
+    - name: Dst-2-Tok
+      ip: 172.16.30.17
+    - name: Asw-2-Lag
+      ip: 172.16.30.18
+    arista_switches:
+    - name: Asw-1-Lag
+      ip: 172.16.30.19
+    vyos_routers:
+    - name: vyos-router-1
+      ip: 0.0.0.0
+    pfsense_firewalls:
+    - name: pf-Tok-3
+      ip: 20.147.30.3
+    - name: pf-Lag-2
+      ip: 20.147.30.2
+    windows_servers:
+    - name: dc-01
+      ip: 172.16.30.3
+    - name: dc-02
+      ip: 172.16.30.2
+    - name: MECM-01
+      ip: 172.16.10.10
+    - name: MECM-02
+      ip: 172.16.10.10
+    linux_servers:
+    - name: U-Dock-Managr-1
+      ip: 172.16.30.6
+    - name: U-Dock-Managr-2
+      ip: 172.16.30.00
+    docker_hosts:
+    - name: U-Dock-Worker-1
+      ip: 10.10.50.37
+    - name: U-Dock-Worker-2
+      ip: 10.10.00.00
+    k8s_pods:
+    - name: myapp-pod-1
+      ip: 0.0.0.0
+    nas_storage:
+    - name: nas-01
+      ip: 172.16.30.11
+    zabbix_servers:
+    - name: zabbix-01
+      ip: 172.16.30.100
+
+# ------------Site Groups (for documentation/reference)------------#
+tokyo_devices:
+- Asw-1-Tok
+- Dst-1-Tok
+- Dst-2-Tok
+- coreR-1-Tok
+- pf-Tok-3
+- dc-02
+- MECM-01
+- U-Dock-Worker-1
+
+lagos_devices:
+- Asw-1-Lag
+- Asw-2-Lag
+- coreR-2-Lag
+- U-Dock-Worker-2
+- pf-Lag-2

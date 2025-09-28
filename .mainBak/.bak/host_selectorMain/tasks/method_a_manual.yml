@@ -1,0 +1,44 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridhub.live)
+# Updated: 2025-08-30 15:33:28 UTC
+#
+# Purpose: Accept manual targets, validate format, and set target_hosts.
+
+- name: Prompt for manual host entry
+  pause:
+    prompt: "Enter IPs/hostnames (comma-separated):"
+  register: manual_input
+
+- name: Normalize input into list
+  set_fact:
+    target_hosts: >-
+      {{ manual_input.user_input | default('') | split(',') | map('trim') | reject('equalto','') | list }}
+
+- name: Initialize validation sets
+  set_fact:
+    invalid_entries: []
+    valid_entries: []
+
+- name: Flag invalid formats
+  set_fact:
+    invalid_entries: "{{ invalid_entries + [item] }}"
+  loop: "{{ target_hosts }}"
+  when: >
+    (item | length) > 253 or (item | regex_search('^[-.]')) or (item | regex_search('[-.]$')) or (item | regex_search('[^A-Za-z0-9._:%-]')) or (item | regex_search('\.\.|--'))
+
+- name: Compute valid entries
+  set_fact:
+    valid_entries: "{{ target_hosts | difference(invalid_entries) }}"
+
+- name: Fail on invalid entries
+  fail:
+    msg: "Invalid entries: {{ invalid_entries | join(', ') }}. Enter valid IPs/hostnames."
+  when: invalid_entries | length > 0
+- name: Finalize target_hosts
+  set_fact:
+    target_hosts: "{{ valid_entries }}"
+
+- name: Report accepted targets
+  debug:
+    msg: "Accepted {{ valid_entries | length }} target(s): {{ valid_entries | join(', ') }}"

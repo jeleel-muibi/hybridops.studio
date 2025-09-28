@@ -1,0 +1,197 @@
+---
+# Environment Guard Framework - Interactive Protection (Built-in Prompts)
+# Author: jeleel-muibi | Date: 2025-08-30 21:00:40 UTC
+
+- name: "🏠 Environment Guard Framework Starting"
+  debug:
+    msg: |
+      🏠 ENVIRONMENT GUARD FRAMEWORK v2.0.0 (Interactive)
+      ├── Date: {{ ansible_date_time.iso8601 }}
+      ├── User: {{ ansible_user_id | default('unknown') }}
+      ├── Mode: Interactive environment selection
+      └── Framework: Starting validation pipeline...
+
+- name: "🎯 Interactive Environment Selection"
+  pause:
+    prompt: |
+
+      🏠 ENVIRONMENT GUARD - DEPLOYMENT TARGET SELECTION
+      ════════════════════════════════════════════════════════════
+
+      📋 Available Deployment Environments:
+
+      🟢 dev        - Development Environment
+         ├── Risk Level: 1/10 (LOW)
+         ├── Approval: Auto-approved
+         ├── Deployment: Immediate
+         └── Impact: Development systems only
+
+      🟡 staging    - Staging Environment
+         ├── Risk Level: 5/10 (MEDIUM)
+         ├── Approval: Auto-approved
+         ├── Deployment: Business hours preferred
+         └── Impact: Pre-production validation
+
+      🔴 production - Production Environment
+         ├── Risk Level: 10/10 (HIGH)
+         ├── Approval: Manual confirmation required
+         ├── Deployment: Maintenance window required
+         └── Impact: ⚠️  LIVE CUSTOMER SYSTEMS ⚠️
+
+      ⚠️  Choose carefully - this affects real infrastructure!
+
+      Enter environment (dev/staging/production) [default: dev]
+  register: environment_selection
+  when: env is not defined or env == ""
+
+- name: "📊 Set environment from user input or variable"
+  set_fact:
+    env: "{{ environment_selection.user_input | default(env) | default('dev') }}"
+
+- name: "❌ Fail if invalid environment"
+  fail:
+    msg: |
+      ❌ ENVIRONMENT GUARD: DEPLOYMENT BLOCKED
+      ════════════════════════════════════════════════════════════
+      🚨 ERROR: Invalid environment '{{ env }}'!
+
+      📋 Valid environments: dev, staging, production
+      💡 You provided: {{ env }}
+
+      ✅ Valid options:
+      ├── dev        - Development environment
+      ├── staging    - Staging environment
+      └── production - Production environment
+
+      🔄 Please run the playbook again and select a valid environment.
+      ════════════════════════════════════════════════════════════
+  when: env not in ['dev', 'staging', 'production']
+
+- name: "🛡️ Set environment protection level"
+  set_fact:
+    env_protection:
+      dev:
+        risk_level: 1
+        approval_required: false
+        description: "Development environment - auto-approved"
+        color: "🟢"
+      staging:
+        risk_level: 5
+        approval_required: false
+        description: "Staging environment - business hours preferred"
+        color: "🟡"
+      production:
+        risk_level: 10
+        approval_required: true
+        description: "Production environment - manual approval required"
+        color: "🔴"
+
+- name: "📊 Calculate deployment risk"
+  set_fact:
+    current_env_config: "{{ env_protection[env] }}"
+    risk_score: "{{ env_protection[env].risk_level }}"
+    requires_approval: "{{ env_protection[env].approval_required }}"
+    target_host_count: "{{ ansible_play_hosts | length }}"
+    env_color: "{{ env_protection[env].color }}"
+
+- name: "🚨 PRODUCTION DEPLOYMENT WARNING"
+  debug:
+    msg: |
+      🚨 PRODUCTION DEPLOYMENT DETECTED
+      ════════════════════════════════════════════════════════════
+      ⚠️  ENVIRONMENT: {{ env | upper }}
+      ⚠️  RISK LEVEL: {{ risk_score }}/10 (HIGH)
+      ⚠️  TARGET HOSTS: {{ target_host_count }} hosts
+      ⚠️  USER: {{ ansible_user_id | default('unknown') }}
+      ⚠️  TIME: {{ ansible_date_time.iso8601 }}
+      ────────────────────────────────────────────────────────────
+      🔒 Manual approval required for production deployments
+      ════════════════════════════════════════════════════════════
+  when: env == 'production'
+
+- name: "📝 Production Deployment Justification"
+  pause:
+    prompt: |
+
+      📝 PRODUCTION DEPLOYMENT JUSTIFICATION REQUIRED
+      ════════════════════════════════════════════════════════════
+
+      Environment: {{ env | upper }}
+      Risk Level: {{ risk_score }}/10 (HIGH)
+      Target Hosts: {{ target_host_count }} hosts
+      User: {{ ansible_user_id | default('unknown') }}
+
+      Please provide justification for this production deployment:
+      (e.g., "Critical security patch", "Emergency fix", "Scheduled release")
+
+      Justification
+  register: production_justification
+  when: requires_approval | bool
+
+- name: "🔒 Production Approval Required"
+  pause:
+    prompt: |
+
+      🚨 PRODUCTION DEPLOYMENT APPROVAL REQUIRED
+      ════════════════════════════════════════════════════════════
+
+      Environment: {{ env | upper }}
+      Risk Level: {{ risk_score }}/10 (HIGH)
+      Target Hosts: {{ target_host_count }} hosts
+      User: {{ ansible_user_id | default('unknown') }}
+      Time: {{ ansible_date_time.iso8601 }}
+      Justification: {{ production_justification.user_input | default('Not provided') }}
+
+      ⚠️  This will deploy to PRODUCTION environment!
+      ⚠️  This action cannot be undone!
+      ⚠️  Live customer systems will be affected!
+
+      To proceed, type 'DEPLOY' (case sensitive)
+      ────────────────────────────────────────────────────────────
+  register: production_approval
+  when: requires_approval | bool
+
+- name: "❌ Production deployment cancelled"
+  fail:
+    msg: |
+      ❌ PRODUCTION DEPLOYMENT CANCELLED
+      ════════════════════════════════════════════════════════════
+      🚫 User did not confirm deployment
+
+      You typed: '{{ production_approval.user_input | default('nothing') }}'
+      Expected: 'DEPLOY'
+      Justification: {{ production_justification.user_input | default('Not provided') }}
+
+      💡 Deployment cancelled for safety
+      ════════════════════════════════════════════════════════════
+  when:
+  - requires_approval | bool
+  - production_approval.user_input != 'DEPLOY'
+
+- name: "✅ Environment Guard Validation Complete"
+  debug:
+    msg: |
+      ✅ ENVIRONMENT GUARD: DEPLOYMENT APPROVED
+      ════════════════════════════════════════════════════════════
+      📅 Time: {{ ansible_date_time.iso8601 }}
+      {{ env_color }} Environment: {{ env | upper }} ({{ current_env_config.description }})
+      ✅ Risk Level: {{ risk_score }}/10
+      ✅ User: {{ ansible_user_id | default('unknown') }}
+      ✅ Target Hosts: {{ target_host_count }} hosts
+      ✅ Approval: {{ 'MANUAL APPROVED' if requires_approval else 'AUTO APPROVED' }}
+      {% if production_justification is defined and production_justification.user_input is defined and production_justification.user_input %}
+      ✅ Justification: {{ production_justification.user_input }}
+      {% endif %}
+      ✅ Status: DEPLOYMENT AUTHORIZED
+      ════════════════════════════════════════════════════════════
+      🚀 Proceeding with deployment...
+
+- name: "📊 Set framework variables for other roles"
+  set_fact:
+    validated_env: "{{ env }}"
+    environment_type: "{{ current_env_config.description }}"
+    env_guard_risk_score: "{{ risk_score }}"
+    env_guard_correlation_id: "envguard-{{ ansible_date_time.epoch }}-{{ 999 | random }}"
+    env_guard_version: "2.0.0"
+    deployment_justification: "{{ (production_justification.user_input | default('')) if (production_justification is defined) else 'Standard deployment' }}"
+    _final_status: "approved"

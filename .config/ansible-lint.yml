@@ -1,0 +1,21 @@
+---
+skip_list:
+- yaml # yamllint already handles this
+- fqcn # enable later, after minimal churn
+- var-naming # avoid mass renames for now
+- jinja # spacing nits
+- role-name[path] # ../../ in tests
+- name[missing] # add names gradually
+
+exclude_paths:
+- .mainBak/
+- mainBak/
+- "**/.bak/"
+- "**/tests/"
+- "docs/diagrams/"
+
+warn_list:
+- name
+- fqcn
+- jinja
+strict: false
