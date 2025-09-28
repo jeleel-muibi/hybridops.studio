@@ -1,2 +1,0 @@
-# Network Storage group variables
-# Credentials are sourced from Ansible Vault (see vault_default_* in all.yml)
