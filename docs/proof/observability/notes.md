@@ -1,7 +1,18 @@
-# Observability (Prometheus/Grafana) — Proof Pack Notes
-_Last updated: 2025-09-22T00:00Z_
+# Observability (Federation, DR KPIs, Autoscaling)
 
-- **Proves:** On‑prem **Prometheus** scrapes on‑prem + EVE sites; **federation core** aggregates; **Grafana** dashboards/alerts active.
-- **Verify:** Add **Grafana panel links** (viewPanel) for federation targets and on‑prem scrape status.
-- **Evidence included:** Federation targets screenshots, recording rules/alerts summary, alert → action timeline.
-- **KPIs mapped:** Signals feeding Decision Service for failover/burst.
+## DR KPIs
+Evidence that disaster recovery meets stated targets.
+- Grafana DR dashboard and annotated step timings.
+- Example artifacts: `images/*grafana_dr_panel*.png`, `RUN.log`.
+
+## Federation
+Evidence of Prometheus Federation across sites and clouds.
+- Federation targets and scrape status.
+- Example artifacts: `images/*federation_targets*.png`, exported dashboard JSON.
+
+## Autoscaling
+Evidence of application and cluster scaling behavior.
+- HPA/VPA events and scale traces.
+- Example artifacts: `images/*hpa_events*.png`, `*scale_trace*.png`.
+
+**Navigate:** [Evidence Map](../../evidence_map.md) · [Proof Archive](../README.md)

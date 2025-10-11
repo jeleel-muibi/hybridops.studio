@@ -1,0 +1,49 @@
+---
+# Skip caches, backups, tests, diagrams, and zips.
+exclude: >
+  ^(
+    .*/\.private_gists/|
+    .*/\.bak/|
+    .*/tests/|
+    docs/diagrams/|
+    output/|
+    out/|
+    build/|
+    dist/|
+    .*\.zip$
+  )
+
+default_language_version:
+  python: python3
+
+repos:
+# YAML style/structure
+- repo: https://github.com/adrienverge/yamllint
+  rev: v1.37.1
+  hooks:
+  - id: yamllint
+    args: [ "-c", ".config/linters/yamllint.yaml" ]
+    types: [ yaml ]
+
+# General hygiene
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v6.0.0
+  hooks:
+  - id: check-yaml
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+    args: [ "--markdown-linebreak-ext=md,markdown,mdx" ]
+  - id: mixed-line-ending
+  - id: check-merge-conflict
+  - id: detect-private-key
+  - id: check-executables-have-shebangs
+
+# Ansible lint (manual; run in CI or on demand)
+- repo: https://github.com/ansible/ansible-lint
+  rev: v25.9.0
+  hooks:
+  - id: ansible-lint
+    args: [ "-c", ".config/ansible-lint.yml" ]
+    additional_dependencies: [ "ansible==9.7.0" ]
+    files: ^core/ansible/
+    stages: [ manual ]

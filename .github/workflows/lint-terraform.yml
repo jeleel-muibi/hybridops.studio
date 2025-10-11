@@ -1,0 +1,40 @@
+name: lint-terraform
+on:
+  pull_request:
+    paths:
+    - 'terraform-infra/**'
+  push:
+    branches: [ main ]
+    paths:
+    - 'terraform-infra/**'
+
+jobs:
+  terraform-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: '1.6.x'
+    - name: Terraform fmt (check)
+      run: terraform -chdir=terraform-infra fmt -recursive -check
+    - name: Terraform validate (all roots)
+      shell: bash
+      run: |
+        set -euo pipefail
+        while IFS= read -r -d '' f; do
+          dir="${f%/*}"
+          echo "::group::validate ${dir}"
+          terraform -chdir="${dir}" init -backend=false -input=false -no-color
+          terraform -chdir="${dir}" validate -no-color
+          echo "::endgroup::"
+        done < <(find terraform-infra -maxdepth 3 -name "main.tf" -print0)
+    - name: Install tfsec (static analysis)
+      shell: bash
+      run: |
+        set -euo pipefail
+        curl -sSL https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install-linux.sh | bash
+        tfsec --version
+    - name: Run tfsec
+      run: tfsec --soft-fail terraform-infra

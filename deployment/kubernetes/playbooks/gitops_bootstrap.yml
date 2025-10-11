@@ -1,0 +1,14 @@
+---
+- name: GitOps bootstrap (Argo CD + root app)
+  hosts: k8s_control
+  become: true
+  gather_facts: false
+  collections: [ hybridops.common ]
+  roles:
+  - role: kubernetes/gitops_bootstrap
+    vars:
+      argo_namespace: "argocd"
+      source_repo: "https://github.com/your-handle/hybridops-studio.git"
+      source_path: "deployment/gitops/base"
+      source_revision: "main"
+  tags: [ gitops, bootstrap ]

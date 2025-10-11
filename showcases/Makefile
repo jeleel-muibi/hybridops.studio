@@ -1,20 +1,28 @@
-# —— Showcases Orchestrator (concise) ——
-.DEFAULT_GOAL := help
-SHELL := /usr/bin/env bash
-.SHELLFLAGS := -eu -o pipefail -c
-.SILENT:
+SHELL := /bin/bash
+ROOT ?= $(shell git rev-parse --show-toplevel 2>/dev/null || echo ../..)
+INV  ?= $(ROOT)/deployment/inventories/dev/hosts.ini
+DRVARS ?= $(ROOT)/showcases/hybrid-failover-migration-showcase/vars/dr.env.yml
 
-SUBS := ci-cd-pipeline-showcase hybrid-failover-migration-showcase kubernetes-autoscaling-showcase \
-        linux-administration-showcase network-automation-nornir windows-administration-showcase
+EVIDENCE := $(ROOT)/showcases/hybrid-failover-migration-showcase/evidence
 
-.PHONY: help list
-help: ## List sub-projects & how to run them
-	@echo "Showcases:"
-	@for s in $(SUBS); do echo "  - $$s (use: make -C showcases/$$s help)"; done
-	@echo
-	@echo "Examples:"
-	@echo "  make -C showcases/network-automation-nornir dry-run"
-	@echo "  make -C showcases/hybrid-failover-migration-showcase plan SCENARIO=failover-azure"
+.PHONY: demo evidence clean
 
-list: ## List available sub-project directories
-	@printf "%s\n" $(SUBS)
+demo: ## Run DR demo end-to-end using deployment targets
+	$(MAKE) -C $(ROOT) sanity env.setup
+	# (Optional) pass scenario vars to specific playbooks if you wire them
+	$(MAKE) -C $(ROOT) dr.db.promote
+	$(MAKE) -C $(ROOT) dr.cluster.attach
+	$(MAKE) -C $(ROOT) dr.gitops.sync
+	$(MAKE) -C $(ROOT) dr.dns.cutover
+	$(MAKE) evidence
+
+evidence: ## Collect artifacts from out/ into this showcase folder
+	mkdir -p $(EVIDENCE)
+	# copy ansible run logs (adjust patterns as needed)
+	cp -r $(ROOT)/out/artifacts/ansible-runs $(EVIDENCE)/ 2>/dev/null || true
+	# copy any DR drill exports
+	cp -r $(ROOT)/out/artifacts/dr-drills $(EVIDENCE)/ 2>/dev/null || true
+	@echo "Evidence collected under $(EVIDENCE)"
+
+clean:
+	rm -rf $(EVIDENCE)

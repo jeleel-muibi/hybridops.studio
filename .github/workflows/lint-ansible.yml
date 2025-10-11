@@ -1,0 +1,37 @@
+name: lint-ansible
+on:
+  pull_request:
+    paths:
+    - 'deployment/**'
+    - 'core/**'
+    - '.config/linters/yamllint.yaml'
+    - 'ansible-lint.*'
+  push:
+    branches: [ main ]
+    paths:
+    - 'deployment/**'
+    - 'core/**'
+    - '.config/linters/yamllint.yaml'
+    - 'ansible-lint.*'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install linters
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible ansible-lint yamllint
+
+    - name: ansible-lint
+      run: ansible-lint || true
+
+    - name: yamllint
+      run: yamllint -c .config/linters/yamllint.yaml . || true

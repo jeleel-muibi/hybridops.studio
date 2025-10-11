@@ -1,0 +1,5 @@
+rke2_type: "server"           # server | agent
+rke2_channel: "stable"        # RKE2 release channel
+rke2_server_url: ""           # required if rke2_type=agent (e.g., https://<server>:9345)
+rke2_token: ""                # required if rke2_type=agent
+rke2_config_extra: {}         # freeform extra config (key: value)

@@ -1,0 +1,5 @@
+netbox_url: "https://netbox.local"
+netbox_token: ""
+site_name: "Site A"
+tenant_name: "HybridOps"
+dry_run: true

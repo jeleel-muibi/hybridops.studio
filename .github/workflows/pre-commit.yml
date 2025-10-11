@@ -1,10 +1,8 @@
----
 name: pre-commit
-
 on:
-  push:
   pull_request:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
   run:
@@ -12,17 +10,24 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - uses: actions/setup-python@v5
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.x"
+        python-version: '3.11'
 
-      # Optional but helpful: cache pre-commit envs to speed up runs
-    - uses: actions/cache@v4
-      with:
-        path: ~/.cache/pre-commit
-        key: pre-commit-${{ runner.os }}-${{ hashFiles('.config/pre-commit-config.yaml') }}
-        restore-keys: |
-          pre-commit-${{ runner.os }}-
+    - name: Install pre-commit
+      run: |
+        python -m pip install --upgrade pip
+        pip install pre-commit
 
-    - run: pip install pre-commit
-    - run: pre-commit run --all-files --config .config/pre-commit-config.yaml
+    - name: Install Terraform & TFLint (for terraform hooks)
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install -y unzip
+        curl -fsSL https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip -o tf.zip
+        sudo unzip -o tf.zip -d /usr/local/bin && rm tf.zip
+        curl -fsSL https://github.com/terraform-linters/tflint/releases/download/v0.50.3/tflint_linux_amd64.zip -o tflint.zip
+        sudo unzip -o tflint.zip -d /usr/local/bin && rm tflint.zip
+
+    - name: Run pre-commit
+      run: pre-commit run --all-files

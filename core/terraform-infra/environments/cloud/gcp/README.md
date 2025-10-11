@@ -1,2 +1,0 @@
-# Gcp
-Documentation placeholder.

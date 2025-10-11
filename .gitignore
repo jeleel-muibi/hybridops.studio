@@ -1,6 +1,11 @@
 # files to delete
 core/ansible/collections/ansible_collections/hybridops/common/roles/ansible_roles_for_job_applications.txt
-.mainBak
+.mainBak/
+contrib/maintainer_guide.md
+.private_gists
+
+# Ignore .config directory containing environment-specific settings
+.config/
 
 # planning Ideas and notes
 plan/
@@ -18,14 +23,16 @@ core/ansible/inventories/*/host_vars/*-secret*.yml
 
 # Ansible retries & logs
 *.retry
-logs/
+output/
+*.logs
 
 # Terraform
-.terraform/
-*.tfstate.*
-crash.*.log
-# Keep provider lock file tracked
-!terraform.lock.hcl
+terraform-infra/**/.terraform/
+terraform-infra/**/.terraform.lock.hcl
+terraform-infra/**/terraform.tfstate
+terraform-infra/**/terraform.tfstate.backup
+terraform-infra/**/crash.log
+output/
 
 # Project-specific Terraform outputs
 core/terraform-infra/output/*.json

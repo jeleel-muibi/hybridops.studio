@@ -1,7 +1,8 @@
-# SQL Read‑Only Replica (Azure) — Proof Pack
-_Last updated: 2025-09-22 00:07 UTC_
+# SQL Read‑Only & RPO
 
-- **What this proves:** **RO** replica of the on‑prem SQL primary is healthy in Azure; **RPO ≤ 5m** target met.
-- **Capture date (UTC):** 2025-09-22 00:07 UTC
-- **How to verify:** See `./links.txt` (Grafana replication lag panel; SQL dashboard/deep link).
-- **Hint:** Add a short window around a test failover or heavy write burst to show lag behavior.
+Evidence that a cloud read‑only replica supports DR and that **RPO ≤ 5m** during promotion.
+- Replica status and RO lag charts.
+- Promotion logs and timing snapshots.
+- Example artifacts: `images/*ro_replica_status*.png`, `*promotion_log*.png`.
+
+**Navigate:** [Evidence Map](../../evidence_map.md) · [Proof Archive](../README.md)

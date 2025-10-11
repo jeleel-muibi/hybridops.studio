@@ -1,0 +1,10 @@
+---
+- name: Seed NetBox
+  hosts: localhost
+  gather_facts: false
+  vars:
+    commit: false
+  tasks:
+  - name: Placeholder
+    ansible.builtin.debug:
+      msg: "seed netbox"

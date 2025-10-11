@@ -1,0 +1,44 @@
+name: auto-close-external-prs
+on:
+  pull_request_target:
+    types:
+    - opened
+    - reopened
+    - edited
+    - synchronize
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Close PRs from external contributors
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const allowed = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
+          const pr = context.payload.pull_request;
+          const assoc = pr.author_association;
+          if (allowed.has(assoc)) {
+            core.info(`Trusted contributor: ${assoc}. Leaving PR open.`);
+            return;
+          }
+          core.info(`Closing PR from ${assoc}.`);
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: [
+              'Thanks for your interest! This repository does not accept external pull requests.',
+              'If you have feedback or spot an issue, please open an Issue instead.'
+            ].join(' ')
+          });
+          await github.rest.pulls.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: pr.number,
+            state: 'closed'
+          });

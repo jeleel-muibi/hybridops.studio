@@ -1,0 +1,14 @@
+- name: Render domain join script
+  ansible.windows.win_template:
+    src: join_domain.ps1.j2
+    dest: C:\Temp\join_domain.ps1
+
+- name: Join domain
+  ansible.windows.win_shell: |
+    powershell -ExecutionPolicy Bypass -File C:\Temp\join_domain.ps1 -Domain {{ ad_domain }} -User "{{ ad_user }}" -Password "{{ ad_password }}" -OU "{{ ad_ou }}"
+  args:
+    creates: 'HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\JoinDomain'
+
+- name: Reboot if requested
+  ansible.windows.win_reboot:
+  when: reboot_after_join | bool

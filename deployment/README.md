@@ -1,109 +1,99 @@
-# 🚀 Deployment Automation Suite
+# Deployment — Playbooks, Inventories & GitOps
 
-Welcome to the **Deployment Automation Suite** — your one-stop shop for deploying and managing infrastructure across multiple environments and platforms. This folder is organized for clarity, efficiency, and professional portfolio presentation.
+Operational playbooks, inventories, and GitOps overlays used to bring up and run HybridOps.Studio.
+This area is runnable and intentionally concise; deeper guidance lives under [docs](../docs/) and [contrib](../contrib/).
 
 ---
 
-## 📦 Structure Overview
+## What this area provides
+
+- **Domain playbooks:** `linux/`, `kubernetes/`, `netbox/`, `network/`, `windows/`
+- **Inventories:** static bootstrap → NetBox dynamic handoff
+- **GitOps:** app-of-apps with Kustomize overlays for **dev**, **stage**, and **dr**
+- **Orchestration:** invoked via the root **Makefile** and **control** wrappers
+
+> Reusable logic (roles, modules, helpers) lives in **Core**. This folder contains the environment-specific glue.
+
+---
+
+## Source of Truth handoff
+
+1. **Bootstrap** against the static inventory to baseline hosts.
+2. **Switch SoT:** Terraform emits facts → seed **NetBox** → switch Ansible to the NetBox dynamic inventory.
+
+```bash
+# Inspect inventory from NetBox
+ansible-inventory -i deployment/inventories/netbox/netbox.yml --graph
+
+# Example baseline run from NetBox inventory
+ansible-playbook -i deployment/inventories/netbox/netbox.yml   deployment/linux/playbooks/baseline.yml
+```
+
+Secrets are not committed. Provide them via Ansible Vault or CI secrets.
+
+---
+
+## Makefile routing (from repo root)
+
+The root Makefile forwards targets to per-domain Makefiles under `deployment/`.
+
+```bash
+make env.setup sanity
+
+# Examples
+make linux.rke2_install_server
+make kubernetes.gitops_bootstrap
+make netbox.seed
+make windows.domain_join
+make network.configure_bgp
+```
+
+Logs land in `output/artifacts/ansible-runs/<domain>/TIMESTAMP.log`.
+Override inventory per run if needed:
+
+```bash
+INVENTORY=deployment/inventories/bootstrap/hosts.ini   make linux.rke2_install_server
+```
+
+---
+
+## GitOps (Argo CD)
+
+App-of-apps with Kustomize overlays.
+
+```bash
+# Bootstrap GitOps
+kubectl apply -f deployment/kubernetes/gitops/bootstrap.yaml
+
+# Build overlays locally or in CI
+kustomize build deployment/gitops/overlays/dev   > output/gitops_dev.yaml
+kustomize build deployment/gitops/overlays/stage > output/gitops_stage.yaml
+kustomize build deployment/gitops/overlays/dr    > output/gitops_dr.yaml
+```
+
+---
+
+## Layout (high level)
 
 ```
 deployment/
-├── linux/        # Linux deployment scripts & tools
-├── windows/      # Windows deployment scripts & tools
-├── network/      # Network automation scripts
-├── kubernetes/   # Kubernetes deployment scripts
-├── inventory/    # Env-specific inventories/configs
-├── common/       # Shared helpers/utilities
-├── orchestrate_all.sh # Master orchestration script
-└── README.md     # (this file)
+  inventories/
+    bootstrap/           # static inventory before NetBox SoT
+    netbox/              # dynamic inventory after seeding
+  linux|kubernetes|.../
+    Makefile             # domain router (called by root Makefile)
+    playbooks/           # thin playbooks that call reusable roles
+    files|templates/     # env-specific helpers (only if needed)
+  gitops/                # base/apps/overlays
 ```
 
-- **Each folder** contains scripts targeting a specific platform or environment.
-- **No per-folder READMEs:** This document is the central source of deployment documentation.
-- **Every script** contains a detailed header at the top covering purpose, usage, arguments, examples, and author.
-
 ---
 
-## 🛠️ Getting Started
+## Related
 
-### 1. Make Scripts Executable
-
-```bash
-chmod +x linux/*.sh network/*.sh kubernetes/*.sh common/*.sh orchestrate_all.sh
-```
-(Adjust for `*.ps1` or other extensions as needed.)
-
-### 2. Run a Deployment Script
-
-Navigate to the relevant subfolder and run the script, specifying the environment (`dev`, `staging`, `prod`, etc.):
-
-```bash
-cd linux
-./deploy.sh dev
-```
-
-Or run the master orchestrator from the root:
-
-```bash
-./orchestrate_all.sh prod
-```
-
-> **Tip:** All scripts require the target environment as a command-line argument. If omitted, you'll see usage instructions from the script header.
-
----
-
-## ⚙️ How It Works
-
-- **Inventory Management:**
-  Scripts use or generate inventory/config files from `inventory/` for the chosen environment.
-
-- **Playbook & Script Execution:**
-  Each deploy script (shell, PowerShell, etc.) executes the right automation playbooks (Ansible, etc.) and logic for the target platform.
-
-- **Secrets/Vault Handling:**
-  If using Ansible Vault or similar, you'll be prompted for secrets if needed. See each script header for specifics.
-
----
-
-## ❓ Troubleshooting
-
-- **Permission Denied:**
-  Scripts must be executable:
-  `chmod +x <script>`
-
-- **Missing Arguments:**
-  Scripts will exit and display usage instructions if required arguments are missing.
-
-- **Other issues?**
-  See the script header for dependencies, known issues, and advanced options.
-
----
-
-## 🌟 Best Practices
-
-- Use only these scripts for deployment to ensure all prerequisites and steps are followed.
-- Source shared helpers from `common/` in your scripts as needed (see script headers).
-- Keep code and documentation up to date. Update this README if the high-level structure changes.
-- For any new script, include a standard header describing usage, author, and options.
-
----
-
-## 📑 Related Documentation
-
-- [Project Overview](../README.md)
-- [Linux Automation](../linuxautomation/README.md)
-- [Windows Automation](../windowsautomation/README.md)
-- [Network Automation](../networkautomation/README.md)
-- [Kubernetes Automation](../kubernetesautomation/README.md)
-- [Inventory Management](../inventory/README.md)
-
----
-
-## 👤 Author
-
-Scripts and workflow by **Jeleel Muibi**
-*Infrastructure Automation Specialist*
-
----
-
-**For script-specific help,** always check the header at the top of the script!
+- **[Runbooks](../docs/runbooks/README.md)** — procedural steps for DR, burst, bootstrap, DNS, VPN, secrets
+- **[Deployment (this folder)](./)** — environment-specific playbooks and GitOps overlays
+- **[Terraform Infra](../terraform-infra/README.md)** — environment directories and modules
+- **[Core](../core/)** — reusable Ansible collection, Python utilities, PowerShell module
+- **[Evidence Map](../docs/evidence_map.md)** — claim → proof links for KPIs and architecture
+- **[Scripts ↔ Playbooks Reference](../contrib/scripts-playbooks.md)** — orchestration patterns and examples

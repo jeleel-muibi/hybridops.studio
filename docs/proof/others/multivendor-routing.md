@@ -15,3 +15,5 @@ _Last updated: 2025-09-21 (UTC)_
 
 ## Notes
 - Call out which neighbors/paths are shown and capture window (UTC).
+
+**Back to:** [Evidence Map](../../evidence_map.md)

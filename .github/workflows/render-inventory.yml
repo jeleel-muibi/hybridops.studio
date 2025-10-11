@@ -1,0 +1,48 @@
+name: render-inventory
+on:
+  workflow_dispatch:
+    inputs:
+      netbox_url:
+        description: 'NetBox URL (https://...)'
+        required: false
+        default: ''
+  pull_request:
+    paths:
+    - 'deployment/inventories/netbox/**'
+    - 'deployment/netbox/**'
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    env:
+      NETBOX_URL: ${{ github.event.inputs.netbox_url != '' && github.event.inputs.netbox_url || secrets.NETBOX_URL }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Ansible + NetBox plugin
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible "requests>=2.31.0" "pynetbox>=7.3.4"
+
+    - name: Load NetBox token
+      shell: bash
+      run: |
+        echo "NETBOX_TOKEN=${{ secrets.NETBOX_TOKEN }}" >> "$GITHUB_ENV"
+
+    - name: Render inventory from NetBox
+      shell: bash
+      run: |
+        : "${NETBOX_URL:?NETBOX_URL is required}"
+        : "${NETBOX_TOKEN:?NETBOX_TOKEN is required}"
+        ansible-inventory -i deployment/inventories/netbox/netbox.yml --list > inventory.json
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: rendered-inventory
+        path: inventory.json

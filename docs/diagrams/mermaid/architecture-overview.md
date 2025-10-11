@@ -1,78 +1,110 @@
-## Mermaid Diagram (renders on GitHub)
-> **Legend:** Solid = control/data · Dashed = IPsec/eBGP
+# Architecture Overview (Mermaid)
+
+> **Navigate:** [Docs Home](../README.md) · [Network Design](../network/README.md)
+
+## Network Core (Single Hub)
+> **Legend:** solid = control/data · dotted = IPsec/BGP
 
 ```mermaid
-flowchart LR
-  %% ===== On-Prem =====
-  subgraph OnPrem["On-Prem (Site A) [HA]"]
-    PVE["Proxmox [HA]"]
-    PF["pfSense [HA]"]
-    K8S["K8s Control Plane x3 + Workers [HA]"]
-    SQL["SQL Server (WSFC)"]
-    PROM_ON["Prometheus (on-prem)"]
+flowchart TB
+  subgraph OnPrem["On‑prem (Site A)"]
+    direction TB
+    EDGES["EVE‑NG Edges (B1/B2)"]
+    PVE["Proxmox"]
+    KCP["RKE2 Control‑plane"]
+    PVE --> KCP
   end
 
-  %% ===== EVE-NG =====
-  subgraph EVE["EVE-NG Region (B1/B2)"]
-    EDGE["pfSense Edges (IPsec)"]
-    WORKERS["K8s Workers + routers/switches"]
+  subgraph GCP["GCP Hub"]
+    direction TB
+    HAVPN["HA VPN"]
+    CR["Cloud Router (BGP)"]
+    HUB["Hub VPC"]
+    NCC["NCC (Hub)"]
+    GKE["GKE spokes"]
+    HAVPN --> CR --> HUB --> NCC --> GKE
   end
 
-  %% ===== Hub & Decision =====
-  subgraph HUB["Google NCC (Hub)"]
-    NCC["NCC Hub"]
-    PROM_FED["Prometheus Federation Core"]
-    DEC["Decision Service (policy-governed)"]
+  subgraph Azure["Azure Spoke"]
+    direction TB
+    AZGW["VPN Gateway (BGP)"]
+    AKS["AKS / VNet"]
+    AVD["AVD"]
+    AZGW --> AKS --> AVD
   end
 
-  %% ===== Azure =====
-  subgraph AZ["Azure (DR/Burst)"]
-    K8S_AZ["K8s Burst Workers"]
-    RO_DB["Read-Only DB [RO]"]
-    DR["Failover Compute [DR]"]
-    AZ_MON["Azure Monitor (signals)"]
-    PROM_AZ["Prometheus"]
-    BLOB["Blob (Packer images)"]
-  end
-
-  %% ===== GCP =====
-  subgraph GC["GCP (Burst)"]
-    K8S_GCP["K8s Burst Workers"]
-    GCS["GCS (Packer mirror)"]
-    PROM_GCP["Prometheus"]
-    GCP_MON["GCP Monitoring (signals)"]
-  end
-
-  %% ===== CI/CD & Images =====
-  subgraph CICD["CI/CD & Images"]
-    JENK["Jenkins"]
-    GHA["GitHub Actions"]
-    PACK["Packer"]
-    TFC["Terraform Cloud"]
-  end
-
-  %% Primary (solid)
-  PVE --> K8S
-  K8S --> SQL
-  PROM_ON --> PROM_FED
-  TFC --> PVE
-  JENK --> PACK
-  GHA --> PACK
-  PACK --> BLOB
-  PACK --> GCS
-
-  %% Overlays (dashed)
-  PF -. "IPsec" .-> NCC
-  EDGE -. "IPsec" .-> NCC
-  PROM_FED -. "Federation" .-> PROM_AZ
-  PROM_FED -. "Federation" .-> PROM_GCP
-  K8S -. "Burst" .-> K8S_AZ
-  K8S -. "Burst" .-> K8S_GCP
-  SQL -. "Replication" .-> RO_DB
-  AZ_MON -. "Signals" .-> DEC
-  GCP_MON -. "Signals" .-> DEC
-  PROM_FED --> DEC
-  DEC -. "Trigger" .-> K8S_AZ
-  DEC -. "Trigger" .-> K8S_GCP
-  DEC -. "Trigger" .-> DR
+  %% Tunnels
+  EDGES -. IPsec+BGP .-> HAVPN
+  AZGW  -. Inter‑cloud BGP .-> CR
 ```
+
+---
+
+## Operations & Workloads (Windows, GitOps, DR)
+> **Legend:** solid = control/data · dotted = GitOps/Config/Backups/Signals
+
+```mermaid
+flowchart TB
+  %% ===== Workloads (on‑prem) =====
+  subgraph Workloads["Workloads"]
+    direction TB
+    KCP["RKE2 Control‑plane"]
+    KW["RKE2 Workers"]
+    WIN["Windows AD / Admin Targets"]
+    PG["PostgreSQL (Primary)"]
+    KCP --> KW
+  end
+
+  %% ===== Tooling =====
+  subgraph Tooling["Observability & CI/CD"]
+    direction TB
+    PFED["Prometheus Federation"]
+    GRAF["Grafana"]
+    ALERT["Alerting"]
+    DEC["Decision Service (policy)"]
+    TF["Terraform"]
+    PKR["Packer"]
+    ANS["Ansible / PowerShell"]
+    PFED --> GRAF --> ALERT
+    PFED -. signals .-> DEC
+    DEC  -. triggers .-> TF
+  end
+
+  %% ===== Cloud targets =====
+  subgraph Clouds["Cloud targets"]
+    direction TB
+    AKS["AKS"]
+    GKE["GKE"]
+  end
+
+  %% ===== Artifacts =====
+  subgraph Artifacts["Images & backups"]
+    direction TB
+    BLOB["Azure Blob"]
+    GCS["GCS"]
+  end
+
+  %% Provision & GitOps
+  TF --> AKS
+  TF --> GKE
+  KCP -. GitOps .-> AKS
+  KCP -. GitOps .-> GKE
+
+  %% Admin & config
+  ANS -. WinRM .-> WIN
+  ANS -. K8s mods .-> KCP
+
+  %% Backups & images
+  PG  -. WAL‑G .-> BLOB
+  PG  -. WAL‑G .-> GCS
+  PKR --> BLOB
+  PKR --> GCS
+```
+
+---
+---
+
+## See also
+- **Security & Compliance (summary)** — see [Network Design › Security](../network/README.md#security--compliance-summary)
+- **Test Matrix (minimum)** — see [Network Design › Test Matrix](../network/README.md#test-matrix-minimum)
+- **Alternative Topology (Dual Hubs)** — see [Network Design › Appendix — Dual Hubs](../network/README.md#appendix--dual-hubs-reference)

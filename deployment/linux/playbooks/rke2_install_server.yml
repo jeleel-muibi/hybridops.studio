@@ -1,0 +1,11 @@
+---
+- name: Install RKE2 (server)
+  hosts: k8s_control
+  become: true
+  collections: [ hybridops.common ]
+  roles:
+  - role: linux/rke2_install
+    vars:
+      rke2_type: "server"
+      rke2_channel: "stable"
+  tags: [ baseline, rke2, server ]

@@ -1,0 +1,13 @@
+---
+- name: Install RKE2 (agent)
+  hosts: k8s_agents
+  become: true
+  collections: [ hybridops.common ]
+  roles:
+  - role: linux/rke2_install
+    vars:
+      rke2_type: "agent"
+      rke2_channel: "stable"
+      # rke2_server_url: "https://kcp-1:9345"
+      # rke2_token: "__INJECT_AT_RUNTIME__"
+  tags: [ baseline, rke2, agent ]

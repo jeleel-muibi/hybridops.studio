@@ -1,7 +1,8 @@
-# NCC — Proof Pack Notes
-_Last updated: 2025-09-22T00:00Z_
+# Google NCC (Hub‑and‑Spoke)
 
-- **Proves:** Google **Network Connectivity Center** hub‑and‑spoke is configured and exchanging routes; Azure/GCP spokes reachable.
-- **Verify:** Attach **direct** portal deep links (hub, spokes, route tables). Include a topology screenshot.
-- **Evidence included:** Hub & spokes JSON exports, route table captures, tunnel status view.
-- **KPIs mapped:** Underpins DR/burst path reachability.
+Evidence that NCC is operating as the network hub with on‑prem and cloud spokes.
+- Topology and spoke attachments.
+- Hub/spoke effective routes toward DR/burst targets.
+- Example artifacts: `images/*ncc_topology*.png`, `*hub_routes*.png`.
+
+**Navigate:** [Evidence Map](../../evidence_map.md) · [Proof Archive](../README.md)

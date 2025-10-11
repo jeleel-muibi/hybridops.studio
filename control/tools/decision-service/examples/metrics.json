@@ -1,0 +1,12 @@
+{
+  "azure": {
+    "rpo": 280,
+    "rto": 600,
+    "latency_ms": 45
+  },
+  "gcp": {
+    "rpo": 260,
+    "rto": 480,
+    "latency_ms": 55
+  }
+}

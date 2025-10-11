@@ -1,4 +1,4 @@
-# Decision Service — Proof Pack Notes
+# Decision Service (Policy‑Driven Failover/Burst)
 _Last updated: 2025-09-22 00:00 UTC_
 
 **Proves:** A policy-governed Decision Service triggers autoscale/failover from SLO + cost/credits + monitor signals.
@@ -26,3 +26,5 @@ _Last updated: 2025-09-22 00:00 UTC_
 ### Redactions
 - Mask tenant/subscription/project IDs and any real IPs in screenshots or payloads.
 - Keep links read-only; do not expose secrets or tokens.
+
+**Navigate:** [Evidence Map](../../evidence_map.md) · [Proof Archive](../README.md)

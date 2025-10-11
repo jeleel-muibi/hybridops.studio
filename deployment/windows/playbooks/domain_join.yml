@@ -1,0 +1,8 @@
+---
+- name: Join Windows servers to domain
+  hosts: windows
+  gather_facts: false
+  collections: [ hybridops.common ]
+  roles:
+  - role: windows/domain_join
+  tags: [ windows, join, baseline ]

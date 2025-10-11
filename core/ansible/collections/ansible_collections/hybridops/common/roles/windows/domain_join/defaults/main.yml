@@ -1,0 +1,5 @@
+ad_domain: "example.local"
+ad_ou: "OU=Servers,DC=example,DC=local"
+ad_user: "EXAMPLE\\svc_join"
+ad_password: ""
+reboot_after_join: true
