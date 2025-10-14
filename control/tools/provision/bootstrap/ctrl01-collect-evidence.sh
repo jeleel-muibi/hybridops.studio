@@ -16,8 +16,8 @@
 set -Eeuo pipefail
 
 # Evidence parameters
-CURRENT_DATE="2025-10-14 19:02:15"
-CURRENT_USER="jeleel-muibibuntu"
+CURRENT_DATE="$(date -u -Is)"
+CURRENT_USER="$(id -un)"
 
 # Determine where to store evidence
 REPO_PATH="/srv/hybridops"

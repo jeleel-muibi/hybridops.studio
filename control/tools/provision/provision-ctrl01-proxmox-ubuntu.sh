@@ -70,7 +70,6 @@ users:
     shell: /bin/bash
     lock_passwd: false
     sudo: ALL=(ALL) NOPASSWD:ALL
-    passwd: ${CIPASS}
 $( [ -n "$AUTHORIZED_KEYS" ] && printf "    ssh_authorized_keys:\n%s" "$AUTHORIZED_KEYS" )
 
 write_files:

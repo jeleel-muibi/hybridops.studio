@@ -134,6 +134,17 @@ fi
 
 echo "[bootstrap] Day-1 process completed at $(date -Is)"
 
+EV_BASE="/srv/hybridops/docs/proof/ctrl01"
+if [ -d "$EV_BASE" ]; then
+  # best-effort: set 'latest' or most recent dir as evidence_dir
+  EV_DIR="$(ls -1dt "$EV_BASE"/* 2>/dev/null | head -n1 || true)"
+  if [ -n "$EV_DIR" ]; then
+    jq '. + {evidence_dir: env.EV_DIR}' /var/lib/ctrl01/status.json 2>/dev/null \
+      | sed "s#ENV\.EV_DIR#\"$EV_DIR\"#g" >/var/lib/ctrl01/status.json.tmp || true
+    [ -s /var/lib/ctrl01/status.json.tmp ] && mv /var/lib/ctrl01/status.json.tmp /var/lib/ctrl01/status.json
+  fi
+fi
+
 # Run adaptive hardening AFTER evidence collection
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   echo "[bootstrap] adaptive hardening: grace ${HARDEN_GRACE_MIN}m"
