@@ -1,102 +1,67 @@
-# Documentation Index
+# HybridOps Studio — Documentation Index
 
-> Start here to navigate briefings, diagrams, runbooks, CI, and evidence.
-
----
-
-## How to read this
-1. **Briefings** – short narratives (executive → technical) for quick context.
-2. **Diagrams** – architecture views (draw.io renders and Mermaid fallbacks).
-3. **Evidence Map** – one place that links claims → dashboards/logs/exports.
-4. **Runbooks** – procedure playbooks for DR, burst, bootstrap, and operations.
-5. **ADRs & Case Studies** – design decisions and focused walkthroughs.
-6. **CI** – GitHub Actions and Jenkins jobs that lint, test, and render artifacts.
+This page orients readers to the core materials—ADRs (why), How-to guides (how), Runbooks (operate), diagrams (design), and evidence. Detailed procedures live in the How-to and Runbooks.
 
 ---
 
-## Briefings
-- **Executive Summary** — [read](./briefings/executive_summary.md)
-- **Project Overview** — [read](./briefings/project_overview.md)
-- **Technical Architecture** — [read](./briefings/technical_architecture.md)
+## Start here
+
+- **How‑to: Provision the Control Node (Proxmox)** — Day‑0 → Day‑1 walkthrough with execution steps.  
+  See: [How‑to: Provision ctrl‑01](./howto/HOWTO_ctrl01_provisioner.md)
+
+- **Design Rationale** — why the control node is a full VM (cloud‑init), and how this supports DR and migration.  
+  See: [ADR‑0012 — Control node as a VM](./adr/ADR-0012_control-node-as-vm.md)
+
+- **Operations Runbook** — verification, optional Jenkins notes, troubleshooting, and re‑runs.  
+  See: [Runbook — ctrl‑01 bootstrap](./runbooks/bootstrap/bootstrap-ctrl01-node.md)
+
+> ℹ️ This index intentionally avoids inline shell commands and credentials. Use the How‑to for any execution.
 
 ---
 
-## Diagrams
-- **Architecture (rendered PNG)** — [view](./diagrams/flowcharts/renders/architecture-overview.png)
-- **Architecture (Mermaid)** — [view](./diagrams/mermaid/architecture-overview.md)
-- **Network Design (canonical)** — [view](./diagrams/network/README.md)
+## Selected artifacts
 
-> Editing sources: draw.io files live under `diagrams/flowcharts/*.drawio`.
+- **Briefings**
+  - [Executive Summary](./briefings/executive_summary.md)
+  - [Project Overview](./briefings/project_overview.md)
+  - [Technical Architecture](./briefings/technical_architecture.md)
 
----
+- **Diagrams**
+  - [Architecture (rendered)](./diagrams/flowcharts/renders/architecture-overview.png)
+  - [Architecture (Mermaid)](./diagrams/mermaid/architecture-overview.md)
+  - [Network Design (canonical)](./diagrams/network/README.md)
 
-## Evidence & Proof
-- **Evidence Map (claims → proofs)** — [open](./evidence_map.md)
-- **Proof Archive (screenshots & exports)** — [open](./proof/README.md)
+- **Evidence & Proof**
+  - [Evidence Map (claims → proofs)](./evidence_map.md)
+  - [Proof Archive](./proof/README.md)
 
----
+- **Runbooks**
+  - [Runbook Index](./runbooks/README.md)
+  - [ctrl‑01: Bootstrap & Verification](./runbooks/bootstrap/bootstrap-ctrl01-node.md)
+  - DR — [Failover to Cloud](./runbooks/dr-failover-to-cloud.md) · [Failback to On‑Prem](./runbooks/dr-failback-to-onprem.md) · [DNS Cutover](./runbooks/ops-dns-cutover.md)
+  - Bootstrap — [RKE2 Install](./runbooks/bootstrap-rke2-install.md) · [NetBox Seed](./runbooks/bootstrap-netbox.md)
 
-## Runbooks
-- **Runbook index** — [open](./runbooks/README.md)
-- DR: **Failover to Cloud** — [open](./runbooks/dr-failover-to-cloud.md)
-- DR: **Failback to On‑Prem** — [open](./runbooks/dr-failback-to-onprem.md)
-- DR: **DNS Cutover** — [open](./runbooks/ops-dns-cutover.md)
-- Bootstrap: **RKE2 Install** — [open](./runbooks/bootstrap-rke2-install.md)
-- Bootstrap: **NetBox Seed** — [open](./runbooks/bootstrap-netbox.md)
-- Ops: **AVD Zero‑Touch** — [open](./runbooks/ops-avd-zero-touch.md)
-- Ops: **VPN Bring‑Up** — [open](./runbooks/ops-vpn-bringup.md)
-- Ops: **Postgres WAL‑G Restore/Promote** — [open](./runbooks/ops-postgres-walg-restore-promote.md)
+- **ADRs**
+  - [ADR Index](./adr/README.md)
+  - Selected: [ADR‑0001 — ADR process](./adr/ADR-0001_adr-process-and-conventions.md) · [ADR‑0002 — NetBox SoT](./adr/ADR-0002_source-of-truth_netbox-driven-inventory.md) · [ADR‑0003 — Secrets via External Secrets + KMS](./adr/ADR-0003_secrets-management_k8s-external-secrets-kms.md) · [ADR‑0012 — Control node as a VM](./adr/ADR-0012_control-node-as-vm.md)
 
-> Use the template at `runbooks/templates/runbook_template.md` for new procedures.
+- **CI**
+  - [CI Overview](./ci/README.md) · [GitHub Actions](./ci/github-actions.md) · [Jenkins CI](./ci/jenkins.md)
 
----
-
-## Continuous Integration (CI)
-- **CI Overview** — [open](./ci/README.md)
-- **GitHub Actions** — [open](./ci/github-actions.md)
-- **Jenkins CI** — [open](./ci/jenkins.md)
-
----
-
-## Architecture Decision Records (ADRs)
-- **ADR Index** — [open](./adr/README.md)
-- ADR‑0001 — ADR process & conventions — [read](./adr/ADR-0001_adr-process-and-conventions.md)
-- ADR‑0002 — NetBox as Source of Truth — [read](./adr/ADR-0002_source-of-truth_netbox-driven-inventory.md)
-- ADR‑0003 — Secrets via External Secrets + KMS — [read](./adr/ADR-0003_secrets-management_k8s-external-secrets-kms.md)
-- ADR‑0004 — NCC primary hub; Azure routed spoke — [read](./adr/ADR-0004_ncc-primary-hub_azure-spoke.md)
+- **Guides & Roadmaps**
+  - [SecOps Roadmap](./guides/secops-roadmap.md)
+  - [Maintenance Guide](./maintenance.md)
+  - [How‑to: Provision ctrl‑01](./howto/HOWTO_ctrl01_provisioner.md)
 
 ---
 
-## Guides & Roadmaps
-- **SecOps Roadmap** — [open](./guides/secops-roadmap.md)
-- **Maintenance Guide** — [open](./maintenance.md)
+## Conventions
+
+- This page is an **index of portfolio artifacts**.  
+- Execution details: **How‑to** and **Runbooks**.  
+- Design decisions: **ADRs**.  
+- Evidence and proofs: **Evidence Map** and **Proof Archive**.
 
 ---
 
-## Case Studies
-- **Nornir: Brown‑field Switch Config (BSC)** — [read](./case-studies/bsc-nornir.md)
-
----
-
-## Requirements (tooling)
-- **Python/Ansible** — [view](./requirements/requirements.txt)
-- **Ansible Collections** — [view](./requirements/requirements.yml)
-
----
-
-## Maintenance & Ownership
-
-- **[Maintenance Guide](./maintenance.md)** — files and dashboards to keep current as the portfolio evolves.
-- **Licensing (docs):** **[CC‑BY‑4.0](./license-docs.md)**. Vendor marks are noted in `NOTICE` at the repository root.
-
----
-
-### Pinned Quick Links
-
-- **Run a DR drill:** follow **[DR Failover to Cloud](./runbooks/dr-failover-to-cloud.md)**.
-- **Bootstrap GitOps:** see **[Bootstrap GitOps](./runbooks/bootstrap-gitops.md)**.
-- **Secrets rotation:** see **[Secrets Rotation](./runbooks/ops-secrets-rotation.md)**.
-
----
-
-_Last updated: 2025-10-08 (UTC)_
+_Last updated: 2025-10-13 19:10 UTC_

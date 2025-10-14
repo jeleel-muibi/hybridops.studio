@@ -1,0 +1,7 @@
+# from your Mac
+# 1) Put the cloud-init file on Proxmox
+scp ctrl01-rocky-single-cloudinit.yaml root@192.168.0.27:/var/lib/vz/snippets/
+scp create_ctrl01_vmbr1_rocky.sh root@192.168.0.27:/root/
+
+
+scp ctrl01-bootstrap.evidence.sh ubuntu@172.16.10.5:/home/ubuntu
