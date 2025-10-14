@@ -139,9 +139,10 @@ fi
 
 echo "[bootstrap] Day-1 process completed at $(date -Is)"
 
-# Run evidence collection script if it exists
+# Run evidence collection script if it exists (same directory)
 EVIDENCE_SCRIPT="${SCRIPT_DIR}/ctrl01-collect-evidence.sh"
 if [ -f "$EVIDENCE_SCRIPT" ]; then
   echo "[bootstrap] Running evidence collection script"
-  bash "$EVIDENCE_SCRIPT"
+  chmod +x "$EVIDENCE_SCRIPT"
+  CURRENT_DATE="2025-10-14 20:02:06" CURRENT_USER="jeleel-muibi" bash "$EVIDENCE_SCRIPT"
 fi
