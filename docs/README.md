@@ -13,7 +13,7 @@ This page orients readers to the core materials—ADRs (why), How-to guides (how
   See: [ADR‑0012 — Control node as a VM](./adr/ADR-0012_control-node-as-vm.md)
 
 - **Operations Runbook** — verification, optional Jenkins notes, troubleshooting, and re‑runs.  
-  See: [Runbook — ctrl‑01 bootstrap](./runbooks/bootstrap/bootstrap-ctrl01-node.md)
+  See: [Runbook — ctrl‑01 bootstrap](./runbooks/bootstrap/bootstrap-ctrl01-node.md) · [Evidence — ctrl‑01 bootstrap](../proof/ctrl01/latest/README.md)
 
 > ℹ️ This index intentionally avoids inline shell commands and credentials. Use the How‑to for any execution.
 
