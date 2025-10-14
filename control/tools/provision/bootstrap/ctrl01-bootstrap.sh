@@ -1,43 +1,48 @@
 #!/usr/bin/env bash
+
 # -----------------------------------------------------------------------------
-# HybridOps Studio — ctrl‑01 Day‑1 bootstrap
-# Installs core tooling, clones the repo, optional Jenkins, and collects evidence.
-# Designed to be fetched/exec'd by Day‑0 fetcher.
+# HybridOps Studio: ctrl-01 Day‑1 Bootstrap (Configuration)
 # -----------------------------------------------------------------------------
+# PURPOSE
+#   • Day‑1 (inside VM): Install core tooling (Terraform, Packer, kubectl,
+#     Helm, Ansible, Jenkins), configure services, and apply adaptive hardening.
+#
+# OPERATIONAL SHAPE
+#   • This script is stored in source control and executed from within the VM
+#   • Triggered by systemd timer after Day-0 VM provisioning completes
+#
+# AUDIT ARTIFACTS
+#   • Logs:        /var/log/ctrl01_bootstrap.log (already configured by launcher)
+#   • Status JSON: /var/lib/ctrl01/status.json
+# -----------------------------------------------------------------------------
+
 set -Eeuo pipefail
-LOG=/var/log/ctrl01_bootstrap.log
-exec > >(tee -a "$LOG") 2>&1
-echo "[bootstrap] start $(date -Is)"
-export LC_ALL=C LANG=C
 
-# ---------- Tunables via environment (have sane defaults) ----------
-CIUSER=${CIUSER:-admin}
-ENABLE_FULL_BOOTSTRAP=${ENABLE_FULL_BOOTSTRAP:-true}
-ENABLE_JENKINS=${ENABLE_JENKINS:-true}
-ENABLE_AUTO_HARDEN=${ENABLE_AUTO_HARDEN:-true}
-HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-10}
+# Environment variables with defaults (can be overridden when calling script)
+ENABLE_FULL_BOOTSTRAP=${ENABLE_FULL_BOOTSTRAP:-true}   # install the full toolchain
+ENABLE_JENKINS=${ENABLE_JENKINS:-true}                 # install & start Jenkins
+ENABLE_AUTO_HARDEN=${ENABLE_AUTO_HARDEN:-true}         # disable password auth if a key exists
+HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-10}               # minutes to wait before hardening
+CIUSER=${CIUSER:-ubuntu}                               # should match Day-0 user
 
-REPO_URL=${REPO_URL:-https://github.com/jeleel-muibi/hybridops.studio}
-REPO_BRANCH=${REPO_BRANCH:-main}
-REPO_DIR=${REPO_DIR:-/srv/hybridops}
+# Get our bearings
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../../" &>/dev/null && pwd)"
+echo "[bootstrap] Starting Day-1 process from ${SCRIPT_DIR} (repo: ${REPO_ROOT})"
 
-# Evidence dir
-TS=$(date -u +%Y%m%dT%H%M%SZ)
-EV_BASE=${EV_BASE:-/srv/hybridops/output/artifacts/ctrl01}
-EV_DIR="$EV_BASE/$TS"
-install -d -m 0755 "$EV_DIR"
-
-retry() { local n=1; local tries="$1"; local sleep_s="$2"; shift 2;
+# Networking resilience
+retry() {
+  local n=1; local tries="$1"; local sleep_s="$2"; shift 2;
   until "$@"; do
     if [ $n -ge "$tries" ]; then echo "RETRY: giving up after $n: $*"; return 1; fi
     echo "RETRY: $n/$tries failed: $* ; sleeping ${sleep_s}s"; sleep "$sleep_s"; n=$((n+1))
   done
 }
 
-# Prefer IPv4
+# Prefer IPv4 for flaky links
 grep -q '::ffff:0:0/96' /etc/gai.conf 2>/dev/null || echo 'precedence ::ffff:0:0/96  100' | sudo tee -a /etc/gai.conf >/dev/null
 
-# Basic network/dpkg sanity
+# Ensure dpkg/apt are sane and caches are minimal
 rm -rf /var/lib/apt/lists/* || true
 apt-get clean || true
 dpkg --configure -a || true
@@ -46,7 +51,7 @@ dpkg --configure -a || true
 retry 20 3 bash -lc 'ping -c1 -W1 8.8.8.8 >/dev/null 2>&1'
 retry 20 3 bash -lc 'getent hosts archive.ubuntu.com >/dev/null 2>&1'
 
-# Grow root if needed
+# Grow root partition & filesystem (no‑op if already maxed)
 if ! command -v growpart >/dev/null 2>&1; then
   retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::ForceIPv4=true'
   retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get -y install cloud-guest-utils'
@@ -60,8 +65,8 @@ elif lsblk -no FSTYPE /dev/sda1 2>/dev/null | grep -qi xfs; then
 fi
 
 # Base tools + guest agent
-retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::ForceIPv4=true | tee '"$EV_DIR"'/10_apt_update.txt'
-retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get -y install qemu-guest-agent curl git jq unzip wget tar ca-certificates make python3-pip ufw | tee -a '"$EV_DIR"'/10_apt_update.txt'
+retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::ForceIPv4=true'
+retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get -y install qemu-guest-agent curl git jq unzip wget tar ca-certificates make python3-pip ufw'
 systemctl enable --now qemu-guest-agent || true
 
 if [ "${ENABLE_FULL_BOOTSTRAP}" = "true" ]; then
@@ -82,81 +87,34 @@ if [ "${ENABLE_FULL_BOOTSTRAP}" = "true" ]; then
     echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" | tee /etc/apt/sources.list.d/jenkins.list >/dev/null
   fi
 
-  retry 8 10 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::ForceIPv4=true | tee -a '"$EV_DIR"'/10_apt_update.txt'
+  retry 8 5 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::ForceIPv4=true'
   PKGS="terraform packer kubectl ansible fontconfig openjdk-17-jre-headless"
   if [ "${ENABLE_JENKINS}" = "true" ]; then PKGS="$PKGS jenkins"; fi
-  retry 8 10 bash -lc 'DEBIAN_FRONTEND=noninteractive apt-get -y install '"$PKGS"' | tee '"$EV_DIR"'/20_tool_install.txt'
+  retry 6 5 bash -lc "DEBIAN_FRONTEND=noninteractive apt-get -y install $PKGS"
 
-  # Helm (script installer)
+  # Helm via official script (fallback)
   if ! command -v helm >/dev/null 2>&1; then
-    retry 5 10 bash -lc 'curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash | tee '"$EV_DIR"'/21_helm_install.txt'
+    retry 5 5 bash -lc 'curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash'
   fi
 
   # Firewall (SSH + Jenkins if installed)
   ufw allow 22/tcp || true
   [ "${ENABLE_JENKINS}" = "true" ] && ufw allow 8080/tcp || true
   yes | ufw enable || true
+
+  [ "${ENABLE_JENKINS}" = "true" ] && systemctl enable --now jenkins || true
 fi
 
-# Clone/update repo
-install -d -m 0755 "$(dirname "$REPO_DIR")"
-if [ ! -d "$REPO_DIR/.git" ]; then
-  echo "[bootstrap] cloning repo $REPO_URL -> $REPO_DIR (branch $REPO_BRANCH)"
-  retry 6 10 git clone --branch "$REPO_BRANCH" --depth 1 "$REPO_URL" "$REPO_DIR" | tee "$EV_DIR/30_repo_clone.txt"
-else
-  echo "[bootstrap] updating repo $REPO_DIR"
-  git -C "$REPO_DIR" fetch --depth 1 origin "$REPO_BRANCH" || true
-  git -C "$REPO_DIR" checkout "$REPO_BRANCH" || true
-  git -C "$REPO_DIR" pull --ff-only || true
-fi
-
-# Tool versions
-{
-  echo "==== versions @ $(date -Is) ===="
-  terraform -v || true
-  packer -v || true
-  kubectl version --client --output=yaml || true
-  helm version || true
-  ansible --version || true
-} | tee "$EV_DIR/40_tool_versions.txt"
-
-# Jenkins status/evidence
-if [ "${ENABLE_JENKINS}" = "true" ]; then
-  systemctl enable --now jenkins || true
-  sleep 2
-  {
-    systemctl status jenkins --no-pager || true
-    ss -lntp | grep :8080 || true
-    test -f /var/lib/jenkins/secrets/initialAdminPassword && echo "INITIAL_PASS: $(sudo cat /var/lib/jenkins/secrets/initialAdminPassword)"
-  } | tee "$EV_DIR/50_jenkins_status.txt"
-fi
-
-# Extra captures
-ip a | tee "$EV_DIR/00_ip_addr.txt"
-df -h | tee "$EV_DIR/00_df.txt"
-tail -n 200 /var/log/cloud-init-output.log 2>/dev/null | tee "$EV_DIR/60_cloudinit_tail.txt" || true
-
-# Status JSON (include evidence_dir)
+# Status artifact
 install -d -m 0755 /var/lib/ctrl01
 IP="$(hostname -I | awk '{print $1}')"
-JENK="http://$IP:8080"
-jq -n \
-  --arg status "ok" \
-  --arg ip "$IP" \
-  --arg jenkins "$JENK" \
-  --arg ts "$(date -Is)" \
-  --arg bootstrap "$ENABLE_FULL_BOOTSTRAP" \
-  --arg repo "${REPO_URL}@${REPO_BRANCH}" \
-  --arg evidence_dir "$EV_DIR" \
-  '{status:$status, ip:$ip, jenkins:$jenkins, ts:$ts, bootstrap:$bootstrap, repo:$repo, evidence_dir:$evidence_dir}' \
-  | tee /var/lib/ctrl01/status.json >/dev/null
-
+printf '{"status":"ok","ip":"%s","jenkins":"http://%s:8080","ts":"%s","bootstrap":"%s","repo":"%s"}\n' \
+  "$IP" "$IP" "$(date -Is)" "${ENABLE_FULL_BOOTSTRAP}" "${REPO_ROOT}" > /var/lib/ctrl01/status.json
 echo "[bootstrap] base converge done $(date -Is)"
 
-# Adaptive hardening
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   echo "[bootstrap] adaptive hardening: grace ${HARDEN_GRACE_MIN}m"
-  sleep "$(( HARDEN_GRACE_MIN * 60 ))"
+  sleep "$((HARDEN_GRACE_MIN * 60))"
   AUTH="/home/${CIUSER}/.ssh/authorized_keys"
   if [ -s "$AUTH" ]; then
     echo "[bootstrap] key detected, disabling password auth"
@@ -169,4 +127,11 @@ if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   fi
 fi
 
-echo "[bootstrap] done $(date -Is)"
+# Optional: Run any additional repo-specific initialization tasks here
+# This could include setting up dev environments, project-specific configs, etc.
+if [ -f "${REPO_ROOT}/control/tools/provision/init/ctrl01-init.sh" ]; then
+  echo "[bootstrap] Running project initialization script"
+  bash "${REPO_ROOT}/control/tools/provision/init/ctrl01-init.sh"
+fi
+
+echo "[bootstrap] Day-1 process completed at $(date -Is)"
