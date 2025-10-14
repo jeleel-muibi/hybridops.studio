@@ -116,6 +116,25 @@ jq -n \
 
 echo "[bootstrap] base converge done $(date -Is)"
 
+# Collect evidence BEFORE hardening so it's not missed
+echo "[bootstrap] Collecting initial evidence"
+EVIDENCE_SCRIPT="${SCRIPT_DIR}/ctrl01-collect-evidence.sh"
+if [ -f "$EVIDENCE_SCRIPT" ]; then
+  echo "[bootstrap] Running evidence collection script"
+  chmod +x "$EVIDENCE_SCRIPT"
+  CURRENT_DATE="2025-10-14 20:30:52" CURRENT_USER="jeleel-muibithe" bash "$EVIDENCE_SCRIPT"
+  echo "[bootstrap] Evidence collected successfully"
+fi
+
+# Optional: Run any additional repo-specific initialization tasks here
+if [ -f "${REPO_ROOT}/control/tools/provision/init/ctrl01-init.sh" ]; then
+  echo "[bootstrap] Running project initialization script"
+  bash "${REPO_ROOT}/control/tools/provision/init/ctrl01-init.sh"
+fi
+
+echo "[bootstrap] Day-1 process completed at $(date -Is)"
+
+# Run adaptive hardening AFTER evidence collection
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   echo "[bootstrap] adaptive hardening: grace ${HARDEN_GRACE_MIN}m"
   sleep "$((HARDEN_GRACE_MIN * 60))"
@@ -129,20 +148,4 @@ if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   else
     echo "[bootstrap] no key found; leaving password auth enabled"
   fi
-fi
-
-# Optional: Run any additional repo-specific initialization tasks here
-if [ -f "${REPO_ROOT}/control/tools/provision/init/ctrl01-init.sh" ]; then
-  echo "[bootstrap] Running project initialization script"
-  bash "${REPO_ROOT}/control/tools/provision/init/ctrl01-init.sh"
-fi
-
-echo "[bootstrap] Day-1 process completed at $(date -Is)"
-
-# Run evidence collection script if it exists (same directory)
-EVIDENCE_SCRIPT="${SCRIPT_DIR}/ctrl01-collect-evidence.sh"
-if [ -f "$EVIDENCE_SCRIPT" ]; then
-  echo "[bootstrap] Running evidence collection script"
-  chmod +x "$EVIDENCE_SCRIPT"
-  CURRENT_DATE="2025-10-14 20:02:06" CURRENT_USER="jeleel-muibi" bash "$EVIDENCE_SCRIPT"
 fi
