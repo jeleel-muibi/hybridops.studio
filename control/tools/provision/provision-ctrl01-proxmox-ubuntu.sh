@@ -150,6 +150,10 @@ write_files:
 runcmd:
   - echo '${CIUSER}:${CIPASS}' | chpasswd
   - systemctl daemon-reload
+  - timedatectl set-ntp true
+  - sleep 5
+  - systemctl daemon-reexec
+  - systemctl daemon-reload
   - systemctl enable --now ctrl01-bootstrap.timer
 EOF
 
