@@ -81,3 +81,7 @@ Thumbs.db
 # **/reports/*.json
 deployment/netbox/volumes/*
 !deployment/netbox/volumes/.gitkeep
+
+# local runtime artifacts
+**/admin_credentials.txt
+/var/lib/ctrl01/
