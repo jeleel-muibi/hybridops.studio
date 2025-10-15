@@ -78,7 +78,7 @@ for f in /root/.ssh/id_rsa.pub /root/.ssh/id_ed25519.pub; do
 done
 
 # --- Generate cloud-init config ----------------------------------------------
-# Inline heredoc integrated to preserve single-file zero-touch reproducibility.
+# Inline heredoc retained to preserve single-file zero-touch reproducibility.
 # The embedded password is ephemeral and exists only for initial boot.
 SNIP="/var/lib/vz/snippets/ctrl01-day0.yaml"
 cat >"$SNIP" <<EOF
@@ -181,6 +181,7 @@ qm importdisk "$VMID" "$IMG" "$DISKSTORE" >>"$LOG" 2>&1
 
 echo "[+] Configuring cloud-init and network..."
 qm set "$VMID" --scsi0 "$DISKSTORE:vm-$VMID-disk-0" --boot c --bootdisk scsi0 >/dev/null
+qm resize "$VMID" scsi0 +18G >>"$LOG" 2>&1   # ⬅️ moved here — after attach
 qm set "$VMID" --ide2 "$DISKSTORE:cloudinit" >/dev/null
 qm set "$VMID" --ipconfig0 "ip=$IPCIDR,gw=$GATEWAY" --nameserver "$DNS" >/dev/null
 qm set "$VMID" --searchdomain local --ciuser "$CIUSER" >/dev/null
@@ -219,10 +220,10 @@ printf " VM Name:        %s (ID %s)\n" "$VMNAME" "$VMID"
 printf " IP Address:     %s\n" "${IPCIDR%%/*}"
 printf " SSH Access:     ssh %s@%s\n" "$CIUSER" "${IPCIDR%%/*}"
 printf " Password:       %s\n" "$CIPASS"
-printf " Wait Time:      1–3 minutes for initial boot and network setup\n"
+printf " Wait Time:      1–2 minutes for initial boot and network setup\n"
 printf " Day-1 Timer:    Triggers after %ss\n" "$BOOTSTRAP_DELAY_SEC"
 echo "───────────────────────────────────────────────────────────────"
 echo "[info] Cloud-init snippet: $SNIP"
 echo "[info] Admin password is ephemeral — used once during Jenkins initialization, then hashed internally."
 echo "───────────────────────────────────────────────────────────────"
-echos
+echo
