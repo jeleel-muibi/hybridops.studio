@@ -14,12 +14,13 @@
 
 set -euo pipefail
 trap 'echo "[warn] evidence collection encountered an error at line $LINENO — continuing" >&2' ERR
+echo "[evidence] start $(date -Is)"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT_DIR="${REPO_ROOT}/docs/proof/ctrl01/${TS}"
-LATEST="${REPO_ROOT}/docs/proof/ctrl01/latest"
+LATEST_LINK="${REPO_ROOT}/docs/proof/ctrl01/latest"
 mkdir -p "${OUT_DIR}"
 
 IP="$(hostname -I | awk '{print $1}')"
@@ -117,6 +118,9 @@ Each file corresponds to a verification point in the HybridOps runbook.
 ---
 
 **Location:** \`${OUT_DIR}\`
-**Symlink:** \`${LATEST}\` → \`${OUT_DIR}\` *(latest)*
+**Symlink:** \`${LATEST_LINK}\` → \`${OUT_DIR}\` (latest)
 **Generated:** $(date -Is)
 MD
+
+ln -sfn "${OUT_DIR}" "${LATEST_LINK}"
+echo "[evidence] complete $(date -Is)"

@@ -1,27 +1,11 @@
 #!/usr/bin/env bash
 # -----------------------------------------------------------------------------
-# HybridOps Studio — Day-1 Bootstrap for ctrl-01 (Jenkins Controller)
+# HybridOps Studio — ctrl-01 Day-1 Bootstrap (Jenkins Controller)
 # -----------------------------------------------------------------------------
 # Purpose:
-#   Installs Jenkins, imports controller-init Groovy scripts, and prepares
-#   the controller for Git-driven CI/CD. Requires JENKINS_ADMIN_PASS from
-#   environment (set by Day-0 cloud-init).
-#
-# Design:
-#   - Executes automatically via systemd timer on first boot.
-#   - Configures Jenkins with no manual input.
-#   - Writes structured proof artifacts for audit and DR.
-#
-# Notes:
-#   - The admin password is read once from memory and never stored in plaintext.
-#   - Jenkins hashes it internally on first startup.
-
-# Usage:
-#   This script is invoked automatically by ctrl01-bootstrap.service on first boot.
-#   It can also be run manually after Day-0 provisioning, e.g. for recovery.
-
-# Debugging:
-# sudo tail -f /var/log/ctrl01_bootstrap.log
+#   Configure a clean, auditable Jenkins controller VM from Git.
+#   Installs Jenkins only (no heavy toolchains; agents handle workloads).
+#   Produces machine-verifiable evidence and enforces SSH hardening post-bootstrap.
 # -----------------------------------------------------------------------------
 
 set -Eeuo pipefail
@@ -29,81 +13,108 @@ LOG=/var/log/ctrl01_bootstrap.log
 exec > >(tee -a "$LOG") 2>&1
 echo "[bootstrap] start $(date -Is)"
 
-# --- Parameters ---------------------------------------------------------------
 CIUSER=${CIUSER:-hybridops}
 JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER:-admin}
+JENKINS_ADMIN_PASS=${JENKINS_ADMIN_PASS:-ChangeMe_$(date +%s)}
+JENKINS_PLUGINS=${JENKINS_PLUGINS:-"configuration-as-code job-dsl git workflow-aggregator pipeline-utility-steps ansible ssh-slaves credentials-binding matrix-auth timestamper blueocean"}
+JENKINS_SEED_JOB=${JENKINS_SEED_JOB:-ctrl01-bootstrap}
 JENKINS_SEED_REPO=${JENKINS_SEED_REPO:-https://github.com/jeleel-muibi/hybridops.studio}
 JENKINS_SEED_BRANCH=${JENKINS_SEED_BRANCH:-main}
 ENABLE_AUTO_HARDEN=${ENABLE_AUTO_HARDEN:-true}
 HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-10}
 
-# --- Verify credentials -------------------------------------------------------
-if [ -z "${JENKINS_ADMIN_PASS:-}" ]; then
-  echo "[bootstrap] ERROR: JENKINS_ADMIN_PASS not found in environment." >&2
-  exit 1
-fi
-
-# --- Paths --------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
-INIT_SRC="${REPO_ROOT}/control/tools/jenkins/controller-init"
-INIT_DST="/var/lib/jenkins/init.groovy.d"
+EVIDENCE_BASE="${REPO_ROOT}/docs/proof/ctrl01"
+mkdir -p "$EVIDENCE_BASE"
 
 # --- Helper: retry ------------------------------------------------------------
-retry() {
-  local tries="${1:-8}" delay="${2:-5}"
-  shift 2
-  local n=1
+retry() { local n=1 tries="${1:-8}" delay="${2:-5}"; shift 2
   until "$@"; do
-    ((n++>=tries)) && { echo "[retry] failed: $*"; return 1; }
-    echo "[retry] attempt $n/$tries"
-    sleep "$delay"
+    ((n++>=tries)) && { echo "Retry failed after $tries attempts: $*"; return 1; }
+    echo "[retry] attempt $n/$tries"; sleep "$delay"
   done
 }
 
-# --- Install Jenkins and dependencies ----------------------------------------
+# --- Ensure base packages -----------------------------------------------------
 retry 10 5 apt-get update -o Acquire::ForceIPv4=true
-retry 6 5 apt-get install -y qemu-guest-agent curl git jq unzip ca-certificates \
-  openjdk-17-jre-headless make ufw jenkins
-
+retry 6 5 apt-get install -y qemu-guest-agent curl git jq unzip ca-certificates make ufw openjdk-17-jre-headless jenkins
 systemctl enable --now qemu-guest-agent jenkins
 
-# --- Firewall configuration ---------------------------------------------------
+# --- Firewall baseline --------------------------------------------------------
 ufw allow 22/tcp 8080/tcp && yes | ufw enable || true
+
+# --- Jenkins readiness + plugin bootstrap ------------------------------------
 retry 40 3 bash -lc 'ss -lnt | grep -q ":8080"'
-
-# --- Import controller-init Groovy scripts -----------------------------------
-echo "[bootstrap] importing controller-init from ${INIT_SRC}"
-install -d -m 0755 "${INIT_DST}"
-if [ -d "${INIT_SRC}" ]; then
-  cp -r "${INIT_SRC}/"* "${INIT_DST}/"
-  chown -R jenkins:jenkins "${INIT_DST}"
-else
-  echo "[bootstrap] ERROR: controller-init not found at ${INIT_SRC}" >&2
-  exit 1
-fi
-
+/usr/lib/jenkins/jenkins-plugin-cli --plugins ${JENKINS_PLUGINS} || true
 systemctl restart jenkins
 retry 40 3 bash -lc 'ss -lnt | grep -q ":8080"'
 
-# --- Evidence snapshot --------------------------------------------------------
+# --- Admin user & seed job ----------------------------------------------------
+install -d -m 0755 /var/lib/jenkins/init.groovy.d
+
+cat >/var/lib/jenkins/init.groovy.d/01-admin.groovy <<GROOVY
+import jenkins.model.*
+import hudson.security.*
+
+def j = Jenkins.get()
+def realm = new HudsonPrivateSecurityRealm(false)
+if (realm.getAllUsers()?.isEmpty()) {
+  realm.createAccount("${JENKINS_ADMIN_USER}", "${JENKINS_ADMIN_PASS}")
+  j.setSecurityRealm(realm)
+  def strat = new FullControlOnceLoggedInAuthorizationStrategy()
+  strat.setAllowAnonymousRead(false)
+  j.setAuthorizationStrategy(strat)
+  j.save()
+}
+GROOVY
+
+cat >/var/lib/jenkins/init.groovy.d/02-seed-mbp.groovy <<GROOVY
+import jenkins.model.*
+import jenkins.branch.*
+import jenkins.plugins.git.*
+import org.jenkinsci.plugins.workflow.multibranch.*
+
+def j = Jenkins.instance
+def name = "${JENKINS_SEED_JOB}"
+if (j.getItem(name) == null) {
+  def mbp = new WorkflowMultiBranchProject(j, name)
+  def scm = new GitSCMSource("${JENKINS_SEED_REPO}")
+  scm.setTraits([new BranchDiscoveryTrait()])
+  mbp.getSourcesList().add(new BranchSource(scm))
+  mbp.setDisplayName("HybridOps • ctrl-01")
+  j.putItem(mbp)
+  mbp.scheduleBuild2(0)
+}
+GROOVY
+
+chown -R jenkins:jenkins /var/lib/jenkins
+systemctl restart jenkins
+
+# --- Evidence collection ------------------------------------------------------
 IP="$(hostname -I | awk '{print $1}')"
-mkdir -p /var/lib/ctrl01
+EVID_DIR="${EVIDENCE_BASE}/$(date -u +%Y%m%dT%H%M%SZ)"
+install -d -m 0755 "$EVID_DIR"
+
 cat > /var/lib/ctrl01/status.json <<JSON
 {
   "status": "ok",
   "ip": "${IP}",
   "jenkins": "http://${IP}:8080",
-  "ts": "$(date -Is)"
+  "timestamp": "$(date -Is)",
+  "repo": "${REPO_ROOT}"
 }
 JSON
 
-# --- Optional SSH hardening ---------------------------------------------------
+bash "${SCRIPT_DIR}/ctrl01-collect-evidence.sh" || true
+
+# --- Adaptive SSH hardening ---------------------------------------------------
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
-  echo "[bootstrap] scheduling SSH hardening in ${HARDEN_GRACE_MIN}m"
+  echo "[bootstrap] hardening in ${HARDEN_GRACE_MIN}m"
   sleep "$((HARDEN_GRACE_MIN*60))"
   AUTH="/home/${CIUSER}/.ssh/authorized_keys"
   if [ -s "$AUTH" ]; then
+    echo "[bootstrap] key detected → disable password auth"
     mkdir -p /etc/ssh/sshd_config.d
     cat >/etc/ssh/sshd_config.d/99-password-off.conf <<'CONF'
 PasswordAuthentication no
@@ -112,8 +123,7 @@ ChallengeResponseAuthentication no
 UsePAM yes
 CONF
     systemctl reload ssh || systemctl reload sshd
-    echo "[bootstrap] SSH password authentication disabled."
   fi
 fi
 
-echo "[bootstrap] complete $(date -Is)"
+echo "[bootstrap] done $(date -Is)"
