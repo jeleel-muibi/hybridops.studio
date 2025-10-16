@@ -129,11 +129,16 @@ CONF
   ) &
 fi
 
-# --- Evidence collection ------------------------------------------------------
+# --- Evidence collection: Automatically generate audit evidence after bootstrap.----
 EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collect-evidence.sh"
-if [ -x "$EVIDENCE_SCRIPT" ]; then
-  echo "[bootstrap] launching evidence collector..."
-  bash "$EVIDENCE_SCRIPT" || echo "[warn] evidence collector failed — continuing"
+
+if [ -f "$EVIDENCE_SCRIPT" ]; then
+  echo "[bootstrap] preparing evidence collector..."
+  chmod +x "$EVIDENCE_SCRIPT" || echo "[warn] failed to set execute bit on evidence collector"
+
+  echo "[bootstrap] launching evidence collector (background)..."
+  nohup bash "$EVIDENCE_SCRIPT" >/var/log/ctrl01_evidence.log 2>&1 & disown
+
 else
   echo "[warn] evidence collector script not found at $EVIDENCE_SCRIPT"
 fi
