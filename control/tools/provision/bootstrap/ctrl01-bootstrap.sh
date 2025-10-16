@@ -32,6 +32,14 @@ JENKINS_SEED_REPO=${JENKINS_SEED_REPO:-https://github.com/jeleel-muibi/hybridops
 JENKINS_SEED_BRANCH=${JENKINS_SEED_BRANCH:-main}
 ENABLE_AUTO_HARDEN=${ENABLE_AUTO_HARDEN:-true}
 HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-1}
+LOCK_FILE=/var/lib/ctrl01/bootstrap.lock
+
+# --- Idempotency guard --------------------------------------------------------
+if [ -f "$LOCK_FILE" ]; then
+  echo "[bootstrap] lock file found — previous run detected, skipping duplicate execution."
+  echo "[bootstrap] To rerun manually, remove ${LOCK_FILE} first."
+  exit 0
+fi
 
 # --- Credential verification --------------------------------------------------
 if [ -z "${JENKINS_ADMIN_PASS:-}" ]; then
@@ -147,11 +155,10 @@ CONF
   ) &
 fi
 
-# --- Completion marker --------------------------------------------------------
-
 # Update structured phase marker for CI/audit tools
 jq '.phase = "bootstrap-complete"' /var/lib/ctrl01/status.json > /var/lib/ctrl01/status.tmp 2>/dev/null \
   && mv /var/lib/ctrl01/status.tmp /var/lib/ctrl01/status.json
 
+echo "$(date -Is)" > "$LOCK_FILE"
 echo "[bootstrap] marked complete — lock written at ${LOCK_FILE}"
 echo "[bootstrap] complete $(date -Is)"
