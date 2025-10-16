@@ -64,6 +64,14 @@ if ! getent hosts github.com >/dev/null 2>&1; then
   echo "nameserver 1.1.1.1" > /etc/resolv.conf
 fi
 
+# --- Idempotency guard --------------------------------------------------------
+LOCK_FILE=/var/lib/ctrl01/bootstrap.lock
+if [ -f "$LOCK_FILE" ]; then
+  echo "[bootstrap] lock file found — previous run detected, skipping duplicate execution."
+  echo "[bootstrap] To rerun manually, remove ${LOCK_FILE} first."
+  exit 0
+fi
+
 # --- Jenkins repository setup -------------------------------------------------
 echo "[bootstrap] adding Jenkins repository..."
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
@@ -149,8 +157,11 @@ fi
 
 # --- Completion marker --------------------------------------------------------
 LOCK_FILE=/var/lib/ctrl01/bootstrap.lock
+
+# Update structured phase marker for CI/audit tools
 jq '.phase = "bootstrap-complete"' /var/lib/ctrl01/status.json > /var/lib/ctrl01/status.tmp 2>/dev/null \
   && mv /var/lib/ctrl01/status.tmp /var/lib/ctrl01/status.json
+
 echo "$(date -Is)" > "$LOCK_FILE"
 echo "[bootstrap] marked complete — lock written at ${LOCK_FILE}"
 echo "[bootstrap] complete $(date -Is)"
