@@ -5,16 +5,25 @@
 # Author: Jeleel Muibi
 #
 # Description:
-#   Idempotent Day-0 bootstrap for the Jenkins control-plane (ctrl-01).
-#   Provisions an Ubuntu VM on Proxmox, embeds a cloud-init payload that
-#   performs Day-1 configuration autonomously, and injects an ephemeral
-#   Jenkins admin credential used only once during controller initialization.
+#   Autonomous Day-0 routine that provisions the Jenkins controller (ctrl-01)
+#   as an Ubuntu VM on Proxmox and embeds a self-contained cloud-init payload.
+#   The payload performs Day-1 configuration automatically — cloning the repo,
+#   installing Jenkins, and applying controller-init scripts without operator
+#   input.
 #
 # Design intent:
-#   • Zero-touch: runs end-to-end from a single script.
-#   • Deterministic: embeds all config (no external fetches beyond the repo/img).
-#   • Secure: admin secret lives only in-memory and within VM during Day-1.
-#   • Adaptive: Day-1 launcher waits for network readiness before execution.
+#   • Zero-touch — one command from Proxmox host yields a running controller.
+#   • Deterministic — all logic and cloud-init YAML are embedded inline.
+#   • Secure — Jenkins admin password injected only ephemerally at Day-0/1.
+#   • Auditable — emits logs and artifacts to /var/log/ctrl01_provision.log.
+#   • Safe — includes a timed grace window before destroying existing VMs.
+#
+# Usage:
+#   sudo bash provision-ctrl01-proxmox-ubuntu.sh
+#
+#   Optional environment overrides:
+#     VMID=101 VMNAME=ctrl-01 BRIDGE=vmbr1 JENKINS_ADMIN_PASS=<secret> ...
+#
 # -----------------------------------------------------------------------------
 
 set -Eeuo pipefail
@@ -110,6 +119,18 @@ write_files:
       #!/usr/bin/env bash
       set -Eeuo pipefail
       LOG=/var/log/ctrl01_bootstrap.log
+      LOCK_FILE="/var/lib/ctrl01/bootstrap.lock"
+
+      # Create log directory and parent dir for lock file
+      mkdir -p "\$(dirname "\$LOG")" "\$(dirname "\$LOCK_FILE")"
+
+      # Exit if bootstrap already completed
+      if [ -f "\$LOCK_FILE" ]; then
+        echo "[launcher] Bootstrap already completed (lock file exists)" | tee -a "\$LOG"
+        exit 0
+      fi
+
+      # Set up output redirection once
       exec > >(tee -a "\$LOG") 2>&1
       echo "[launcher] starting Day-1 bootstrap at \$(date -Is)"
 
@@ -142,9 +163,10 @@ write_files:
 
       chmod +x "\$SCRIPT"
       echo "[launcher] executing bootstrap script..."
-      exec env JENKINS_ADMIN_PASS="\${JENKINS_ADMIN_PASS:-}" "\$SCRIPT"
+      # Pass NO_OUTPUT_REDIRECT to prevent duplicate logging
+      env JENKINS_ADMIN_PASS="\${JENKINS_ADMIN_PASS:-}" NO_OUTPUT_REDIRECT=1 "\$SCRIPT"
 
-  # Systemd service and timer for first-boot bootstrap
+  # Systemd service for first-boot bootstrap
   - path: /etc/systemd/system/ctrl01-bootstrap.service
     permissions: "0644"
     content: |
@@ -158,24 +180,10 @@ write_files:
       ExecStart=/usr/local/sbin/day1-launcher
       RemainAfterExit=yes
 
-  - path: /etc/systemd/system/ctrl01-bootstrap.timer
-    permissions: "0644"
-    content: |
-      [Unit]
-      Description=Day-1 bootstrap timer
-      [Timer]
-      OnBootSec=10
-      Unit=ctrl01-bootstrap.service
-      [Install]
-      WantedBy=timers.target
-
 runcmd:
   - echo '${CIUSER}:${CIPASS}' | chpasswd
-  - timedatectl set-ntp true
-  - sleep 3
-  - systemctl daemon-reexec
   - systemctl daemon-reload
-  - systemctl enable --now ctrl01-bootstrap.timer
+  - systemctl start ctrl01-bootstrap.service
 EOF
 
 # --- VM lifecycle orchestration ----------------------------------------------
@@ -187,20 +195,15 @@ echo "────────────────────────�
 
 # Graceful cleanup of any previous VM instance
 if qm status "$VMID" &>/dev/null; then
-  echo "[WARN] Existing VM ID $VMID detected — attempting graceful shutdown..."
-  qm stop "$VMID" --timeout 30 >/dev/null 2>&1 || {
-    echo "[WARN] Graceful stop failed, forcing stop..."
-    qm stop "$VMID" --skiplock --force-stop >/dev/null 2>&1 || true
-  }
-  echo "[INFO] Destroying old instance (purge mode)..."
-  qm destroy "$VMID" --purge >/dev/null 2>&1 || {
-    echo "[WARN] Destroy failed — checking for stale cloud-init volume..."
-    if lvs --noheadings -o lv_name pve | grep -q "vm-${VMID}-cloudinit"; then
-      echo "[INFO] Removing stale cloud-init volume pve/vm-${VMID}-cloudinit..."
-      lvremove -f "pve/vm-${VMID}-cloudinit" >/dev/null 2>&1 || true
-    fi
-  }
-  echo "[OK] Old VM instance removed."
+  if qm config "$VMID" | grep -q "tags:.*protected"; then
+    echo "[provision] VM ${VMID} tagged 'protected' — skipping destroy."
+    exit 0
+  fi
+  mkdir -p /var/log/hybridops_provision
+  echo "$(date -Is) | Rebuilt VM $VMNAME (ID $VMID)" >> /var/log/hybridops_provision/destroy_audit.log
+  echo "[provision] Rebuilding existing VM (logged)."
+  qm stop "$VMID" --timeout 30 >/dev/null 2>&1 || true
+  qm destroy "$VMID" --purge >/dev/null 2>&1 || true
 fi
 
 # Create new VM definition
@@ -227,7 +230,7 @@ qm cloudinit update "$VMID" >>"$LOG" 2>&1
 echo "[OK] Cloud-init ISO generated and linked."
 
 # Boot the VM
-echo -n "[+] Booting VM"; for i in {1..3}; do sleep 2; echo -n "."; done; echo
+echo -n "[+] Booting VM"; for i in {1..5}; do sleep 2; echo -n "."; done; echo
 qm start "$VMID" >/dev/null
 echo "[OK] VM '$VMNAME' started successfully."
 
