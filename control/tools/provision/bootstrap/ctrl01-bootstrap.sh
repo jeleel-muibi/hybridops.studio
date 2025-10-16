@@ -19,7 +19,6 @@
 #
 # Debugging:
 # sudo tail -f /var/log/ctrl01_bootstrap.log
-# -----------------------------------------------------------------------------
 
 set -Eeuo pipefail
 LOG=/var/log/ctrl01_bootstrap.log
@@ -27,16 +26,14 @@ exec > >(tee -a "$LOG") 2>&1
 echo "[bootstrap] start $(date -Is)"
 
 # --- Runtime parameters -------------------------------------------------------
-# Configurable values, overridable via environment or Day-0 injection.
 CIUSER=${CIUSER:-hybridops}
 JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER:-admin}
 JENKINS_SEED_REPO=${JENKINS_SEED_REPO:-https://github.com/jeleel-muibi/hybridops.studio}
 JENKINS_SEED_BRANCH=${JENKINS_SEED_BRANCH:-main}
 ENABLE_AUTO_HARDEN=${ENABLE_AUTO_HARDEN:-true}
-HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-10}
+HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-2}
 
 # --- Credential verification --------------------------------------------------
-# The Jenkins admin password must be provided from Day-0 injection.
 if [ -z "${JENKINS_ADMIN_PASS:-}" ]; then
   echo "[bootstrap] ERROR: JENKINS_ADMIN_PASS not found in environment." >&2
   exit 1
@@ -48,8 +45,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
 INIT_SRC="${REPO_ROOT}/control/tools/jenkins/controller-init"
 INIT_DST="/var/lib/jenkins/init.groovy.d"
 
-# --- Helper: retry wrapper ----------------------------------------------------
-# Standard retry loop with bounded attempts and back-off delay.
+# --- Helper: retry ------------------------------------------------------------
 retry() {
   local tries="${1:-8}" delay="${2:-5}"
   shift 2
@@ -62,27 +58,28 @@ retry() {
 }
 
 # --- Jenkins repository setup -------------------------------------------------
-# Registers the official Jenkins Debian repo with verified signing key.
 echo "[bootstrap] adding Jenkins repository..."
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
   | tee /usr/share/keyrings/jenkins-keyring.asc >/dev/null
 echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
   > /etc/apt/sources.list.d/jenkins.list
 
-# --- Core package installation ------------------------------------------------
-# Installs Jenkins, OpenJDK, and baseline utilities required by the controller.
+# --- Core installation --------------------------------------------------------
 retry 10 5 apt-get update -o Acquire::ForceIPv4=true
 retry 6 5 apt-get install -y qemu-guest-agent curl git jq unzip ca-certificates \
   openjdk-17-jre-headless make ufw jenkins
 
 systemctl enable --now qemu-guest-agent jenkins
 
-# Minimal network hardening: open SSH + Jenkins ports only.
-ufw allow 22/tcp 8080/tcp && yes | ufw enable || true
-retry 40 3 bash -lc 'ss -lnt | grep -q ":8080"'
+# --- Firewall configuration ---------------------------------------------------
+echo "[bootstrap] configuring UFW..."
+ufw --force reset >/dev/null 2>&1 || true
+ufw allow 22/tcp comment 'SSH access'
+ufw allow 8080/tcp comment 'Jenkins controller UI'
+yes | ufw enable >/dev/null 2>&1 || true
+ufw status numbered || true
 
 # --- Initialization script injection -----------------------------------------
-# Populates Jenkins init directory with Groovy configuration scripts.
 echo "[bootstrap] importing controller-init from ${INIT_SRC}"
 install -d -m 0755 "${INIT_DST}"
 if [ -d "${INIT_SRC}" ]; then
@@ -93,12 +90,10 @@ else
   exit 1
 fi
 
-# Restart Jenkins to apply configuration scripts and verify listener availability.
 systemctl restart jenkins
 retry 40 3 bash -lc 'ss -lnt | grep -q ":8080"'
 
-# --- Evidence capture ---------------------------------------------------------
-# Persists basic runtime metadata for later audit and verification.
+# --- Evidence snapshot --------------------------------------------------------
 IP="$(hostname -I | awk '{print $1}')"
 mkdir -p /var/lib/ctrl01
 cat > /var/lib/ctrl01/status.json <<JSON
@@ -111,31 +106,30 @@ cat > /var/lib/ctrl01/status.json <<JSON
 JSON
 
 # --- Ephemeral secret cleanup -------------------------------------------------
-# Removes sensitive environment file once initialization has succeeded.
 echo "[bootstrap] cleaning ephemeral admin secret..."
 rm -f /etc/profile.d/jenkins_env.sh || true
 
 # --- Optional SSH hardening ---------------------------------------------------
-# Disables password authentication after grace period if SSH keys are present.
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
-  echo "[bootstrap] scheduling SSH hardening in ${HARDEN_GRACE_MIN}m"
-  sleep "$((HARDEN_GRACE_MIN*60))"
-  AUTH="/home/${CIUSER}/.ssh/authorized_keys"
-  if [ -s "$AUTH" ]; then
-    mkdir -p /etc/ssh/sshd_config.d
-    cat >/etc/ssh/sshd_config.d/99-password-off.conf <<'CONF'
+  echo "[bootstrap] scheduling SSH hardening in ${HARDEN_GRACE_MIN}m (background)"
+  (
+    sleep "$((HARDEN_GRACE_MIN * 60))"
+    AUTH="/home/${CIUSER}/.ssh/authorized_keys"
+    if [ -s "$AUTH" ]; then
+      mkdir -p /etc/ssh/sshd_config.d
+      cat >/etc/ssh/sshd_config.d/99-password-off.conf <<'CONF'
 PasswordAuthentication no
 KbdInteractiveAuthentication no
 ChallengeResponseAuthentication no
 UsePAM yes
 CONF
-    systemctl reload ssh || systemctl reload sshd
-    echo "[bootstrap] SSH password authentication disabled."
-  fi
+      systemctl reload ssh || systemctl reload sshd
+      echo "[bootstrap] SSH password authentication disabled."
+    fi
+  ) &
 fi
 
 # --- Evidence collection ------------------------------------------------------
-# Trigger post-bootstrap collector (non-blocking, safe to fail)
 EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collector.sh"
 if [ -x "$EVIDENCE_SCRIPT" ]; then
   echo "[bootstrap] launching evidence collector..."
