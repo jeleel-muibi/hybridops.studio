@@ -31,7 +31,7 @@ JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER:-admin}
 JENKINS_SEED_REPO=${JENKINS_SEED_REPO:-https://github.com/jeleel-muibi/hybridops.studio}
 JENKINS_SEED_BRANCH=${JENKINS_SEED_BRANCH:-main}
 ENABLE_AUTO_HARDEN=${ENABLE_AUTO_HARDEN:-true}
-HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-2}
+HARDEN_GRACE_MIN=${HARDEN_GRACE_MIN:-1}
 
 # --- Credential verification --------------------------------------------------
 if [ -z "${JENKINS_ADMIN_PASS:-}" ]; then
@@ -130,7 +130,7 @@ CONF
 fi
 
 # --- Evidence collection ------------------------------------------------------
-EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collector.sh"
+EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collect-evidence.sh"
 if [ -x "$EVIDENCE_SCRIPT" ]; then
   echo "[bootstrap] launching evidence collector..."
   bash "$EVIDENCE_SCRIPT" || echo "[warn] evidence collector failed — continuing"

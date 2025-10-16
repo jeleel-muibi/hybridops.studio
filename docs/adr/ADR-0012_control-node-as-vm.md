@@ -7,46 +7,59 @@ domains: [platform, sre, infra]
 tags: [proxmox, vmware, dr, cloud-init, jenkins, terraform, packer, kubernetes]
 ---
 
-# ADR-0012 — Control Node runs as a full VM (not LXC)
+# ADR-0012 — Control Node as VM (`ctrl-01`)
 
 ## Context
-We need a reproducible “control node” that hosts CI/CD and platform tooling (Terraform, Packer, kubectl, Helm, Ansible, optional Jenkins). It must be portable across hypervisors (Proxmox now, VMware/cloud later), easy to back up / DR, and compatible with systemd services, kernel modules, and vendor repos.
+
+The HybridOps Studio control plane requires a reproducible, auditable automation
+hub to coordinate provisioning, CI/CD orchestration, and evidence capture.
+Two architectural options were considered:
+
+1. **LXC-based controller** — lightweight, but limited kernel isolation.  
+2. **Full VM controller** — slightly heavier, but provides clean kernel boundaries,
+   systemd isolation, and snapshot-grade disaster recovery.
+
+---
 
 ## Decision
-Run the control node as a **full VM** (Ubuntu LTS) instead of an LXC container.
 
-## Rationale
-- **Portability & DR:** VM images export/import cleanly; snapshots/backups are standard.
-- **Compatibility:** Fewer surprises with systemd, cgroups, kernel deps, and vendor APT repos.
-- **Security posture:** Clean OS boundaries; predictable SSH and firewall behavior.
-- **Operational clarity:** Day-0 (Proxmox) + Day-1 (in-guest) split. Day-1 runs under systemd.
+Implement the control node (`ctrl-01`) as a **dedicated Proxmox VM**.
 
-## Implementation notes
-- **Day-0 (Proxmox):**  
-  Creates the VM with static IP, console, cloud-init user, password + optional SSH key, and writes a minimal Day-1 launcher unit/timer.
-- **Day-1 (in-guest):**  
-  Installs toolchain, optionally Jenkins, clones the repo (if configured), then applies **adaptive hardening**: after a grace window, if a public key is present for the login user, disable password auth and rotate the temporary password.
-- **Artifacts:**  
-  - Logs: `/var/log/ctrl01_bootstrap.log`  
-  - Status JSON: `/var/lib/ctrl01/status.json`  
-  - Evidence (latest): `docs/proof/ctrl01/latest/` (see links below)
+This approach provides:
 
-## Security considerations
-- Day-0 **intentionally enables** both **password + key** for deterministic first access across devices.  
-- Day-1 **disables password auth** (and rotates the temp password) **iff** an SSH public key is present for the CI user, after a grace window (default 10 min).  
-- UFW enables SSH (22) and optionally Jenkins (8080) when Jenkins is installed.
+- Deterministic cloud-init provisioning independent of host state  
+- Native systemd support for timers, services, and hardening  
+- Full DR encapsulation (VM snapshot, replication, or cold-standby restore)  
+- Realistic parity with enterprise Jenkins controller deployments
 
-## Operational risks & mitigations
-- **apt/dpkg interruptions:** Retried; `dpkg --configure -a` used on failure; IPv4 DNS preference reduces flakiness.
-- **DNS/network hiccups:** `gai.conf` precedence tweak prefers IPv4; explicit retries around `apt-get update` and repo key fetches.
-- **Jenkins optionality:** Controlled by env flags; failure won’t block the rest of Day-1.
+---
 
 ## Consequences
-- Slightly heavier than LXC; acceptable for the benefits listed.
-- Clean “Day-0 → Day-1” flow is easier to reason about, test, and present to assessors.
 
-## References
-- **How-to (walkthrough):** [Provision ctrl-01 on Proxmox](../howto/HOWTO_ctrl01_provisioner.md)
-- **Runbook (ops/verify):** [ctrl-01 Day-1 bootstrap & verification](../runbooks/bootstrap-ctrl01-node.md)
-- **Provisioner script:** [provision-ctrl01-proxmox-ubuntu.sh](../../control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh)
-- **Evidence (latest):** [ctrl-01 bootstrap evidence](../proof/ctrl01/latest/README.md)
+**Positive**
+- VM image is portable and reproducible across hosts or clouds.  
+- CI/CD and audit evidence remain self-contained.  
+- Enables lifecycle automation testing under production-equivalent conditions.  
+
+**Negative**
+- Slightly higher resource footprint (~4 GiB RAM baseline).  
+- Longer initial provisioning time versus LXC.
+
+---
+
+## Linked Artifacts
+
+| Phase | Artifact | Path |
+|--------|-----------|------|
+| Day-0 | Provisioner | [`provision-ctrl01-proxmox-ubuntu.sh`](../../control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh) |
+| Day-1 | Bootstrap | [`ctrl01-bootstrap.sh`](../../control/tools/provision/bootstrap/ctrl01-bootstrap.sh) |
+| Controller Init | Groovy scripts | [`controller-init`](../../control/tools/jenkins/controller-init/) |
+| Validation | Evidence bundle | [`docs/proof/ctrl01/`](../../docs/proof/ctrl01/) |
+
+---
+
+## Outcome
+
+Running the control node as a full VM ensures an **independent, snapshot-ready
+control plane** that demonstrates **zero-touch provisioning**, **deterministic rebuilds**,  
+and **verifiable evidence** — core tenets of HybridOps Studio.
