@@ -1,6 +1,6 @@
 ---
 id: 0012
-title: Control node runs as a VM (cloud‑init); LXC reserved for light helpers
+title: Control node runs as a VM (cloud-init); LXC reserved for light helpers
 status: accepted
 decision_date: 2025-10-12
 domains: [platform, sre, infra]
@@ -12,12 +12,12 @@ tags: [proxmox, vmware, dr, cloud-init, jenkins, terraform, packer, kubernetes]
 ## Context
 
 The HybridOps Studio control plane requires a reproducible, auditable automation
-hub to coordinate provisioning, CI/CD orchestration, and evidence capture.
-Two architectural options were considered:
+hub to coordinate provisioning, CI/CD orchestration, and evidence capture.  
+Two architectures were evaluated:
 
-1. **LXC-based controller** — lightweight, but limited kernel isolation.  
-2. **Full VM controller** — slightly heavier, but provides clean kernel boundaries,
-   systemd isolation, and snapshot-grade disaster recovery.
+1. **LXC-based controller** — lightweight but lacks full kernel isolation.  
+2. **VM-based controller** — heavier, but provides full systemd support and
+snapshot-grade disaster-recovery semantics.
 
 ---
 
@@ -25,25 +25,25 @@ Two architectural options were considered:
 
 Implement the control node (`ctrl-01`) as a **dedicated Proxmox VM**.
 
-This approach provides:
+This approach ensures:
 
 - Deterministic cloud-init provisioning independent of host state  
-- Native systemd support for timers, services, and hardening  
-- Full DR encapsulation (VM snapshot, replication, or cold-standby restore)  
-- Realistic parity with enterprise Jenkins controller deployments
+- Native systemd timers, services, and hardening support  
+- Full DR encapsulation (snapshot, replication, or cold-standby restore)  
+- Parity with enterprise-grade Jenkins controller deployments
 
 ---
 
 ## Consequences
 
 **Positive**
-- VM image is portable and reproducible across hosts or clouds.  
-- CI/CD and audit evidence remain self-contained.  
-- Enables lifecycle automation testing under production-equivalent conditions.  
+- Portable, snapshot-ready control-plane image  
+- Self-contained CI/CD state and audit evidence  
+- Enables lifecycle automation tests under production-equivalent conditions  
 
 **Negative**
-- Slightly higher resource footprint (~4 GiB RAM baseline).  
-- Longer initial provisioning time versus LXC.
+- Slightly higher resource footprint (~4 GiB RAM baseline)  
+- Marginally longer initial provisioning time versus LXC  
 
 ---
 
@@ -60,6 +60,12 @@ This approach provides:
 
 ## Outcome
 
-Running the control node as a full VM ensures an **independent, snapshot-ready
-control plane** that demonstrates **zero-touch provisioning**, **deterministic rebuilds**,  
-and **verifiable evidence** — core tenets of HybridOps Studio.
+Running the control node as a full VM establishes an **independent,
+snapshot-ready automation plane** that demonstrates:
+
+- **Zero-touch provisioning**
+- **Deterministic rebuilds**
+- **Verifiable evidence generation**
+
+These traits are core to HybridOps Studio’s governance, DR, and
+enterprise reproducibility model.

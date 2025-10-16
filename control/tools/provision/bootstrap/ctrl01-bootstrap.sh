@@ -25,15 +25,6 @@ LOG=/var/log/ctrl01_bootstrap.log
 exec > >(tee -a "$LOG") 2>&1
 echo "[bootstrap] start $(date -Is)"
 
-# --- Idempotency lock ---------------------------------------------------------
-LOCK_FILE="/var/lib/ctrl01/bootstrap.lock"
-if [ -f "$LOCK_FILE" ]; then
-  echo "[bootstrap] already executed — skipping duplicate run."
-  exit 0
-fi
-mkdir -p "$(dirname "$LOCK_FILE")"
-touch "$LOCK_FILE"
-
 # --- Runtime parameters -------------------------------------------------------
 CIUSER=${CIUSER:-hybridops}
 JENKINS_ADMIN_USER=${JENKINS_ADMIN_USER:-admin}
@@ -65,6 +56,13 @@ retry() {
     sleep "$delay"
   done
 }
+
+# --- Network readiness --------------------------------------------------------
+echo "[bootstrap] verifying network connectivity..."
+if ! getent hosts github.com >/dev/null 2>&1; then
+  echo "[bootstrap] DNS seems unavailable — adding fallback nameserver..."
+  echo "nameserver 1.1.1.1" > /etc/resolv.conf
+fi
 
 # --- Jenkins repository setup -------------------------------------------------
 echo "[bootstrap] adding Jenkins repository..."
@@ -129,7 +127,7 @@ else
   echo "[warn] evidence collector script not found at $EVIDENCE_SCRIPT"
 fi
 
-# --- SSH hardening ---------------------------------------------------
+# --- SSH hardening ------------------------------------------------------------
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   echo "[bootstrap] scheduling SSH hardening in ${HARDEN_GRACE_MIN}m (background)"
   (
@@ -150,8 +148,9 @@ CONF
 fi
 
 # --- Completion marker --------------------------------------------------------
+LOCK_FILE=/var/lib/ctrl01/bootstrap.lock
 jq '.phase = "bootstrap-complete"' /var/lib/ctrl01/status.json > /var/lib/ctrl01/status.tmp 2>/dev/null \
   && mv /var/lib/ctrl01/status.tmp /var/lib/ctrl01/status.json
-
+echo "$(date -Is)" > "$LOCK_FILE"
 echo "[bootstrap] marked complete — lock written at ${LOCK_FILE}"
 echo "[bootstrap] complete $(date -Is)"

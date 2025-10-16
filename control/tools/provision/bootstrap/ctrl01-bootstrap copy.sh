@@ -5,25 +5,34 @@
 # Author: Jeleel Muibi
 #
 # Description:
-#   Autonomous Day-1 configuration routine for the Jenkins control-plane (ctrl-01).
-#   Executes once at first boot via systemd, installing Jenkins, applying
-#   initialization Groovy scripts, and finalizing controller readiness for
-#   Git-driven CI/CD operations.
+#   Automated Day-1 configuration for the Jenkins control-plane (ctrl-01).
+#   Installs Jenkins, applies controller-init Groovy scripts, and finalizes
+#   readiness for Git-driven CI/CD. Runs once at first boot via systemd.
 #
 # Design intent:
-#   • Executed headlessly by Day-0 cloud-init timer (no operator interaction).
-#   • Enforces consistent Jenkins setup using versioned Groovy scripts from repo.
-#   • Cleans ephemeral secrets once initialization completes.
-#   • Optionally enforces SSH password lockout after a grace window.
-#   • Triggers the ctrl-01 evidence collector in soft-strict mode for DR/audit proof.
+#   • Executed headlessly by Day-0 cloud-init timer.
+#   • Ensures deterministic Jenkins setup via versioned Groovy scripts.
+#   • Cleans ephemeral secrets after initialization.
+#   • Automatically generates Day-1 evidence artifacts.
+#   • Disables SSH password logins after a short grace period.
 #
 # Debugging:
-# sudo tail -f /var/log/ctrl01_bootstrap.log
+#   sudo tail -f /var/log/ctrl01_bootstrap.log
+# -----------------------------------------------------------------------------
 
 set -Eeuo pipefail
 LOG=/var/log/ctrl01_bootstrap.log
 exec > >(tee -a "$LOG") 2>&1
 echo "[bootstrap] start $(date -Is)"
+
+# --- Idempotency lock ---------------------------------------------------------
+LOCK_FILE="/var/lib/ctrl01/bootstrap.lock"
+if [ -f "$LOCK_FILE" ]; then
+  echo "[bootstrap] already executed — skipping duplicate run."
+  exit 0
+fi
+mkdir -p "$(dirname "$LOCK_FILE")"
+touch "$LOCK_FILE"
 
 # --- Runtime parameters -------------------------------------------------------
 CIUSER=${CIUSER:-hybridops}
@@ -68,7 +77,6 @@ echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkin
 retry 10 5 apt-get update -o Acquire::ForceIPv4=true
 retry 6 5 apt-get install -y qemu-guest-agent curl git jq unzip ca-certificates \
   openjdk-17-jre-headless make ufw jenkins
-
 systemctl enable --now qemu-guest-agent jenkins
 
 # --- Firewall configuration ---------------------------------------------------
@@ -99,6 +107,7 @@ mkdir -p /var/lib/ctrl01
 cat > /var/lib/ctrl01/status.json <<JSON
 {
   "status": "ok",
+  "phase": "bootstrap-running",
   "ip": "${IP}",
   "jenkins": "http://${IP}:8080",
   "ts": "$(date -Is)"
@@ -109,7 +118,18 @@ JSON
 echo "[bootstrap] cleaning ephemeral admin secret..."
 rm -f /etc/profile.d/jenkins_env.sh || true
 
-# --- Optional SSH hardening ---------------------------------------------------
+# --- Evidence collection ------------------------------------------------------
+EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collect-evidence.sh"
+if [ -f "$EVIDENCE_SCRIPT" ]; then
+  echo "[bootstrap] preparing evidence collector..."
+  chmod +x "$EVIDENCE_SCRIPT" || echo "[warn] failed to set execute bit on evidence collector"
+  echo "[bootstrap] launching evidence collector (background)..."
+  nohup bash "$EVIDENCE_SCRIPT" >/var/log/ctrl01_evidence.log 2>&1 & disown
+else
+  echo "[warn] evidence collector script not found at $EVIDENCE_SCRIPT"
+fi
+
+# --- SSH hardening ---------------------------------------------------
 if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
   echo "[bootstrap] scheduling SSH hardening in ${HARDEN_GRACE_MIN}m (background)"
   (
@@ -129,18 +149,9 @@ CONF
   ) &
 fi
 
-# --- Evidence collection: Automatically generate audit evidence after bootstrap.----
-EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collect-evidence.sh"
+# --- Completion marker --------------------------------------------------------
+jq '.phase = "bootstrap-complete"' /var/lib/ctrl01/status.json > /var/lib/ctrl01/status.tmp 2>/dev/null \
+  && mv /var/lib/ctrl01/status.tmp /var/lib/ctrl01/status.json
 
-if [ -f "$EVIDENCE_SCRIPT" ]; then
-  echo "[bootstrap] preparing evidence collector..."
-  chmod +x "$EVIDENCE_SCRIPT" || echo "[warn] failed to set execute bit on evidence collector"
-
-  echo "[bootstrap] launching evidence collector (background)..."
-  nohup bash "$EVIDENCE_SCRIPT" >/var/log/ctrl01_evidence.log 2>&1 & disown
-
-else
-  echo "[warn] evidence collector script not found at $EVIDENCE_SCRIPT"
-fi
-
+echo "[bootstrap] marked complete — lock written at ${LOCK_FILE}"
 echo "[bootstrap] complete $(date -Is)"
