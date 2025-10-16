@@ -142,4 +142,7 @@ MD
 # Maintain “latest” pointer for easy CI consumption or DR verification.
 ln -sfn "${OUT_DIR}" "${LATEST_LINK}"
 
+echo "[evidence] written to ${OUT_DIR}"
+echo "[evidence] symlink updated: ${LATEST_LINK} → ${OUT_DIR}"
 echo "[evidence] complete $(date -Is)"
+echo "[evidence] Completed successfully — latest proof available at ${LATEST_LINK}"
