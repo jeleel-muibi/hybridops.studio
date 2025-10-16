@@ -116,5 +116,55 @@ retry 40 3 bash -lc 'ss -lnt | grep -q ":8080"'
 # --- Evidence snapshot --------------------------------------------------------
 IP="$(hostname -I | awk '{print $1}')"
 mkdir -p /var/lib/ctrl01
-cat > /var/lib/ctrl01/status
-
+cat > /var/lib/ctrl01/status.json <<JSON
+{
+  "status": "ok",
+  "phase": "bootstrap-running",
+  "ip": "${IP}",
+  "jenkins": "http://${IP}:8080",
+  "ts": "$(date -Is)"
+}
+JSON
+
+# --- Ephemeral secret cleanup -------------------------------------------------
+echo "[bootstrap] cleaning ephemeral admin secret..."
+rm -f /etc/profile.d/jenkins_env.sh || true
+
+# --- Evidence collection ------------------------------------------------------
+EVIDENCE_SCRIPT="${REPO_ROOT}/control/tools/provision/evidence/ctrl01-collect-evidence.sh"
+if [ -f "$EVIDENCE_SCRIPT" ]; then
+  echo "[bootstrap] preparing evidence collector..."
+  chmod +x "$EVIDENCE_SCRIPT" || echo "[warn] failed to set execute bit on evidence collector"
+  echo "[bootstrap] launching evidence collector (background)..."
+  nohup bash "$EVIDENCE_SCRIPT" >/var/log/ctrl01_evidence.log 2>&1 & disown
+else
+  echo "[warn] evidence collector script not found at $EVIDENCE_SCRIPT"
+fi
+
+# --- SSH hardening ------------------------------------------------------------
+if [ "${ENABLE_AUTO_HARDEN}" = "true" ]; then
+  echo "[bootstrap] scheduling SSH hardening in ${HARDEN_GRACE_MIN}m (background)"
+  (
+    sleep "$((HARDEN_GRACE_MIN * 60))"
+    AUTH="/home/${CIUSER}/.ssh/authorized_keys"
+    if [ -s "$AUTH" ]; then
+      mkdir -p /etc/ssh/sshd_config.d
+      cat >/etc/ssh/sshd_config.d/99-password-off.conf <<'CONF'
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+CONF
+      systemctl reload ssh || systemctl reload sshd
+      echo "[bootstrap] SSH password authentication disabled."
+    fi
+  ) &
+fi
+
+# Update structured phase marker for CI/audit tools
+jq '.phase = "bootstrap-complete"' /var/lib/ctrl01/status.json > /var/lib/ctrl01/status.tmp 2>/dev/null \
+  && mv /var/lib/ctrl01/status.tmp /var/lib/ctrl01/status.json
+
+echo "$(date -Is)" > "$LOCK_FILE"
+echo "[bootstrap] marked complete — lock written at ${LOCK_FILE}"
+echo "[bootstrap] complete $(date -Is)"
