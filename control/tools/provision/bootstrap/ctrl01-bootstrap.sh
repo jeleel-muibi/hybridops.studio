@@ -16,8 +16,12 @@
 #   • Automatically generates Day-1 evidence artifacts.
 #   • Disables SSH password logins after a short grace period.
 #
-# Debugging:
+# QUICK SELF-CHECK COMMANDS (ON THE VM)
 #   sudo tail -f /var/log/ctrl01_bootstrap.log
+#   systemctl status ctrl01-bootstrap.timer --no-pager
+#   journalctl -u ctrl01-bootstrap.service --no-pager | tail -n 80
+#   cat /var/lib/ctrl01/status.json
+#   ls -1 docs/proof/ctrl01/latest/
 # -----------------------------------------------------------------------------
 
 set -Eeuo pipefail
