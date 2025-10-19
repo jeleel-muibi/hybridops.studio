@@ -1,54 +1,62 @@
 ---
-id: ADR-008
-title: "Use NETCONF with Nornir for CSR1000v Network Automation"
+id: ADR-0006
+title: "NETCONF-Driven Network Management Using Cisco CSR1000v and Nornir"
 status: Accepted
 date: 2025-10-08
-domains: ["networking"]
-owners: [jeleel-dev]
+domains: ["networking", "automation", "observability"]
+owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
   prs: []
-  runbooks: []
-  evidence: []
-  diagrams: []
+  runbooks: ["../runbooks/networking/netconf-csr1000v-setup.md"]
+  evidence: ["../proof/networking/netconf-csr1000v/"]
+  diagrams: ["../diagrams/netconf_csr_architecture.png"]
 ---
 
-# Use NETCONF with Nornir for CSR1000v Network Automation
+# ADR-0006 — NETCONF-Driven Network Management Using Cisco CSR1000v and Nornir
+
+## Status
+Accepted — Cisco CSR1000v routers are standardized as NETCONF-capable network endpoints for programmatic management, configuration validation, and evidence collection.
 
 ## Context
-HybridOps.Studio includes automation of network devices such as CSR1000v. While CLI-based automation via SSH is common, CSR1000v supports NETCONF natively, enabling structured, model-driven configuration using YANG models. Nornir is a Python-native automation framework that integrates well with NETCONF libraries like `scrapli_netconf` and `ncclient`. This ADR evaluates the decision to use NETCONF with Nornir for CSR1000v automation.
+HybridOps.Studio requires a **reliable, auditable, and fully automated method** for managing hybrid network infrastructure spanning Proxmox, pfSense, and CSR routers.  
+Manual SSH-based configuration and CLI scraping are error-prone and unsuitable for evidence-based automation pipelines.
+
+NETCONF, a standard management protocol (RFC 6241), provides:
+- Structured configuration and operational state retrieval (XML or YANG models).
+- Transactional operations with rollback and validation.
+- Consistent support across Cisco CSR, Arista vEOS, and Juniper vSRX.
+
+Nornir’s native NETCONF driver allows multi-device orchestration, validation, and evidence capture at scale.  
+Integrating it into the HybridOps pipeline bridges the gap between **declarative configs (Ansible)** and **state introspection (Nornir + NETCONF)**.
 
 ## Decision
-We will use NETCONF with Nornir to automate CSR1000v devices. This approach leverages CSR1000v's native NETCONF support and Nornir's Pythonic orchestration capabilities. It enables structured configuration, better error handling, and integration with NetBox as a source of truth. The scope is limited to CSR1000v devices within the lab and staging environments.
+Adopt **NETCONF over SSH** as the standard interface for router configuration, telemetry, and audit across all CSR1000v instances.  
+Use **Nornir with Netmiko and ncclient** for automation and evidence correlation.
+
+### Implementation Highlights
+- **Transport:** NETCONF over SSH (port 830).
+- **Schema:** Cisco native + OpenConfig YANG modules.
+- **Automation Layer:** Nornir plugin (`netconf_collector`) to capture running-config and operational state.
+- **Evidence Path:** `docs/proof/networking/netconf-csr1000v/` — contains XML outputs, config diffs, and YANG snapshots.
+
+The workflow is triggered automatically by Jenkins or Ansible jobs and outputs structured proof artifacts tied to correlation IDs.
 
 ## Consequences
-- Positive impacts:
-  - Enables structured, model-driven automation using YANG.
-  - Improves performance and control via Python-native orchestration.
-  - Aligns with enterprise-grade practices for network automation.
-- Risks and mitigations:
-  - Requires enabling NETCONF on CSR1000v (`netconf-yang` command).
-  - Requires installation and testing of NETCONF libraries (`scrapli_netconf`, `ncclient`).
-- Ops/cost considerations:
-  - Minimal operational overhead; libraries are lightweight and open-source.
-- Rollback strategy:
-  - Fall back to CLI-based automation via SSH if NETCONF fails or is unsupported.
-
-## Alternatives Considered
-- **Ansible NETCONF modules**
-  - Pros: Familiar syntax, existing playbooks.
-  - Cons: Less flexible, slower execution, limited error handling.
-- **CLI-based SSH automation**
-  - Pros: Simple and widely supported.
-  - Cons: Unstructured, harder to validate, less scalable.
-
-## Verification / Test Matrix (optional)
-- CSR1000v responds to NETCONF queries using `scrapli_netconf`.
-- Configuration changes applied via NETCONF are reflected in device state.
-- NetBox inventory is used to dynamically target CSR1000v devices via Nornir.
+- ✅ Strong compliance and audit visibility (configurations are structured, verifiable XML).  
+- ✅ Enables pre-/post-change validation directly from pipelines.  
+- ✅ Extensible to other vendors supporting NETCONF/YANG.  
+- ⚠️ Requires maintaining YANG model consistency across router images.  
+- ⚠️ Slightly higher CPU overhead on virtual routers during schema parsing.
 
 ## References
-- https://developer.cisco.com/docs/ios-xe/#!netconf/overview
-- https://nornir.readthedocs.io
-- https://github.com/carlmontanari/scrapli_netconf
+- [Runbook: NETCONF Setup on CSR1000v](../runbooks/networking/netconf-csr1000v-setup.md)  
+- [Diagram: NETCONF + Nornir Architecture](../diagrams/netconf_csr_architecture.png)  
+- [Evidence: NETCONF State & Config Snapshots](../proof/networking/netconf-csr1000v/)  
+
+---
+
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0

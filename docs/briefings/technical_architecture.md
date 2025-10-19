@@ -3,16 +3,19 @@
 This section outlines the major components and flows that power HybridOps.Studio. Detailed diagrams live in **Diagrams & Guides**; proofs for each assertion live under the **Proof Archive**.
 
 ## Core Components
-- **Control plane (on‑prem):** RKE2 (Kubernetes) with GitOps (ArgoCD/Flux). Rancher optional for fleet access.
-- **Data layer:** PostgreSQL primary remains on‑prem; **WAL‑G** handles offsite backups and restores for DR.
+- **Zero-Touch Bootstrap (`ctrl-01`):** The initial control node automates environment provisioning using Ansible and Packer.
+  It performs Day-0/1 setup — network validation, RKE2 cluster bring-up, Jenkins installation, and GitOps enrollment — entirely hands-off.
+  Evidence: [ctrl-01 Zero-Touch](../proof/ctrl01/latest/README.md)
+- **Control plane (on-prem):** RKE2 (Kubernetes) with GitOps (ArgoCD/Flux). Rancher optional for fleet access.
+- **Data layer:** PostgreSQL primary remains on-prem; **WAL-G** handles offsite backups and restores for DR.  
   Evidence: [SQL RO & RPO](../proof/sql-ro/README.md)
-- **Networking:** Google **NCC** provides hub‑and‑spoke connectivity across sites/clouds.
+- **Networking:** Google **NCC** provides hub-and-spoke connectivity across sites/clouds.  
   Evidence: [NCC](../proof/ncc/README.md)
-- **Observability:** **Prometheus Federation** aggregates metrics; **Grafana** provides DR panels and autoscale traces.
+- **Observability:** **Prometheus Federation** aggregates metrics; **Grafana** provides DR panels and autoscale traces.  
   Evidence: [Observability](../proof/observability/README.md)
-- **Decision Service:** Policy engine that selects Azure/GCP using federation metrics, cloud monitoring, and credits.
+- **Decision Service:** Policy engine that selects Azure/GCP using federation metrics, cloud monitoring, and credits.  
   Evidence: [Decision Service](../proof/decision-service/README.md)
-- **Images & CI/CD:** Packer builds base images; Jenkins primary CI with GitHub Actions fallback.
+- **Images & CI/CD:** Packer builds base images; Jenkins primary CI with GitHub Actions fallback.  
   Evidence: [Runtime Images](../proof/images-runtime/README.md)
 
 ## DR & Bursting Flow (high level)

@@ -1,0 +1,46 @@
+# ============================================================
+# HybridOps.Studio — Unified Python Requirements
+# Covers: automation, documentation, and repo utilities
+# ============================================================
+
+# --- Infrastructure Automation ---
+ansible>=9.0.0
+nornir>=3.4.1
+netmiko>=4.3.0
+paramiko>=3.4.0
+napalm>=4.2.0
+
+# --- Template / Parsing / Data ---
+jinja2>=3.1.2
+pyyaml>=6.0.1
+requests>=2.32.3
+jsonschema>=4.23.0
+
+# --- CLI / Helpers / Logging ---
+rich>=13.9.1
+click>=8.1.7
+typer>=0.12.3
+python-dotenv>=1.0.1
+tenacity>=8.3.0
+
+# --- Docs & Indexing Scripts ---
+markdown>=3.6
+pygments>=2.18.0
+
+# --- Optional: Cloud / CI integrations ---
+boto3>=1.35.0
+google-auth>=2.34.0
+azure-identity>=1.17.0
+gitpython>=3.1.43
+
+# --- Version control / utilities ---
+packaging>=24.0
+setuptools>=70.0
+wheel>=0.44.0
+
+# ============================================================
+# Usage:
+#   pip install -r requirements.txt
+# Optional (dev mode):
+#   python3 -m pip install -r requirements.txt --upgrade
+# ============================================================

@@ -50,7 +50,7 @@ KUBECONFIG_AZ  ?= $(HOME)/.kube/azure
 KUBECONFIG_GCP ?= $(HOME)/.kube/gcp
 
 # -----------------------------------------------------------------------------
-.PHONY: help adr.index env.setup env.print sanity fmt lint runbooks runbooks.index \
+.PHONY: help adr.index env.setup env.print sanity fmt lint runbooks runbooks.index howto.index \
         $(addsuffix .%, $(DOMAINS)) \
         gitops dr.db.promote dr.cluster.attach dr.gitops.sync dr.dns.cutover \
         burst.scale.up burst.validate burst.scale.down \
@@ -75,6 +75,8 @@ help: ## Show this help
 adr.index:  ## Generate ADR index and domain pages
 	@python3 control/tools/repo/indexing/gen_adr_index.py
 
+howto.index: ## Generate How-To index
+	@python3 control/tools/repo/indexing/gen_howto_index.py
 
 runbooks.index:
 	@python3 control/tools/repo/indexing/gen_runbook_index.py

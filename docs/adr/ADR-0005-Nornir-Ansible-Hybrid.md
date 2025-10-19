@@ -1,53 +1,63 @@
 ---
 id: ADR-0005
-title: "Use Nornir for Network Automation and Ansible for Server Automation"
+title: "Hybrid Network Automation: Nornir + Ansible Integration"
 status: Accepted
 date: 2025-10-08
-domains: ["networking"]
-owners: [jeleel-dev]
+domains: ["automation", "networking", "platform"]
+owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
   prs: []
-  runbooks: []
-  evidence: []
-  diagrams: []
+  runbooks: ["../runbooks/networking/nornir-ansible-integration.md"]
+  evidence: ["../proof/networking/nornir-ansible-interop/"]
+  diagrams: ["../diagrams/nornir_ansible_integration.png"]
 ---
 
-# Use Nornir for Network Automation and Ansible for Server Automation
+# ADR-0005 — Hybrid Network Automation: Nornir + Ansible Integration
+
+## Status
+Accepted — Nornir and Ansible are combined as a unified automation stack for both **network** and **infrastructure orchestration**, balancing flexibility and governance.
 
 ## Context
-HybridOps.Studio requires automation for both network devices (CSR1000v, VyOS, pfSense, Arista vEOS) and servers (Windows, Linux). A single tool could simplify the stack, but network automation often demands protocol-level control and high concurrency, while server automation benefits from mature ecosystems and orchestration features.
+HybridOps.Studio manages both compute (VMs, Kubernetes nodes, cloud resources) and traditional network infrastructure (Cisco CSR1000v, Arista vEOS, pfSense).  
+While Ansible provides excellent orchestration and idempotency for host-level configuration, it is not ideal for concurrent, connection-aware device automation at scale.
+
+Nornir offers:
+- Python-native execution and granular concurrency.
+- Low-level control over connections (SSH/Netmiko/NAPALM).
+- Dynamic inventory loading compatible with Ansible’s YAML structure.
+
+Combining both enables:
+- Unified inventory (NetBox → dynamic generator → YAML).
+- Seamless orchestration pipelines — Ansible drives hosts; Nornir drives network fabric.
+- Evidence collection and correlation under one workflow.
 
 ## Decision
-Adopt a hybrid approach:
-- **Nornir** for network automation tasks (configuration, validation, inventory sync).
-- **Ansible** for server provisioning and configuration (Windows roles, clustering, SCCM).
+Adopt a **hybrid model** where:
+- **Ansible** remains the primary orchestrator for servers, agents, and Kubernetes components.
+- **Nornir** executes network-specific tasks such as configuration diff, compliance validation, and connectivity testing.
+- Shared inventories and credential sources are generated from a **NetBox-backed Source of Truth**.
+- Jenkins pipelines orchestrate both stacks with evidence emission and rollback capabilities.
+
+### Integration Highlights
+- Single YAML inventory structure shared between both tools.
+- Nornir plugins (`env_guard`, `connectivity_test`) integrated into CI pipelines.
+- Evidence logs stored in `/docs/proof/networking/nornir-ansible-interop/`.
 
 ## Consequences
-- Positive impacts:
-  - Each tool is used where it excels.
-  - Demonstrates enterprise realism and tool specialization.
-- Risks and mitigations:
-  - Two automation stacks increase complexity; mitigated by clear documentation and CI/CD integration.
-- Ops/cost considerations:
-  - Both tools are open-source; minimal cost impact.
-- Rollback strategy:
-  - If complexity is too high, fallback to Ansible-only approach for all automation.
-
-## Alternatives Considered
-- **Ansible for all automation**:
-  - Pros: Single tool, simpler learning curve.
-  - Cons: Slower for network tasks, less flexible for CLI parsing.
-- **Nornir for all automation**:
-  - Pros: Python-native, fast.
-  - Cons: Limited ecosystem for Windows automation.
-
-## Verification / Test Matrix
-- Nornir successfully configures switches, routers, firewall via NETCONF/SSH.
-- Ansible provisions Windows servers and applies roles via playbooks.
-- NetBox inventory feeds both tools dynamically.
+- ✅ Improved parallelism for network automation workloads.  
+- ✅ Unified audit trail for hybrid operations.  
+- ⚠️ Slightly more complexity in CI/CD pipelines due to mixed tool orchestration.  
+- ⚠️ Requires Python dependencies (Nornir, Netmiko, Napalm) to be preinstalled in the automation control plane.
 
 ## References
-- https://nornir.readthedocs.io
-- https://docs.ansible.com
+- [Runbook: Nornir + Ansible Integration](../runbooks/networking/nornir-ansible-integration.md)  
+- [Diagram: Nornir–Ansible Interoperability](../diagrams/nornir_ansible_integration.png)  
+- [Evidence: Proof Logs and Compliance Diffs](../proof/networking/nornir-ansible-interop/)  
+
+---
+
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0

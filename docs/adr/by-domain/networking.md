@@ -1,7 +1,8 @@
-# ADRs — networking
+# ADRs — Networking
 
-- [ADR-0004 — NCC as Primary Hub, Azure as Routed Spoke](../ADR-0004_ncc-primary-hub_azure-spoke.md) — **Accepted**
-- [ADR-0005 — Use Nornir for Network Automation and Ansible for Server Automation](../ADR-0005-Nornir-Ansible-Hybrid.md) — **Accepted**
+- [ADR-0004 — NCC Primary Hub: Azure as Hybrid Connectivity Core](../ADR-0004_ncc-primary-hub_azure-spoke.md) — **Accepted**
+- [ADR-0005 — Hybrid Network Automation: Nornir + Ansible Integration](../ADR-0005-Nornir-Ansible-Hybrid.md) — **Accepted**
+- [ADR-0006 — NETCONF-Driven Network Management Using Cisco CSR1000v and Nornir](../ADR-0006-NETCONF-Nornir-CSR1000v.md) — **Accepted**
 - [ADR-0007 — Dual ISP Load Balancing for Resiliency](../ADR-0007-Dual_ISP_Load_Balancing_for_Resiliency.md) — **Accepted**
 - [ADR-0008 — VyOS as Cost-Effective Edge Router](../ADR-0008-VyOS_as_Cost-Effective_Edge_Router.md) — **Accepted**
 - [ADR-0009 — Full Mesh Topology for High Availability](../ADR-0009-Full_Mesh_Topology_for_High_Availability.md) — **Accepted**

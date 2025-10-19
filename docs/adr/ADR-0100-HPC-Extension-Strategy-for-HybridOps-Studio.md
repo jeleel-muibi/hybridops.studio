@@ -1,50 +1,67 @@
 ---
-# ===== Required by the ADR index generator =====
 id: ADR-0100
 title: "HPC Extension Strategy for HybridOps.Studio"
 status: Proposed
-decision_date: 2025-10-10
-domain: ["platform", "hpc"]
-tags: ["hpc", "slurm", "extension"]
-draft: false
-
-# ===== Optional (kept for readers; ignored by the generator) =====
 date: 2025-10-10
-owners: [jeleel-dev]
+domains: ["platform", "hpc", "infra"]
+owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
   prs: []
-  runbooks: []
-  evidence: []
-  diagrams: []
+  runbooks: ["../runbooks/hpc/hpc-integration.md"]
+  evidence: ["../proof/hpc-extension/"]
+  diagrams: ["../diagrams/hpc_extension_architecture.png"]
 ---
 
-# ADR-0100: HPC Extension Strategy for HybridOps.Studio
+# ADR-0100 — HPC Extension Strategy for HybridOps.Studio
+
+## Status
+Proposed — a forward-looking design to extend the HybridOps.Studio control plane toward **HPC (High-Performance Computing)** workloads and research environments.
 
 ## Context
-HybridOps.Studio currently focuses on hybrid infrastructure automation across on-prem and cloud environments, with strong emphasis on networking, observability, and failover. As scientific workloads and AI/ML pipelines become more prevalent, there is a strategic opportunity to extend the platform to support High Performance Computing (HPC) use cases. This would involve integrating Slurm as a job scheduler and simulating HPC clusters within the existing architecture.
+HybridOps.Studio currently focuses on hybrid enterprise automation — connecting on-premises clusters, CI/CD pipelines, and public clouds.  
+However, demand for compute-intensive data analysis, AI model training, and simulation workflows is growing rapidly across enterprise and academic sectors.
+
+To remain future-ready, the platform must support **HPC-style workloads** (MPI, SLURM, CUDA, large-memory nodes) without compromising its reproducibility and DevOps governance model.
+
+## Problem Statement
+Traditional HPC systems rely on tightly coupled infrastructure and bespoke schedulers.  
+HybridOps aims to introduce a **DevOps-style abstraction** for HPC:  
+reproducible environment provisioning, controlled scaling, and consistent logging under existing CI/CD governance.
 
 ## Decision
-Explore the integration of Slurm-based HPC workloads into HybridOps.Studio in future phases. This extension will be modular and scoped to lab-scale emulation using virtualized compute nodes. The goal is to demonstrate job scheduling, resource allocation, and DevOps practices in HPC environments without requiring physical supercomputing infrastructure.
+Introduce a **modular HPC extension layer** leveraging existing HybridOps primitives.
+
+### Design Highlights
+- **Scheduler:** Integrate SLURM within a dedicated “HPC cluster” namespace.  
+- **Compute nodes:** Provisioned dynamically via Terraform + Ansible on dedicated Proxmox or cloud instances.  
+- **Workload packaging:** Use containerized job runners (Apptainer/Singularity).  
+- **Networking:** High-speed vSwitch or VLAN-backed NICs (SR-IOV optional).  
+- **Storage:** Shared NFS or CephFS mounted under `/mnt/hpc-data`.  
+- **Observability:** Prometheus HPC exporter integrated into global federation.  
+- **Governance:** Same “Environment Guard” rules applied to HPC pipelines for auditability.
+
+### Roadmap Phases
+1. **Prototype** — deploy single-rack SLURM cluster using HybridOps provisioning (target: Q1 2026).  
+2. **Integration** — add job submission from Jenkins pipelines (evidence-driven).  
+3. **Federation** — connect on-prem HPC to cloud burst nodes (GCP Preemptible or Azure Spot).  
+4. **Governance** — enforce RTO/RPO and audit alignment with existing control plane.
 
 ## Consequences
-- Positive: Expands the scope of HybridOps.Studio to include scientific computing; showcases versatility and forward-thinking architecture.
-- Negative: Adds complexity to the platform; requires additional tooling and documentation.
-- Neutral/unknowns: Performance limits of virtualized HPC emulation; community support for Slurm in hybrid setups.
+- ✅ Expands HybridOps.Studio use cases into HPC/AI workloads.  
+- ✅ Demonstrates infrastructure scalability for enterprise research environments.  
+- ✅ Aligns DevOps and scientific computing governance under one platform.  
+- ⚠️ Increases complexity — requires new monitoring and cost controls.  
+- ⚠️ Not all HPC workloads will suit containerized scheduling initially.
 
-## Alternatives considered
-1. Ignore HPC use cases — limits the platform’s relevance to scientific and research domains.
-2. Use Kubernetes batch jobs instead of Slurm — simpler but less representative of real-world HPC environments.
+## References
+- [Runbook: HPC Integration](../runbooks/hpc/hpc-integration.md)  
+- [Diagram: HPC Extension Architecture](../diagrams/hpc_extension_architecture.png)  
+- [Evidence: HPC Extension Proofs](../proof/hpc-extension/)  
 
-## Implementation notes
-- Deploy Slurm controller and compute nodes in Proxmox or EVE-NG.
-- Use Ansible or Nornir to automate Slurm configuration.
-- Integrate with existing observability stack (Prometheus/Grafana).
-- Evaluate feasibility and performance quarterly; document findings in future ADRs.
+---
 
-## Links
-- PRs: <add>
-- Runbooks: <add>
-- Evidence: <add>
-- Diagrams: <add>
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0

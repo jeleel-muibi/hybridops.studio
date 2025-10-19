@@ -1,102 +1,61 @@
 ---
 id: ADR-0004
-title: "NCC as Primary Hub, Azure as Routed Spoke"
+title: "NCC Primary Hub: Azure as Hybrid Connectivity Core"
 status: Accepted
-date: 2025-10-05
-domains: ["networking"]
+date: 2025-10-08
+domains: ["networking", "cloud", "governance"]
 owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
   prs: []
-  runbooks: []
-  evidence: []
-  diagrams: []
+  runbooks: ["../runbooks/networking/ncc-hub-setup.md"]
+  evidence: ["../proof/networking/ncc/"]
+  diagrams: ["../diagrams/ncc_hub_architecture.png"]
 ---
 
-# NCC as Primary Hub, Azure as Routed Spoke
+# ADR-0004 — NCC Primary Hub: Azure as Hybrid Connectivity Core
 
----
+## Status
+Accepted — Azure is designated as the **primary hub** in HybridOps.Studio’s global hybrid network topology, using **Google NCC (Network Connectivity Center)** for cross-cloud federation.
 
 ## Context
-HybridOps.Studio must provide **deterministic, secure connectivity** across:
-- **On‑prem** (Proxmox core + EVE‑NG sub‑sites B1/B2, RKE2 control/worker nodes, PostgreSQL primary),
-- **Azure** (AKS, AVD),
-- **GCP** (GKE, federation core).
+HybridOps.Studio integrates multiple on-prem sites (Proxmox, pfSense HA, CSR1000v) with Azure and GCP environments.  
+A reliable hub-and-spoke backbone is essential for service reachability, cross-cluster observability, and seamless DR.  
 
-Goals:
-- Keep **routing simple and auditable**, support **DR/burst** selection by a Decision Service (Prometheus federation + cloud monitors + credits).
-- Maintain a **single source of truth** (Terraform + NetBox), avoid hard‑coded IPs, and preserve **evidence‑backed KPIs** (RTO ≤ 15m, RPO ≤ 5m).
-- Minimize **control‑plane overhead** for a portfolio project while remaining realistic and extensible.
+Several options were evaluated:
+- Azure Virtual WAN + NCC for cross-cloud mesh.
+- GCP NCC as the central hub.
+- Neutral backbone via WireGuard mesh or VPN gateways.
 
-Constraints:
-- Windows admin and AVD live in Azure; observability/federation core is in GCP.
-- Prefer **open, vendor‑neutral** primitives (IPsec, BGP) over proprietary overlays.
-
----
+Azure was chosen as the **primary hub** because:
+- It offers consistent IPsec interoperability with on-prem Cisco CSR and pfSense firewalls.
+- It integrates natively with NCC for Google-side visibility.
+- Its global backbone improves latency and reliability for east-west cloud traffic.
 
 ## Decision
-Adopt **Google NCC as the primary hub**. All sites and clouds attach via **IPsec + BGP**:
-- **On‑prem → GCP:** Route‑based **IPsec (VTI)** to **GCP HA VPN**, BGP to **Cloud Router**, attached into **Hub VPC → NCC**.
-- **Azure → GCP:** **Azure VPN Gateway (BGP)** peers with **GCP Cloud Router** for inter‑cloud routing. Azure workloads (AKS/AVD) remain **routed spokes**.
-- **Workloads:** On‑prem is steady‑state. DR/burst targets (AKS/GKE) are reconciled via **GitOps** after the Decision Service triggers Terraform.
-- **Data:** PostgreSQL remains **authoritative on‑prem**; **WAL‑G** ships backups to cloud storage for RO/promotion in DR drills.
+Designate **Azure VNet Hub** as the **primary NCC core**.  
+GCP NCC remains configured as a peer (read-replica) to allow failover and observability continuity.
 
-This is the **baseline topology** in the docs (see *Network Design*).
-
----
-
-## Rationale
-- **Operational simplicity:** One hub (NCC) → fewer control planes, fewer duplicated policies, faster troubleshooting.
-- **Deterministic routing:** Clear BGP adjacencies and route‑maps; easy to prove reachability (and to collect evidence).
-- **Fits portfolio scope:** Demonstrates multi‑cloud without the overhead of dual hubs; still extensible.
-- **Cost alignment:** Avoids continuous dual‑hub spend; cloud bursting is event‑driven.
-- **Observability first:** Federation core and Decision Service colocated with the hub keep signal quality high.
-
----
+### Implementation details
+- **Hub:** Azure VNet with VPN Gateway (Route-based, BGP enabled).  
+- **Peers:** On-prem pfSense / CSR1000v → IPsec tunnels to Azure → NCC.  
+- **DR Path:** GCP NCC configured for route reflection and telemetry.  
+- **Monitoring:** Prometheus Federation collects metrics from both Azure and on-prem routers via exporters.
 
 ## Consequences
-**Positive**
-- Lower cognitive load; easier to demonstrate **evidence‑backed KPIs**.
-- Faster change lead time and cleaner CI/CD integration (one hub toolchain).
+- ✅ Simplifies cross-cloud routing and telemetry.  
+- ✅ Reduces latency for east-west traffic.  
+- ⚠️ Azure hub downtime would temporarily impact NCC reachability until GCP peer promotion.  
+- ⚠️ Slightly higher operational cost due to Azure VPN Gateway SKU.
 
-**Negative / Risks**
-- **Hairpin** potential when Azure‑local consumers talk Azure‑local services via the hub. Mitigation: targeted route‑maps; keep Azure‑local flows local when required.
-- Single‑hub dependency: if hub is unreachable, cross‑site traffic is impaired. Mitigation: runbooks for **inter‑hub** enablement (see Appendix) and on‑prem isolation mode.
-
----
-
-## Alternatives Considered
-1. **Dual hubs (NCC + Azure vWAN/Hub VNet)** — More symmetry, but **higher operational overhead**, complex policy duplication, and longer change lead times. Kept as **documented alternative**.
-2. **Azure as primary hub** — Tilts control to Azure; less aligned with GKE/federation placement and current credits.
-3. **SD‑WAN overlay** — Adds cost and proprietary control planes; less instructive for a portfolio.
-4. **Cloud‑only** — Fails the hybrid requirement; no on‑prem control.
+## References
+- [Runbook: NCC Hub Setup](../runbooks/networking/ncc-hub-setup.md)  
+- [Diagram: NCC Hybrid Architecture](../diagrams/ncc_hub_architecture.png)  
+- [Evidence: NCC Logs and Topology Validation](../proof/networking/ncc/)  
 
 ---
 
-## Implementation (high level)
-- **Terraform** modules provision:
-  - GCP: HA VPN, Cloud Router, Hub VPC, NCC hub & attachments (GKE spokes).
-  - Azure: VPN Gateway (BGP), VNet, AKS; BGP to Cloud Router.
-- **BGP policy:** Communities/local‑pref to prefer on‑prem steady‑state; DR/burst flips via Terraform variables.
-- **GitOps:** ArgoCD/Flux to reconcile workloads on AKS/GKE; Rancher optional for fleet access.
-- **Secrets & policy:** Sealed/External Secrets; admission/policy to gate changes.
-- **Data path:** WAL‑G to Blob/GCS; promotion runbook for DR.
-
----
-
-## Verification / Test Matrix
-- **VPN/BGP:** Site‑A↔GCP, B1↔GCP, B2↔GCP up; Azure↔GCP inter‑cloud BGP up.
-- **Routing:** Pod/Service CIDRs reachable cross‑site; Azure RO DB reachable (if enabled).
-- **DR/burst flow:** Decision → Terraform attach/scale → GitOps sync → DNS cutover → **RTO ≤ 15m**.
-- **Data:** Promotion achieves **RPO ≤ 5m**.
-- **Observability:** Federation targets healthy; dashboards show end‑to‑end path.
-
----
-
-## Links
-- **Network Design (canonical):** `docs/diagrams/network/README.md`
-- **Architecture Overview (Mermaid):** `docs/diagrams/mermaid/architecture-overview.md`
-- **Evidence Map:** `docs/evidence_map.md` · **Proof Archive:** `docs/proof/README.md`
-- **Runbooks:** `docs/runbooks/` (DR cutover, WAL‑G restore, SoT pivot)
-- **Related ADRs:** ADR‑0003 (Secrets management choice), ADR‑0005 (GitOps policy gates) — _planned_
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0

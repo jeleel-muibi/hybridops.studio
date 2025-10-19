@@ -4,6 +4,20 @@ This page orients readers to the core materials—ADRs (why), How-to guides (how
 
 ---
 
+## Documentation Structure
+
+```mermaid
+graph TD
+  A["Architecture Decision Records\n(ADRs)"] --> B["HOWTO Guides"]
+  B --> C["Runbooks"]
+  C --> D["Evidence Map"]
+  A --> D
+```
+
+<p align="center"><em>Decide → Implement → Operate → Prove</em></p>
+
+---
+
 ## Start here
 
 - **How‑to: Provision the Control Node (Proxmox)** — Day‑0 → Day‑1 walkthrough with execution steps.  
@@ -15,7 +29,7 @@ This page orients readers to the core materials—ADRs (why), How-to guides (how
 - **Operations Runbook** — verification, optional Jenkins notes, troubleshooting, and re‑runs.  
   See: [Runbook — ctrl‑01 bootstrap](./runbooks/bootstrap/bootstrap-ctrl01-node.md) · [Evidence — ctrl‑01 bootstrap](../proof/ctrl01/latest/README.md)
 
-> ℹ️ This index intentionally avoids inline shell commands and credentials. Use the How‑to for any execution.
+> ℹ️ This index omits shell commands and credentials. See the HOWTOs and Runbooks for reproducible procedures.
 
 ---
 

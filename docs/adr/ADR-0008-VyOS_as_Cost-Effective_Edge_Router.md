@@ -1,47 +1,60 @@
 ---
-# ===== Required by the ADR index generator =====
 id: ADR-0008
 title: "VyOS as Cost-Effective Edge Router"
 status: Accepted
-decision_date: 2025-10-09
-domain: ["networking"]
-tags: []
-draft: false
-
-# ===== Optional (kept for readers; ignored by the generator) =====
 date: 2025-10-09
-owners: [jeleel-dev]
+domains: ["networking", "platform"]
+owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
   prs: []
-  runbooks: []
-  evidence: []
-  diagrams: []
+  runbooks: ["../runbooks/networking/vyos-edge-router.md"]
+  evidence: ["../proof/networking/vyos-edge-tests/"]
+  diagrams: ["../diagrams/vyos_edge_architecture.png"]
 ---
 
-# ADR-0008: VyOS as Cost-Effective Edge Router
+# ADR-0008 — VyOS as Cost-Effective Edge Router
+
+## Status
+Accepted — VyOS is standardized as the lightweight, cost-effective edge router for lab and small-scale DR deployments.
 
 ## Context
-CSR1000v requires a license and has limited forwarding capabilities without it. VyOS is open-source, flexible, and supports IPsec, BGP, and load balancing.
+HybridOps.Studio previously relied exclusively on **Cisco CSR1000v** routers for network edge automation.  
+While CSR remains the enterprise reference router, it is resource-intensive (≥3 GB RAM) and requires licenses for certain features.
+
+VyOS provides:
+- Full routing and VPN stack (BGP, OSPF, IPsec, WireGuard).  
+- Scriptable configuration via **VyConf** and **REST API**.  
+- Native support for **cloud-init**, simplifying Day-0 bootstrapping.  
+- Open-source flexibility — ideal for low-cost DR sites and nested virtualization.
+
+The objective is to ensure platform parity between enterprise (CSR) and open source (VyOS) edges without sacrificing governance or automation control.
 
 ## Decision
-Use VyOS as the primary edge router for ISP termination and routing, with CSR1000v retained for protocol demonstration and limited forwarding.
+Deploy VyOS as a **complementary edge router** to CSR1000v for test, training, and secondary site operations.  
+Use identical automation patterns (Nornir + Ansible + NetBox inventory) to maintain consistency across router classes.
+
+### Implementation Outline
+- **Proxmox template:** `vyos-1.5.x-cloudinit.qcow2` imported once and cloned via Terraform.  
+- **Configuration management:** handled through Nornir plugins (`vyos_config_push`, `vyos_healthcheck`).  
+- **VPN roles:** IPsec primary; WireGuard for developer tunnels and lightweight DR peering.  
+- **Integration:** Prometheus node exporter and syslog forwarding to central ELK/Prom stack.
 
 ## Consequences
-- Positive: Cost savings, open-source flexibility, full feature access.
-- Negative: Less enterprise recognition compared to Cisco.
-- Neutral/unknowns: May require additional testing for protocol interoperability.
+- ✅ Reduces licensing and memory footprint for DR and lab topologies.  
+- ✅ Maintains feature symmetry with enterprise routers (routing, VPN, telemetry).  
+- ✅ Demonstrates vendor-agnostic automation approach.  
+- ⚠️ Requires additional test coverage to validate feature parity (QoS, NAT reflection).  
+- ⚠️ Performance lower than CSR under heavy crypto workloads.
 
-## Alternatives considered
-1. CSR1000v only — costly and license-restricted.
-2. pfSense — capable but less suited for BGP and routing logic.
+## References
+- [Runbook: VyOS Edge Router Deployment](../runbooks/networking/vyos-edge-router.md)  
+- [Diagram: VyOS Edge Architecture](../diagrams/vyos_edge_architecture.png)  
+- [Evidence: VyOS Edge Test Logs](../proof/networking/vyos-edge-tests/)
 
-## Implementation notes
-- Deploy VyOS in EVE-NG and configure IPsec tunnels and BGP. Use CSR1000v for protocol showcase only.
+---
 
-## Links
-- PRs: <add>
-- Runbooks: <add>
-- Evidence: <add>
-- Diagrams: <add>
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0

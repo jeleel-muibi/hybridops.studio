@@ -10,7 +10,10 @@ Functions
 - utc_now():               UTC timestamp (YYYY-MM-DD HH:MM UTC).
 - slugify(s):              Lowercase, hyphenate, restrict to [a-z0-9-].
 - normalize_domains(fm):   From fm['domain'] or fm['domains'] (str or list); default ['uncategorized'].
+- should_skip_file(path):  Common skip logic for ignoring certain file types and paths.
 """
+
+
 from pathlib import Path
 from datetime import datetime, timezone
 import re
@@ -89,3 +92,31 @@ def normalize_domains(fm: dict) -> list[str]:
             seen.add(sd)
             out.append(sd)
     return out
+
+
+def should_skip_file(path: Path, ignore_folders=None) -> bool:
+    """
+    Common skip logic for indexing scripts.
+    Skips:
+    - Template or backup files (*.tmpl.md, *template*.md, *.bak, *.backup, *.old, *~)
+    - Any file under ignored subfolders (e.g. by-category/, by-topic/)
+    - Hidden or underscore-prefixed files
+    - Non-markdown files
+    """
+    ignore_folders = ignore_folders or []
+    if any(p in path.parts for p in ignore_folders):
+        return True
+
+    name = path.name.lower()
+    if not name.endswith(".md"):
+        return True
+    if name.startswith("_") or name.startswith("."):
+        return True
+    if "template" in name:
+        return True
+    if name.endswith(".tmpl.md"):
+        return True
+    if any(s in name for s in (".bak", ".backup", ".old", "~", ".tmp")):
+        return True
+
+    return False

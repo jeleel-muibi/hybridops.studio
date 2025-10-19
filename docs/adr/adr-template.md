@@ -1,50 +1,85 @@
 ---
-# ===== Required by the ADR index generator =====
-id: ADR-XXXX                     # e.g., ADR-0005 (matches filename prefix)
-title: "<concise-title>"         # short, action-oriented; used in indexes
-status: Proposed                 # Proposed | Accepted | Deprecated | Superseded
-decision_date: 2025-10-08        # ISO date; the generator reads `decision_date`
-domain: []          # one or more of: platform | networking | gitops | governance | secops | database | windows | observability
-tags: []                         # optional labels (e.g., [ncc, bgp, ipsec])
-draft: false                     # if true, excluded from generated indexes
-
-# ===== Optional (kept for readers; ignored by the generator) =====
-date: 2025-10-08                 # alias; keep if you want both
-owners: [<github-handle>]        # authors / maintainers
-supersedes: []                   # prior ADR IDs this replaces
-superseded_by: []                # ADR IDs that replace this one
+id: ADR-XXXX
+title: "<Concise, action-oriented title — e.g., 'Adopt Rocky Linux 9 for RKE2 Base Image'>"
+status: Proposed            # Proposed | Accepted | Deprecated | Superseded
+date: 2025-10-15            # ISO format; used by index generator
+domains: ["platform"]       # e.g., ["networking", "platform", "sre"]
+owners: ["jeleel"]
+supersedes: []              # e.g., ["ADR-0007"]
+superseded_by: []
 links:
-  prs: []                        # pull request URLs/IDs
-  runbooks: []                   # paths like docs/runbooks/dr/dr_cutover.md
-  evidence: []                   # paths into docs/proof/** or docs/evidence_map.md anchors
-  diagrams: []                   # diagram assets or pages
+  prs: []                   # e.g., ["https://github.com/jeleel-muibi/hybridops.studio/pull/42"]
+  runbooks: ["../runbooks/..."]
+  evidence: ["../proof/..."]
+  diagrams: ["../diagrams/..."]
 ---
 
-# {id}: {title}
+# ADR-XXXX — <Human-Readable Title (Expanded)>
+
+## Status
+Proposed — pending validation or demonstration in the HybridOps.Studio lab.
 
 ## Context
-Describe the problem, constraints, and any forces (compliance, cost, operational risk).
+Briefly describe the situation that led to this decision:
+- What challenge, limitation, or design gap existed?
+- Why now?
+- Which alternatives or prior ADRs informed this one?
+
+*(Example)*  
+Earlier prototypes deployed RKE2 on Ubuntu LXCs, which caused kernel and storage inconsistencies.  
+The team now seeks an enterprise-aligned OS that provides reproducibility, portability, and DR reliability.
 
 ## Decision
-State the decision plainly. Include scope and the domain(s) this affects.
+Summarize the final choice and its scope.  
+Include the **chosen technologies**, **configuration model**, and any **IaC references**.
+
+*(Example)*  
+Adopt **Rocky Linux 9.x** as the standard base image for all RKE2 nodes.  
+Provision via Terraform + Cloud-Init, and automate bootstrap with Ansible.
+
+### Key Components
+- **Base OS:** Rocky Linux 9.x  
+- **Provisioning:** Terraform + Packer + Ansible  
+- **Storage:** Longhorn  
+- **CNI:** Cilium (default)  
+- **Load Balancer:** MetalLB (L2 mode)
+
+## Decision Drivers
+List the major factors that influenced this decision:
+- Compliance / Governance requirements  
+- Ease of automation and reproducibility  
+- Performance or interoperability considerations  
+- Cost, licensing, or open-source viability
 
 ## Consequences
-- Positive: benefits, simplifications, risk reductions
-- Negative: trade‑offs, costs, added complexity
-- Neutral/unknowns: open questions or items for review
+Summarize the outcomes — both **positive** and **negative** — of this decision.
 
-## Alternatives considered
-1. Option A — why rejected
-2. Option B — why rejected
+**Positive**
+- Predictable behavior across on-prem and cloud  
+- Alignment with RHEL-grade enterprise norms  
+- Easier DR replication (VM-based portability)
 
-## Implementation notes
-- Rollout plan, gating checks, migration steps
-- Ownership and review cadence (e.g., quarterly)
+**Negative**
+- Slightly higher resource footprint than LXC  
+- Slower provisioning time for full VMs
 
-## Links
-- PRs: <add> # optional - remove line if it will not be relevant in this case
-- Runbooks: <add> # optional - remove line if it will not be relevant in this case
-- Evidence: <add> # optional - remove line if it will not be relevant in this case
-- Diagrams: <add> # optional - remove line if it will not be relevant in this case
+## Implementation Notes
+Provide relevant implementation details, file paths, and Make targets — without using naked links.
 
-Put placeholder where link may be helpful.
+*(Example)*  
+- Terraform module: `control/terraform/rke2/`  
+- Packer template: `control/packer/rke2-rocky9.json`  
+- Ansible roles: `core/ansible/rke2/`  
+- Make targets: `make k8s.template → k8s.provision → k8s.install`
+
+## References
+- Runbook: [RKE2 VM Deployment](../runbooks/kubernetes/rke2-vm-deploy.md)  
+- Diagram: [RKE2 VM Architecture](../diagrams/rke2_vm_architecture.png)  
+- Evidence: [RKE2 Proofs](../proof/kubernetes/rke2-vm/)  
+- Internal: [Maintenance Guide](../maintenance.md#adr-index-generation)
+
+---
+
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0

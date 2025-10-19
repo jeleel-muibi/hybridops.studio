@@ -11,7 +11,7 @@ tags: ["proxmox", "cloud-init", "jenkins", "terraform", "packer", "kubernetes"]
 # Bootstrap Validation — `ctrl-01` (Jenkins Controller)
 
 > **Context:** Validation report for the Day-1 bootstrap stage defined in  
-> [`control/tools/provision`](../../control/tools/provision/README.md).
+> [`control/tools/provision`](../../../control/tools/provision/README.md).
 
 ---
 

@@ -1,71 +1,64 @@
 ---
-id: 0012
-title: Control node runs as a VM (cloud-init); LXC reserved for light helpers
-status: accepted
-decision_date: 2025-10-12
-domains: [platform, sre, infra]
-tags: [proxmox, vmware, dr, cloud-init, jenkins, terraform, packer, kubernetes]
+id: ADR-0012
+title: "Control Node Runs as a VM (cloud-init); LXC Reserved for Light Helpers"
+status: Accepted
+date: 2025-10-12
+domains: ["platform", "sre", "infra"]
+owners: ["jeleel"]
+supersedes: []
+superseded_by: []
+links:
+  prs: []
+  runbooks: ["../runbooks/bootstrap/bootstrap-ctrl01-node.md"]
+  evidence: ["../proof/ctrl01-bootstrap/"]
+  diagrams: ["../diagrams/control_plane_architecture.png"]
 ---
 
-# ADR-0012 — Control Node as VM (`ctrl-01`)
+# ADR-0012 — Control Node Runs as a VM (Cloud-Init); LXC Reserved for Light Helpers
+
+## Status
+Accepted — The primary control plane (`ctrl-01`) is now provisioned as a **full VM** with Cloud-Init automation, while lightweight helper functions remain on LXC containers.
 
 ## Context
+Early experiments used **LXC containers** for both control and execution nodes to save resources.  
+However, Jenkins and Terraform processes require full virtualization primitives such as:
+- predictable systemd isolation,
+- persistent kernel modules for nested automation, and  
+- clean device mapping for Terraform providers (e.g., Proxmox, libvirt).
 
-The HybridOps Studio control plane requires a reproducible, auditable automation
-hub to coordinate provisioning, CI/CD orchestration, and evidence capture.  
-Two architectures were evaluated:
-
-1. **LXC-based controller** — lightweight but lacks full kernel isolation.  
-2. **VM-based controller** — heavier, but provides full systemd support and
-snapshot-grade disaster-recovery semantics.
-
----
+Containerized control nodes introduced subtle breakages (e.g., missing cgroups, limited kernel access) that reduced reproducibility and broke pipeline jobs requiring elevated permissions.
 
 ## Decision
+Migrate the primary control plane (`ctrl-01`) to a **Proxmox VM** provisioned entirely via **Cloud-Init**, keeping LXCs only for **auxiliary services** (e.g., lightweight agents, builders, or monitoring helpers).
 
-Implement the control node (`ctrl-01`) as a **dedicated Proxmox VM**.
+### Key Principles
+- **VM-based control:** Jenkins, Terraform, Packer, and Ansible run on a full VM.  
+- **Cloud-Init first:** Day-0 bootstrap creates a ready-to-configure host within 10 minutes.  
+- **Evidence-driven:** all bootstrap logs stored in `docs/proof/ctrl01-bootstrap/`.  
+- **LXC reserved:** only for ephemeral or non-privileged helper roles (e.g., docs generator, log relay).  
+- **Reproducibility:** exact same control plane can be rebuilt on Proxmox, VMware, or KVM.
 
-This approach ensures:
-
-- Deterministic cloud-init provisioning independent of host state  
-- Native systemd timers, services, and hardening support  
-- Full DR encapsulation (snapshot, replication, or cold-standby restore)  
-- Parity with enterprise-grade Jenkins controller deployments
-
----
+## Implementation Summary
+- VM image: Ubuntu 22.04 cloud image (Jammy).  
+- Provisioning: automated via `provision-ctrl01-proxmox-ubuntu.sh`.  
+- Configuration: post-bootstrap Jenkins jobs orchestrate full DR sync and evidence capture.  
+- Evidence: automatically timestamped under `docs/proof/ctrl01-bootstrap/<date>/`.
 
 ## Consequences
+- ✅ Predictable, reproducible control plane builds.  
+- ✅ Aligns with enterprise-grade Cloud-Init and Terraform provisioning pipelines.  
+- ✅ Simplifies DR testing — full VMs can be snapshotted or exported.  
+- ⚠️ Slightly higher resource overhead (CPU/RAM) than LXCs.  
+- ⚠️ Slower initial boot, mitigated by pre-baked Packer images.
 
-**Positive**
-- Portable, snapshot-ready control-plane image  
-- Self-contained CI/CD state and audit evidence  
-- Enables lifecycle automation tests under production-equivalent conditions  
-
-**Negative**
-- Slightly higher resource footprint (~4 GiB RAM baseline)  
-- Marginally longer initial provisioning time versus LXC  
-
----
-
-## Linked Artifacts
-
-| Phase | Artifact | Path |
-|--------|-----------|------|
-| Day-0 | Provisioner | [`provision-ctrl01-proxmox-ubuntu.sh`](../../control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh) |
-| Day-1 | Bootstrap | [`ctrl01-bootstrap.sh`](../../control/tools/provision/bootstrap/ctrl01-bootstrap.sh) |
-| Controller Init | Groovy scripts | [`controller-init`](../../control/tools/jenkins/controller-init/) |
-| Validation | Evidence bundle | [`docs/proof/ctrl01/`](../../docs/proof/ctrl01/) |
+## References
+- [Provisional for ctrl-01: provision-ctrl01-proxmox-ubuntu.sh](../../control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh)
+- [Runbook: ctrl-01 Bootstrap / Verification](../runbooks/bootstrap/bootstrap-ctrl01-node.md)  
+- [Diagram: Control Plane Architecture](../diagrams/control_plane_architecture.png)  
+- [Evidence: ctrl-01 Bootstrap Logs](../proof/ctrl01-bootstrap/)
 
 ---
 
-## Outcome
-
-Running the control node as a full VM establishes an **independent,
-snapshot-ready automation plane** that demonstrates:
-
-- **Zero-touch provisioning**
-- **Deterministic rebuilds**
-- **Verifiable evidence generation**
-
-These traits are core to HybridOps Studio’s governance, DR, and
-enterprise reproducibility model.
+**Author / Maintainer:** Jeleel Muibi  
+**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
+**License:** MIT-0 / CC-BY-4.0
