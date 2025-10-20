@@ -4,6 +4,10 @@ core/ansible/collections/ansible_collections/hybridops/common/roles/ansible_role
 contrib/maintainer_guide.md
 .private_gists
 
+# Local overrides
+etc/local/
+**/cost_overrides.local.yaml
+
 # Ignore .config directory containing environment-specific settings
 .config/
 

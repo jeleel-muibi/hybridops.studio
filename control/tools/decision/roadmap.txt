@@ -1,0 +1,81 @@
+Decision Service & Cost Telemetry — ROADMAP
+=================================================
+
+Purpose
+-------
+You decided to defer cloud identities and full collectors for now. This roadmap captures
+exactly what to do when you come back, in the right order, without re‑thinking design.
+
+Scope
+-----
+- Budget Gate (phase 1) and Provider Selection (phase 2) under `control/decision/`
+- Cost evidence collection and publication into `docs/proof/cost/`
+- Zero‑touch secrets via *one* chosen path (recommend: Azure Managed Identity + Key Vault)
+
+Phase 0 — Keep lights on (today)
+--------------------------------
+- Leave example `signals/metrics.json` and `signals/credits.env` shapes for review.
+- Ensure `control/decision/` is linked from top‑level README and Evidence Map.
+- Git‑ignore `control/decision/signals/*.env` and any real metrics JSON.
+
+Phase 1 — Identities & secrets (minimal viable)
+-----------------------------------------------
+Option A (recommended if leaning Azure):
+  - Create a User‑Assigned Managed Identity for the Jenkins agent VM/Pod.
+  - Grant read on **Key Vault** and **Cost Management Query**.
+  - In Jenkins, **do not** store secrets; use the identity to fetch tokens at runtime.
+
+Option B (on‑prem heavy, no cloud identity available):
+  - Stand up HashiCorp Vault (Dev → single‑node → prod later).
+  - Use **AppRole** for Jenkins agents; map policies to least‑privilege.
+
+Definition of Ready:
+  - `whoami` from agent returns a cloud identity OR Vault login works via AppRole.
+  - You can get an access token without pasting creds in Jenkins UI.
+
+Phase 2 — Collectors (signals)
+------------------------------
+- Implement `fetch_signals.sh` to populate two files before each decision:
+  1) `signals/credits.env` — `CREDITS_AVAILABLE`, `BUDGET_REMAINING_PER_HOUR`
+  2) `signals/metrics.json` — per‑provider metrics:
+     ```json
+     { "azure": {"latency_ms": 35, "error_rate": 0.2, "cost_per_hour": 12.5, "slo_score": 0.98},
+       "gcp":   {"latency_ms": 28, "error_rate": 0.3, "cost_per_hour": 11.0, "slo_score": 0.97},
+       "onprem":{"latency_ms": 12, "error_rate": 0.1, "cost_per_hour": 6.0,  "slo_score": 0.95} }
+     ```
+- Source of truth:
+  - Cost/credits → Azure Cost Management (or BigQuery export for GCP), summarized by `run_id`, `workload`, `env`.
+  - SLO/latency/error → Prometheus federation or synthetic probes.
+
+Phase 3 — Gate & selection in pipeline
+--------------------------------------
+- Call:
+  - `scripts/gate_budget.py --policy policy.json --signals signals --out signals/gate.json`
+  - `scripts/select_provider.py --policy policy.json --signals signals --out signals/decision.json`
+- On **deny**, fail the pipeline with a clear message; on **warn**, continue but annotate evidence.
+- Allow manual override with `TARGET=azure|gcp`; still run the gate unless `mode: off`.
+
+Phase 4 — Evidence publication
+------------------------------
+- After each run:
+  - Copy `signals/gate.json` and `signals/decision.json` into `docs/proof/decision/<run_id>/`.
+  - For cost artifacts, write normalized JSON to `docs/proof/cost/<run_id>/` and update `latest/` symlink.
+- Update `docs/evidence_map.md` to include the **Decision** and **Cost** latest links.
+
+Phase 5 — Policy tuning
+-----------------------
+- Start strict: `mode: enforce`, realistic `min_credits`, and `max_hourly_cost`.
+- Adjust `selection.weights` to reflect real SLOs (e.g., give higher weight to `error_rate`).
+- Add per‑workload budgets in the cost scripts and surface them in summaries.
+
+Operational notes
+-----------------
+- No secrets in Git; all auth is runtime via identity or Vault.
+- Keep provider scripts idempotent; log to `out/<timestamp>/` and reference those logs in proofs.
+- Treat `policy.json` changes as ADRs if budgets/SLOs materially change.
+
+References
+----------
+- Cost & Telemetry Guide: `docs/guides/cost-model.md`
+- Decision Service folder: `control/decision/`
+- Evidence Map: `docs/evidence_map.md`

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-10-20T09:30:00Z",
+  "slo": {
+    "rto_max": 15,
+    "rpo_max": 5
+  },
+  "regions": {
+    "onprem": {
+      "rto_minutes": 6,
+      "rpo_minutes": 3,
+      "cpu_utilization": 0.42,
+      "cluster_ready": true,
+      "alerts": 0
+    },
+    "azure": {
+      "rto_minutes": 8,
+      "rpo_minutes": 5,
+      "cpu_utilization": 0.18,
+      "cluster_ready": true,
+      "alerts": 0
+    },
+    "gcp": {
+      "rto_minutes": 7,
+      "rpo_minutes": 4,
+      "cpu_utilization": 0.27,
+      "cluster_ready": true,
+      "alerts": 1
+    }
+  }
+}

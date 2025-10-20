@@ -1,1 +1,1 @@
-.private_gists/index.md
+docs/.private_gists/index.md

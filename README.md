@@ -1,68 +1,83 @@
 # HybridOps.Studio — Hybrid Cloud Automation Portfolio
 
-[![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0) &nbsp;
-[![🎬 Watch the Demo](https://img.shields.io/badge/🎬%20Watch%20the%20Demo-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID "Watch the live HybridOps.Studio demo on YouTube") &nbsp;
-[![🟢 Live Demo](https://img.shields.io/badge/Live%20Demo-ssh%20demo@hybridops.studio-2ea44f?logo=linux)](#)
+[![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0)
+[![Terraform](https://img.shields.io/badge/terraform-1.5%2B-623CE4.svg)](https://terraform.io)
+[![Ansible](https://img.shields.io/badge/ansible-2.12%2B-red.svg)](https://ansible.com)
+[![Watch the Demo](https://img.shields.io/badge/Watch%20the%20Demo-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID "Watch the HybridOps.Studio demo on YouTube")
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-scheduled%20sessions-2ea44f)](#live-demo)
 
-**HybridOps.Studio** is a product-led blueprint for hybrid cloud operations: **on-prem control** with **Kubernetes + GitOps**, and **cloud failover/burst** on Azure or GCP.
-It demonstrates enterprise-grade automation patterns with reproducible runs and linked evidence.
+**HybridOps.Studio** is a product-led blueprint for hybrid cloud operations: on‑prem control with Kubernetes + GitOps, and cloud failover/burst on Azure or GCP. It demonstrates enterprise‑grade automation patterns with reproducible runs and linked evidence.
 
 ---
 
 ## Highlights
 
-- **Zero-Touch Control Plane:** Provisions Jenkins controller (`ctrl-01`) on Proxmox in ≈10 min via cloud-init Day-0/Day-1 automation — fully Git-driven and evidence-backed.  
-- **Source of Truth:** NetBox-driven inventory with Ansible dynamic discovery.  
+- **Zero‑Touch Control Plane:** Provisions a Jenkins controller (`ctrl-01`) on Proxmox in ~10 minutes via cloud‑init Day‑0/Day‑1 automation — fully Git‑driven and evidence‑backed.  
+- **Source of Truth:** NetBox‑driven inventory with Ansible dynamic discovery.  
 - **GitOps Everywhere:** Argo CD / Flux manage desired state across clusters; Rancher optional for fleet access.  
-- **Resilient Data:** PostgreSQL authoritative on-prem; WAL-G backups to cloud storage; fast promotion for DR.  
-- **Networking Backbone:** Google Network Connectivity Center (NCC) as hub; on-prem and cloud VNets/VPCs as spokes.  
+- **Resilient Data:** PostgreSQL remains authoritative on‑prem; WAL‑G backups to cloud storage; fast promotion for DR.  
+- **Networking Backbone:** Google Network Connectivity Center (NCC) as hub; on‑prem and cloud VNets/VPCs as spokes.  
 - **Observability First:** Prometheus Federation across sites; shared Grafana views.  
-- **Policy-Driven DR/Burst:** Decision Service evaluates federation metrics + Azure/GCP monitor signals + available credits.  
-- **Operator Workflow:** No click-ops — Make, Terraform, Ansible, and shell wrappers power everything.  
-- **Evidence-Backed:** Every claim maps to logs, outputs, screenshots, or dashboards.  
+- **Policy‑Driven DR/Burst:** Decision Service evaluates federation metrics plus Azure/GCP monitor signals and available credits.  
+- **Operator Workflow:** No click‑ops — Make, Terraform, Ansible, and thin shell wrappers power everything.  
+- **Evidence‑Backed:** Every claim maps to logs, outputs, screenshots, or dashboards.  
 
-**Target KPIs:** RTO ≤ 15 m  ·  RPO ≤ 5 m  ·  Packer ≤ 12 m  ·  Terraform ≤ 10 m  ·  Autoscale +2 @ 70 % (scale-in < 40 %).
+**Target KPIs:** RTO ≤ 15 m · RPO ≤ 5 m · Packer ≤ 12 m · Terraform ≤ 10 m · Autoscale +2 @ 70% (scale‑in < 40%).
 
 ---
 
-### 🧭 Control Plane Context
+## Cost & Telemetry (Evidence‑Backed)
 
-The control plane (`ctrl-01`) is the foundation of HybridOps.Studio — it’s the first proof of zero-touch automation.  
-See below for a **deep dive** into how it bootstraps itself, generates evidence, and drives the rest of the platform.
+Cost is a first‑class signal in HybridOps.Studio. Pipelines emit verifiable cost artifacts and enforce budget guardrails before burst/DR actions. The same artifacts power dashboards and reports.
+
+- Guide: [Cost & Telemetry](./docs/guides/cost-model.md)  
+- Evidence: [Proof Archive → cost](./docs/proof/cost/)  
+- Policy hooks: [Decision Service](./control/tools/decision)
+
+---
+
+## Control Plane Context
+
+The control plane (`ctrl-01`) is the foundation of HybridOps.Studio — it is the first proof of zero‑touch automation. The section below provides a deep dive into how it bootstraps itself, generates evidence, and drives the rest of the platform.
 
 <details>
-<summary><strong>📘 Deep Dive: Zero-Touch Control Plane (ctrl-01)</strong></summary>
+<summary><strong>Deep Dive: Zero‑Touch Control Plane (ctrl‑01)</strong></summary>
 
 <p align="right"><sub><em>Click again to collapse this section</em></sub></p>
 
 ---
 
+# HybridOps Studio — Control Plane (ctrl‑01) Strategy
+
 ### Purpose
-Show a zero-touch, production-minded control plane that boots from one Day-0 script on Proxmox,  
-self-configures (Day-1) entirely from Git, hands orchestration to Jenkins, executes on ephemeral agents,  
-and produces durable evidence for every run.  
+Show a zero‑touch, production‑minded control plane that:
+- boots from one Day‑0 script on Proxmox  
+- self‑configures (Day‑1) entirely from Git  
+- hands orchestration to Jenkins  
+- executes workloads on ephemeral agents  
+- produces durable evidence for every run  
 
 ---
 
 ### Elevator Pitch
-> “Buy a server, install Proxmox, run one script.  
+> Buy a server, install Proxmox, run one script.  
 > Ten minutes later you get a Jenkins control plane that builds infra on disposable agents and writes proofs into the repo.  
-> Clean separation, easy DR, auditable.”
+> Clean separation, easy DR, auditable.
 
 ---
 
 ### Architecture Summary
 - **Jenkins Controller:** `ctrl-01` — a clean VM, not a container.  
-- **Ephemeral Agents:** cloud-init clones of a gold image, destroyed after jobs.  
-- **Source of Truth:** Git repo defines Day-0/Day-1 state, pipelines, and evidence structure.  
-- **Evidence Output:** `docs/proof/ctrl01/<timestamp>/` with a `latest` symlink.
+- **Ephemeral Agents:** cloud‑init clones of a gold image, destroyed after jobs.  
+- **Source of Truth:** Git repository defines Day‑0/Day‑1 state, pipelines, and evidence structure.  
+- **Evidence Output:** stored under `docs/proof/ctrl01/<timestamp>/` with a `latest` symlink.
 
 ---
 
 ### Flow
 ```bash
-Day-0 → Proxmox creates VM + injects cloud-init metadata  
-Day-1 → VM runs bootstrap.sh from Git (installs Jenkins, seeds jobs)  
+Day-0 → Proxmox creates VM + injects cloud-init metadata
+Day-1 → VM runs bootstrap.sh from Git (installs Jenkins, seeds jobs)
 Day-2+ → Jenkins pipelines provision infra + collect evidence
 ```
 
@@ -79,7 +94,11 @@ Day-2+ → Jenkins pipelines provision infra + collect evidence
 ---
 
 ### Design Principles
-- Clean separation · Ephemeral compute · Immutable evidence · Self-healing · Audit-ready  
+- **Clean separation:** Controller orchestrates; agents execute.  
+- **Ephemeral compute:** Agents are temporary; controller state is Git‑driven.  
+- **Immutable evidence:** Every run emits verifiable outputs tied to a commit.  
+- **Self‑healing:** Failures are rebuilt deterministically.  
+- **Audit‑ready:** Jenkins emits proofs directly into the repo.
 
 ---
 
@@ -90,7 +109,7 @@ Day-2+ → Jenkins pipelines provision infra + collect evidence
 
 ---
 
-<p align="right"><sub>↑ Collapse to continue reading about overall architecture and evidence links.</sub></p>
+<p align="right"><sub>↑ Collapse to continue reading.</sub></p>
 </details>
 
 ---
@@ -102,22 +121,24 @@ Day-2+ → Jenkins pipelines provision infra + collect evidence
 
 <p align="right"><sub><em>Click again to collapse this section</em></sub></p>
 
-### Option 1 — Live Demo (Recommended)
+### Option 1 — Live Demo (recommended)
 
-📺 Prefer a walkthrough? [Watch the official YouTube demo](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+Prefer a walkthrough? [Watch the YouTube demo](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
 
-> You can **SSH into a live demo environment** and **watch the control plane and its apps come alive in real time**.  
-> Jenkins pipelines automatically trigger RKE2, NetBox, and monitoring stacks — all visible as they build.
+You can SSH into a live demo environment and watch the control plane and its apps come online in real time.  
+Jenkins pipelines automatically trigger RKE2, NetBox, and monitoring stacks — all visible as they build.
+
+> Demo access is read-only. Sessions are announced for specific time windows.  
+> One-time credentials expire automatically; destructive actions are not permitted.
 
 ```bash
 ssh demo@hybridops.studio
 # password: TryHybridOps!
 ```
 
-Then open the **Proxmox Viewer** to **see the environment come alive** —  
-VMs booting, pipelines firing, and dashboards lighting up as automation takes over.  
+To follow the build visually, use the Proxmox web viewer (read-only) to watch VMs boot, pipelines run, and dashboards populate:
 
-🔗 [https://demo.hybridops.studio/viewer](https://demo.hybridops.studio/viewer)
+https://demo.hybridops.studio/viewer
 
 *Demo sessions are read-only and reset hourly to ensure a clean environment.*
 
@@ -126,7 +147,7 @@ VMs booting, pipelines firing, and dashboards lighting up as automation takes ov
 ### Option 2 — Run on your own Proxmox host
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeleel-muibi/hybridops.studio/main/control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh   -o /root/provision-ctrl01-proxmox-ubuntu.sh &&   chmod +x /root/provision-ctrl01-proxmox-ubuntu.sh &&   sudo JENKINS_ADMIN_PASS='<secret>' /root/provision-ctrl01-proxmox-ubuntu.sh
+curl -fsSL https://raw.githubusercontent.com/jeleel-muibi/hybridops.studio/main/control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh   -o /root/provision-ctrl01-proxmox-ubuntu.sh && chmod +x /root/provision-ctrl01-proxmox-ubuntu.sh && sudo JENKINS_ADMIN_PASS='<secret>' /root/provision-ctrl01-proxmox-ubuntu.sh
 ```
 
 This Day-0 script:
@@ -134,13 +155,13 @@ This Day-0 script:
 - Injects cloud-init payloads for Day-1 automation  
 - Produces logs under `/var/log/ctrl01_provision.log`
 
-➡️ **Full How-To:** [docs/howto/HOWTO_ctrl01_provisioner.md](./docs/howto/HOWTO_ctrl01_provisioner.md)
+See the full guide: [HOWTO: ctrl-01 Provisioner](./docs/howto/HOWTO_ctrl01_provisioner.md)
 
 </details>
 
 ---
 
-<sub>🛰️ *If the demo server is under maintenance, follow the HOW-TO above to replicate the flow locally.*</sub>
+<sub>*If the demo server is under maintenance, follow the HOW-TO above to replicate the flow locally.*</sub>
 
 ## Architecture (executive view)
 
@@ -282,21 +303,34 @@ This section provides hands-on demonstrations of HybridOps.Studio capabilities. 
 
 ---
 
-## Repository Guide
+## Repository layout
 
-- [**Control**](./control/README.md) — operator wrappers and shared tools
-- [**Deployment**](./deployment/README.md) — playbooks, inventories & GitOps overlays
-- [**Core**](./core/README.md) — reusable roles and decision utilities
-- [**Terraform Infra**](./terraform-infra/README.md) — environment directories & modules
-- [**Docs**](./docs/README.md) — diagrams & guides
-- [**ADRs**](./docs/adr/README.md) — decision log
-- [**Runbooks**](./docs/runbooks/README.md) — procedure catalog
+- [**Control**](./control/README.md) — operator wrappers, provisioning scripts, and the decision service  
+  - [control/tools/](./control/tools/) — repo utilities (index generators, provisioners)  
+  - [control/decision/](./control/decision/README.md) — burst/DR policy, signals, and actions
+
+- [**Packer**](./packer/README.md) — immutable base images (Linux, Windows, RKE2, Jenkins agents)  
+  - templates/, scripts/, vars/; uploads to object storage or hypervisor templates
+
+- [**Terraform**](./terraform/README.md) — modules and environment stacks (on-prem / Azure / GCP)  
+  - modules/, envs/; remote state and policy gates
+
+- [**Core**](./core/README.md) — reusable Ansible roles, shared libraries, and helpers used by control & images
+
+- [**Deployment**](./deployment/README.md) — inventories, playbooks, and GitOps overlays (k8s manifests)
+
+- [**Docs**](./docs/README.md) — documentation hub  
+  - [ADRs](./docs/adr/README.md) — decision log  
+  - [Runbooks](./docs/runbooks/README.md) — procedure catalog  
+  - [HOWTOs](./docs/howto/README.md) — educational guides  
+  - [Guides](./docs/guides/) — e.g., [SecOps Roadmap](./docs/guides/secops-roadmap.md), [Cost & Telemetry](./docs/guides/cost-model.md)  
+  - [Proof Archive](./docs/proof/README.md) — evidence and artifacts
+
 - [**Contrib**](./contrib/README.md) — helper references · [Scripts ↔ Playbooks](./contrib/scripts-playbooks.md)
-- [**CI**](./docs/ci/README.md) — pipelines overview
-- [**Makefile**](./Makefile) — root build/ops targets
-- [**SecOps Roadmap**](./docs/guides/secops-roadmap.md)
-- [**Maintenance**](./docs/maintenance.md) — generators & update workflow
 
+- [**CI (docs)**](./docs/ci/README.md) — pipelines overview (Jenkins & GitHub Actions)
+
+- [**Makefile**](./Makefile) — root build/ops targets
 ---
 
 ## Reuse these modules & roles

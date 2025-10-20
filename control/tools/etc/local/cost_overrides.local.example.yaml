@@ -1,0 +1,12 @@
+# Private overrides (example). Keep this file out of Git.
+providers:
+  azure:
+    budget_month_usd: 15.00
+  gcp:
+    budget_month_usd: 12.00
+policy:
+  hard_cap_usd: 18.00
+workload:
+  vm_hours_month: 80
+  disk_gb_month: 40
+  egress_gb_month: 10
