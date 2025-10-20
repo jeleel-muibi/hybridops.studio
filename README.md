@@ -310,27 +310,24 @@ This section provides hands-on demonstrations of HybridOps.Studio capabilities. 
   - [control/decision/](./control/decision/README.md) — burst/DR policy, signals, and actions
 
 - [**Packer**](./packer/README.md) — immutable base images (Linux, Windows, RKE2, Jenkins agents)  
-  - templates/, scripts/, vars/; uploads to object storage or hypervisor templates
+  - `templates/`, `scripts/`, `vars/` — uploads to object storage or hypervisor templates
 
 - [**Terraform**](./terraform/README.md) — modules and environment stacks (on-prem / Azure / GCP)  
-  - modules/, envs/; remote state and policy gates
+  - `modules/`, `envs/` — remote state and policy gates
 
-- [**Core**](./core/README.md) — reusable Ansible roles, shared libraries, and helpers used by control & images
+- [**Core**](./core/README.md) — reusable Ansible roles, shared libraries, and helpers
 
 - [**Deployment**](./deployment/README.md) — inventories, playbooks, and GitOps overlays (k8s manifests)
 
 - [**Docs**](./docs/README.md) — documentation hub  
-  - [ADRs](./docs/adr/README.md) — decision log  
-  - [Runbooks](./docs/runbooks/README.md) — procedure catalog  
-  - [HOWTOs](./docs/howto/README.md) — educational guides  
-  - [Guides](./docs/guides/) — e.g., [SecOps Roadmap](./docs/guides/secops-roadmap.md), [Cost & Telemetry](./docs/guides/cost-model.md)  
-  - [Proof Archive](./docs/proof/README.md) — evidence and artifacts
+  - [ADRs](./docs/adr/README.md) · [Runbooks](./docs/runbooks/README.md) · [HOWTOs](./docs/howto/README.md) · [Guides](./docs/guides/) · [Proof Archive](./docs/proof/README.md)
 
 - [**Contrib**](./contrib/README.md) — helper references · [Scripts ↔ Playbooks](./contrib/scripts-playbooks.md)
 
 - [**CI (docs)**](./docs/ci/README.md) — pipelines overview (Jenkins & GitHub Actions)
 
 - [**Makefile**](./Makefile) — root build/ops targets
+
 ---
 
 ## Reuse these modules & roles
