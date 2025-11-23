@@ -1,9 +1,9 @@
 # 000-INDEX — Runbooks
-_Last updated: 2025-10-19 01:38 UTC_
+_Last updated: 2025-10-20 21:05 UTC_
 
 Tabular summary of reproducible operational procedures grouped by category and severity.
 
-**Categories:** [bootstrap (4)](./by-category/bootstrap.md) · [burst (1)](./by-category/burst.md) · [dr (5)](./by-category/dr.md) · [ops (4)](./by-category/ops.md)
+**Categories:** [bootstrap (4)](./by-category/bootstrap.md) · [burst (1)](./by-category/burst.md) · [dr (5)](./by-category/dr.md) · [ops (5)](./by-category/ops.md)
 
 **Legend:** P1 = critical · P2 = high · P3 = normal
 
@@ -23,3 +23,4 @@ Tabular summary of reproducible operational procedures grouped by category and s
 | Ops: DNS Cutover | [Open](./ops/ops-dns-cutover.md) | P1 | ops | 2025-10-08 |
 | Ops: Secrets Rotation | [Open](./ops/ops-secrets-rotation.md) | P1 | ops | 2025-10-08 |
 | Ops: Site-to-Site VPN Bring-Up | [Open](./ops/ops-vpn-bringup.md) | P1 | ops | 2025-10-08 |
+| Secrets Rotation — Azure Key Vault + Jenkins Service Principal | [Open](./ops/ops_rotate_jenkins_sp_secret_akv.md) | P2 | ops | 2025-10-20 |

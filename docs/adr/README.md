@@ -12,7 +12,7 @@ Project-wide decision log. Each ADR captures context, options, decision, and con
 ## Domains
 
 <!-- ADR:DOMAINS START -->
-**Domains:** [automation (2)](./by-domain/automation.md) · [cloud (1)](./by-domain/cloud.md) · [data (1)](./by-domain/data.md) · [governance (3)](./by-domain/governance.md) · [hpc (1)](./by-domain/hpc.md) · [infra (4)](./by-domain/infra.md) · [kubernetes (2)](./by-domain/kubernetes.md) · [networking (8)](./by-domain/networking.md) · [observability (1)](./by-domain/observability.md) · [platform (11)](./by-domain/platform.md) · [secops (2)](./by-domain/secops.md) · [security (1)](./by-domain/security.md) · [sre (5)](./by-domain/sre.md)
+**Domains:** [automation (2)](./by-domain/automation.md) · [cloud (1)](./by-domain/cloud.md) · [data (1)](./by-domain/data.md) · [governance (4)](./by-domain/governance.md) · [hpc (1)](./by-domain/hpc.md) · [infra (4)](./by-domain/infra.md) · [kubernetes (2)](./by-domain/kubernetes.md) · [networking (8)](./by-domain/networking.md) · [observability (1)](./by-domain/observability.md) · [platform (12)](./by-domain/platform.md) · [secops (3)](./by-domain/secops.md) · [security (1)](./by-domain/security.md) · [sre (5)](./by-domain/sre.md)
 <!-- ADR:DOMAINS END -->
 
 ---
@@ -36,6 +36,7 @@ Project-wide decision log. Each ADR captures context, options, decision, and con
 | 0012 | [ADR-0012 — Control Node Runs as a VM (cloud-init); LXC Reserved for Light Helpers](./ADR-0012_control-node-as-vm.md) | Accepted | 2025-10-12 |
 | 0013 | [ADR-0013 — PostgreSQL Runs in LXC (State on Host-Mounted Storage; Backups First-Class)](./ADR-0013_postgresql-as-lxc.md) | Accepted | 2025-10-12 |
 | 0014 | [ADR-0014 — RKE2 Runs on Full VMs (Rocky Linux 9 Base) with Simple LB and Storage](./ADR-0014_rke2-on-full-vms.md) | Accepted | 2025-10-12 |
+| 0015 | [ADR-0015 — Secrets Strategy — Azure Key Vault now; SOPS fallback; Vault optional later](./ADR-0015_secrets-strategy_akv-now_sops-fallback_vault-later.md) | Accepted | 2025-10-20 |
 | 0100 | [ADR-0100 — HPC Extension Strategy for HybridOps.Studio](./ADR-0100-HPC-Extension-Strategy-for-HybridOps-Studio.md) | Proposed | 2025-10-10 |
 <!-- ADR:INDEX END -->
 

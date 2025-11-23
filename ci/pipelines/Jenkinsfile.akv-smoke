@@ -1,0 +1,22 @@
+pipeline {
+  agent any
+  stages {
+    stage('AKV Smoke') {
+      steps {
+        script {
+          azureKeyVault(
+            credentialId: 'az-sp-hybridops',
+            keyVaultURL: "${AZURE_KEYVAULT_URL}",
+            secrets: [
+              [ secretType: 'Secret', name: 'JENKINS_ADMIN_PASSWORD', envVariable: 'JENKINS_ADMIN_PASSWORD' ]
+            ]
+          ) {
+            sh '''
+              echo "Fetched JENKINS_ADMIN_PASSWORD from AKV (redacted). Length: ${#JENKINS_ADMIN_PASSWORD}"
+            '''
+          }
+        }
+      }
+    }
+  }
+}

@@ -21,7 +21,7 @@ Each runbook is outcome-focused and linked to supporting evidence.
 ## Runbook Catalog
 
 <!-- RUNBOOKS:INDEX START -->
-**Categories:** [bootstrap (4)](./by-category/bootstrap.md) · [burst (1)](./by-category/burst.md) · [dr (5)](./by-category/dr.md) · [ops (4)](./by-category/ops.md)
+**Categories:** [bootstrap (4)](./by-category/bootstrap.md) · [burst (1)](./by-category/burst.md) · [dr (5)](./by-category/dr.md) · [ops (5)](./by-category/ops.md)
 
 For detailed metadata (severity, timestamps), see the [full index](./000-INDEX.md).
 
@@ -29,7 +29,7 @@ For detailed metadata (severity, timestamps), see the [full index](./000-INDEX.m
 ---
 
 <details>
-  <summary><strong>All Runbooks</strong> (14) — click to expand</summary>
+  <summary><strong>All Runbooks</strong> (15) — click to expand</summary>
 
 - [Bootstrap: GitOps (Argo CD / Flux)](./bootstrap/bootstrap-gitops.md)
 - [Bootstrap: NetBox (Source of Truth)](./bootstrap/bootstrap-netbox.md)
@@ -45,11 +45,12 @@ For detailed metadata (severity, timestamps), see the [full index](./000-INDEX.m
 - [Ops: DNS Cutover](./ops/ops-dns-cutover.md)
 - [Ops: Secrets Rotation](./ops/ops-secrets-rotation.md)
 - [Ops: Site-to-Site VPN Bring-Up](./ops/ops-vpn-bringup.md)
+- [Secrets Rotation — Azure Key Vault + Jenkins Service Principal](./ops/ops_rotate_jenkins_sp_secret_akv.md)
 
 </details>
 
 
-<sub>Last generated: 2025-10-19 01:38 UTC</sub>
+<sub>Last generated: 2025-10-20 21:05 UTC</sub>
 <!-- RUNBOOKS:INDEX END -->
 
 ---
