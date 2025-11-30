@@ -1,0 +1,63 @@
+
+pipeline {
+  agent any
+  options { timestamps() }
+  environment {
+    TF_IN_AUTOMATION = 'true'
+    TF_TOKEN_app_terraform_io = credentials('TFC_TOKEN')
+  }
+  parameters {
+    string(name: 'SUBTREE', defaultValue: 'live/cloud/azure/staging', description: 'Path to run-all subtree')
+    choice(name: 'ACTION', choices: ['plan','apply'], description: 'Terragrunt action')
+  }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Tools') {
+      steps {
+        sh '''
+          which terragrunt || (curl -sLo /usr/local/bin/terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v0.67.4/terragrunt_linux_amd64 && chmod +x /usr/local/bin/terragrunt)
+          which conftest || true
+        '''
+      }
+    }
+    stage('Terragrunt Run-All') {
+      steps {
+        dir(params.SUBTREE) {
+          script {
+            if (params.ACTION == 'plan') {
+              sh 'terragrunt run-all plan -no-color || true'
+            } else {
+              input message: "Apply subtree ${params.SUBTREE}?", ok: "Apply"
+              sh 'terragrunt run-all apply -no-color -auto-approve'
+            }
+          }
+        }
+      }
+    }
+    stage('Evidence (plan.json + OPA)') {
+      when { expression { return params.ACTION == 'plan' } }
+      steps {
+        sh '''
+          # Find all Terraform work dirs and convert plan.out -> plan.json
+          find ${SUBTREE} -type f -name plan.out | while read -r planfile; do
+            wd="$(dirname "$planfile")"
+            ( cd "$wd" && terraform show -json plan.out > plan.json ) || true
+          done
+
+          # Run OPA/Conftest if available against any plan.json
+          if which conftest >/dev/null 2>&1; then
+            find ${SUBTREE} -type f -name plan.json | while read -r pj; do
+              echo "== OPA check: $pj"
+              conftest test "$pj" -p policies/opa || true
+            done
+          fi
+        '''
+      }
+    }
+  }
+  post {
+    always {
+      archiveArtifacts artifacts: '**/plan.out,**/plan.json,docs/proof/**', allowEmptyArchive: true
+    }
+  }
+}

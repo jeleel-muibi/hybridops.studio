@@ -1,0 +1,110 @@
+---
+# SPDX-License-Identifier: MIT-0
+# Author: Jeleel Muibi (hybridops.studio)
+# Created: 2025-09-09 21:39:57 UTC
+# Updated: 2025-09-10 — Initial implementation of connectivity test result saver
+#
+# Purpose: Aggregate and persist test results centrally (JSON, JSONL) with metadata.
+
+- name: Compute run id (UTC)
+  set_fact:
+    __run_id: "{{ lookup('pipe','date -u +%Y%m%dT%H%M%SZ') }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Resolve paths from defaults
+  set_fact:
+    __central_root: "{{ connectivity.paths.connectivity_logs_dir }}"
+    __json_name: "{{ connectivity.audit.json_file }}"
+    __jsonl_name: "{{ connectivity.audit.jsonl_file }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Ensure central root exists
+  ansible.builtin.file:
+    path: "{{ __central_root }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+
+- name: Define run directory
+  set_fact:
+    __run_dir: "{{ __central_root }}/{{ __run_id }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Derive file paths
+  set_fact:
+    __json_path: "{{ __run_dir }}/{{ __json_name }}"
+    __jsonl_path: "{{ __run_dir }}/{{ __jsonl_name }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Ensure run directory exists
+  ansible.builtin.file:
+    path: "{{ __run_dir }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+
+- name: Collect results (dict by hostname)
+  vars:
+    __hosts: "{{ ansible_play_hosts_all | default(ansible_play_hosts) }}"
+  set_fact:
+    __all_results: >-
+      {{ (__all_results | default({})) | combine({ item: (hostvars[item].test_results | default({})) }) }}
+  loop: "{{ __hosts }}"
+  when: hostvars[item].test_results is defined
+  delegate_to: localhost
+  run_once: true
+- name: Save JSON (pretty)
+  ansible.builtin.copy:
+    dest: "{{ __json_path }}"
+    content: "{{ __all_results | default({}) | to_nice_json }}"
+    mode: '0644'
+  delegate_to: localhost
+  run_once: true
+- name: Save JSONL (one event per line)
+  vars:
+    __jsonl: |
+      {% for h, r in (__all_results | default({})).items() %}
+      {{ r | to_json }}
+      {% endfor %}
+  ansible.builtin.copy:
+    dest: "{{ __jsonl_path }}"
+    content: "{{ __jsonl }}"
+    mode: '0644'
+  delegate_to: localhost
+  run_once: true
+
+- name: Update 'latest' symlink -> current run
+  ansible.builtin.file:
+    src: "{{ __run_dir }}"
+    dest: "{{ __central_root }}/latest"
+    state: link
+    force: true
+  delegate_to: localhost
+  run_once: true
+
+- name: Publish connectivity run metadata
+  set_stats:
+    data:
+      connectivity_logs_root: "{{ __central_root }}"
+      connectivity_run_id: "{{ __run_id }}"
+      connectivity_run_dir: "{{ __run_dir }}"
+      connectivity_json_path: "{{ __json_path }}"
+      connectivity_jsonl_path: "{{ __jsonl_path }}"
+  run_once: true
+
+- name: Show artifact paths
+  ansible.builtin.debug:
+    msg: |
+      Artifacts:
+      ROOT : {{ __central_root }}
+      RUN  : {{ __run_dir }}
+      JSON : {{ __json_path }}
+      JSONL: {{ __jsonl_path }}
+  delegate_to: localhost
+  run_once: true

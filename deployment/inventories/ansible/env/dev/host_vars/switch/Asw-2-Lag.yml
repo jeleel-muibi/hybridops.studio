@@ -1,0 +1,77 @@
+---
+interfaces:
+- name: Port-channel1
+  status: false shutdown
+  switchport_mode: trunk
+  encapsulation: dot1q
+  allowed_vlans: [50, 60]
+
+- name: Ethernet0/0
+  status: false shutdown
+  switchport_mode: trunk
+  encapsulation: dot1q
+  allowed_vlans: [50, 60]
+
+- name: Ethernet0/1
+  status: false shutdown
+  switchport_mode: access
+  switchport_access_vlan: 50
+
+- name: Ethernet0/2
+  status: false shutdown
+  switchport_mode: access
+  switchport_access_vlan: 50
+
+- name: Ethernet0/3
+  status: false shutdown
+
+- name: Ethernet1/0
+  status: false shutdown
+
+- name: Ethernet1/1
+  status: false shutdown
+  switchport_mode: trunk
+  encapsulation: dot1q
+  allowed_vlans: [50, 60]
+  channel_group: 1
+  channel_group_mode: on
+- name: Ethernet1/2
+  status: false shutdown
+  switchport_mode: trunk
+  encapsulation: dot1q
+  allowed_vlans: [50, 60]
+  channel_group: 1
+  channel_group_mode: on
+
+- name: Ethernet1/3
+  status: false shutdown
+  switchport_mode: trunk
+  encapsulation: dot1q
+  allowed_vlans: [50, 60]
+  channel_group: 1
+  channel_group_mode: on
+
+- name: Ethernet2/0
+  status: false shutdown
+  switchport_mode: access
+  switchport_access_vlan: 60
+
+- name: Ethernet2/1
+  status: false shutdown
+  switchport_mode: access
+  switchport_access_vlan: 60
+
+- name: Ethernet2/2
+  status: false shutdown
+
+- name: Ethernet2/3
+  status: false shutdown
+  switchport_mode: access
+  switchport_access_vlan: 60
+
+vlans:
+- id: 1
+  name: default
+  ip_address: 172.16.13.18
+  subnet_mask: 255.255.255.0
+  status: false shutdown

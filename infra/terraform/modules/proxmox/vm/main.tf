@@ -32,6 +32,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   clone {
     node_name = var.target_node
     vm_id     = var.template_vm_id
+    full      = true
   }
 
   operating_system {
@@ -40,18 +41,16 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   cpu {
     cores = var.cpu_cores
+    type  = "host"
   }
 
   memory {
     dedicated = var.memory_mb
-    floating  = var.memory_mb
   }
 
-  disk {
-    datastore_id = var.datastore_id
-    size         = var.disk_size_gb
-    interface    = "scsi"
-  }
+  boot_order    = ["scsi0", "net0"]
+
+  scsi_hardware = "virtio-scsi-pci"
 
   network_device {
     bridge   = var.bridge
@@ -59,5 +58,21 @@ resource "proxmox_virtual_environment_vm" "vm" {
     model    = "virtio"
     firewall = false
     enabled  = true
+  }
+
+  # Cloud-init configuration for network setup
+  initialization {
+    datastore_id = var.datastore_id
+
+    ip_config {
+      ipv4 {
+        address = var.use_dhcp ? "dhcp" : var.static_ips[count.index]
+        gateway = var.use_dhcp ? null : var.gateway
+      }
+    }
+
+    dns {
+      servers = var.dns_servers
+    }
   }
 }

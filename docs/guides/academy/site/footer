@@ -1,0 +1,23 @@
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-left">
+      <span>© HybridOps.Studio</span>
+    </div>
+    <div class="footer-center">
+      <a href="/docs">Docs</a>
+      <span>·</span>
+      <a href="/academy">Academy</a>
+      <span>·</span>
+      <a href="/consulting">Consulting</a>
+      <span>·</span>
+      <a href="/about">About</a>
+    </div>
+    <div class="footer-right">
+      <a href="https://github.com/your-org-or-user">GitHub</a>
+      <span>·</span>
+      <a href="https://www.youtube.com/@your-channel">YouTube</a>
+      <span>·</span>
+      <a href="https://www.linkedin.com/in/your-handle/">LinkedIn</a>
+    </div>
+  </div>
+</footer>

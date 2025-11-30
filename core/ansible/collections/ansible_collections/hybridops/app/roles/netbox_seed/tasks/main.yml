@@ -1,0 +1,12 @@
+- name: Ensure NetBox is reachable
+  uri:
+    url: "{{ netbox_url }}/api/dcim/sites/"
+    method: GET
+    headers:
+      Authorization: "Token {{ netbox_token }}"
+    status_code: 200
+  register: nb_ping
+
+- name: Example (seed a site) — replace with netbox.netbox.* modules for production
+  debug:
+    msg: "Would seed site '{{ site_name }}' for tenant '{{ tenant_name }}' (dry_run={{ dry_run }})"

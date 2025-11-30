@@ -1,0 +1,37 @@
+# Network automation and infrastructure orchestration
+ansible>=9.0.0
+ansible-lint>=6.22.0
+nornir>=3.4.1
+netmiko>=4.3.0
+paramiko>=3.4.0
+napalm>=4.2.0
+
+# Documentation generation
+mkdocs==1.5.3
+mkdocs-material==9.5.3
+pymdown-extensions==10.7
+markdown>=3.6
+pygments>=2.18.0
+
+# Template rendering and data processing
+jinja2>=3.1.2
+# pyyaml>=6.0.1
+# requests>=2.32.3
+# jsonschema>=4.23.0
+
+# CLI utilities
+# rich>=13.9.1
+# click>=8.1.7
+# typer>=0.12.3
+# python-dotenv>=1.0.1
+# tenacity>=8.3.0
+
+# # Cloud provider SDKs
+# boto3>=1.35.0
+# google-auth>=2.34.0
+# azure-identity>=1.17.0
+
+# # Version control and IP utilities
+# gitpython>=3.1.43
+# netaddr>=1.2.1
+# packaging>=24.0

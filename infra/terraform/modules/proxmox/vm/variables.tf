@@ -90,3 +90,29 @@ variable "extra_tags" {
   description = "Additional Proxmox tags to apply to the VM"
   default     = []
 }
+
+# ====== Static IP Configuration ======
+
+variable "static_ips" {
+  type        = list(string)
+  description = "List of static IP addresses with CIDR notation (e.g., ['10.20.0.10/24', '10.20.0.11/24'])"
+  default     = []
+}
+
+variable "gateway" {
+  type        = string
+  description = "Gateway IP for static IP configuration"
+  default     = ""
+}
+
+variable "dns_servers" {
+  type        = list(string)
+  description = "DNS servers for static IP configuration"
+  default     = ["8.8.8.8", "8.8.4.4"]
+}
+
+variable "use_dhcp" {
+  type        = bool
+  description = "Use DHCP instead of static IPs (not recommended for infrastructure)"
+  default     = false
+}

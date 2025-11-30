@@ -1,0 +1,89 @@
+---
+interfaces:
+- name: GigabitEthernet1
+  status: no shutdown
+  ip_address: 10.10.30.54
+  subnet_mask: 255.255.255.252
+  negotiation: auto
+  mop_enabled: false
+  mop_sysid: false
+
+- name: GigabitEthernet2
+  status: no shutdown
+  shutdown: true
+  negotiation: auto
+  mop_enabled: false
+  mop_sysid: false
+
+- name: GigabitEthernet3
+  status: no shutdown
+  shutdown: true
+  negotiation: auto
+  mop_enabled: false
+  mop_sysid: false
+
+- name: GigabitEthernet4
+  status: no shutdown
+  vrf: MGMT
+  negotiation: auto
+  mop_enabled: false
+  mop_sysid: false
+
+- name: GigabitEthernet4.1
+  status: no shutdown
+  encapsulation: dot1q
+  vlan_id: 1
+  native_vlan: true
+  vrf: MGMT
+  ip_address: 172.16.13.20
+  subnet_mask: 255.255.255.0
+
+- name: GigabitEthernet4.50
+  status: no shutdown
+  encapsulation: dot1q
+  vlan_id: 50
+  ip_address: 10.10.30.14
+  subnet_mask: 255.255.255.240
+  vrrp:
+    id: 50
+    ipv4: 10.10.30.12
+    priority_level: 150
+
+- name: GigabitEthernet4.60
+  status: no shutdown
+  encapsulation: dot1q
+  vlan_id: 60
+  ip_address: 10.10.30.30
+  subnet_mask: 255.255.255.240
+  vrrp:
+    id: 60
+    ipv4: 10.10.30.28
+    priority_level: 150
+
+- name: GigabitEthernet5
+  status: no shutdown
+  shutdown: true
+  negotiation: auto
+  mop_enabled: false
+  mop_sysid: false
+
+- name: GigabitEthernet6
+  status: no shutdown
+  shutdown: true
+  negotiation: auto
+  mop_enabled: false
+  mop_sysid: false
+
+router_ospf:
+  id: 1
+  router_id: 6.6.6.6
+  networks:
+  - address: 10.10.30.0
+    wildcard_mask: 0.0.0.15
+    area: 0
+  - address: 10.10.30.16
+    wildcard_mask: 0.0.0.15
+    area: 0
+  - address: 10.10.30.52
+    wildcard_mask: 0.0.0.3
+    area: 0

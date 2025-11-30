@@ -1,0 +1,30 @@
+pipeline {
+  agent any
+  options { timestamps() }
+  stages {
+    stage('AKV Fetch') {
+      steps {
+        script {
+          echo "Using AKV at ${env.AZURE_KEYVAULT_URL ?: '(from JCasC plugin config)'}"
+        }
+        azureKeyVault(
+          credentialId: 'az-sp-hybridops',
+          keyVaultURL: env.AZURE_KEYVAULT_URL,
+          secrets: [[secretType: 'Secret', name: 'jenkins-admin-password', envVariable: 'JENKINS_ADMIN_PASSWORD'],
+                    [secretType: 'Secret', name: 'pulse', envVariable: 'PULSE']]
+        ) {
+          sh '''
+            set -eu
+            echo "Pulse: ${PULSE}" > akv_smoke.txt
+            echo "Admin length: ${#JENKINS_ADMIN_PASSWORD}" >> akv_smoke.txt
+          '''
+        }
+      }
+    }
+  }
+  post {
+    always {
+      archiveArtifacts artifacts: 'akv_smoke.txt', fingerprint: true
+    }
+  }
+}

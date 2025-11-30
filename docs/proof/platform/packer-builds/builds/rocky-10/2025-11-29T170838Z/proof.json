@@ -1,0 +1,31 @@
+{
+  "type": "build",
+  "timestamp_utc": "2025-11-29T170838Z",
+  "host": "U-Dock-Managr-1",
+  "chain_id": "CHAIN-20251129T170412Z-rocky-10",
+  "template": "rocky-10",
+  "vmid": "9003",
+  "build_duration": "3 minutes 52 seconds",
+  "proxmox_url": "https://192.168.0.27:8006/api2/json",
+  "proxmox_node": "hybridhub",
+  "vm_facts": {
+    "name": "rocky-10-template",
+    "template_flag": "1",
+    "cores": "2",
+    "sockets": "1",
+    "memory_mb": "4096",
+    "os_type": "l26",
+    "disk_scsi0": "local-lvm:base-9003-disk-0,cache=none,replicate=0,size=10G",
+    "cdrom": "local-lvm:vm-9003-cloudinit,media=cdrom",
+    "net0": "virtio=2E:FA:4C:E3:75:6D,bridge=vmbr0"
+  },
+  "validation_test": {
+    "status": "passed",
+    "guest_agent": "working",
+    "connectivity": "working",
+    "network": "working"
+  },
+  "log_file": "packer.log",
+  "log_sha256": "5601445e4fe4f5f4476342b1cca4c166337bae4a92cb1483ce446ffeba14f98b",
+  "log_bytes": 25809
+}

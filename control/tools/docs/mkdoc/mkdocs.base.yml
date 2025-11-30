@@ -1,0 +1,140 @@
+# mkdocs.base.yml — Shared MkDocs configuration for HybridOps.Studio docs
+# Author: Jeleel Muibi
+# Updated: 2025-11-23
+
+site_name: HybridOps.Studio
+site_url: https://docs.hybridops.studio
+
+theme:
+  name: material
+  features:
+  - navigation.instant
+  - navigation.tracking
+  - content.code.copy
+  palette:
+  - scheme: slate
+    primary: indigo
+    accent: indigo
+    toggle:
+      icon: material/lightbulb-outline
+      name: Switch to dark mode
+  - scheme: default
+    primary: indigo
+    accent: indigo
+    toggle:
+      icon: material/lightbulb-on
+      name: Switch to light mode
+
+repo_url: https://github.com/jeleel-muibi/hybridops.studio
+repo_name: hybridops-studio/hybridops.studio
+
+markdown_extensions:
+- admonition
+- tables
+- toc:
+    permalink: true
+- codehilite
+- pymdownx.details
+- pymdownx.superfences:
+    custom_fences:
+    - name: mermaid
+      class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ""
+
+extra_css:
+- css/custom.css
+
+copyright: "© 2025 HybridOps.Studio — Educational and portfolio project."
+
+extra:
+  audience: public
+  generator: false
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/jeleel-muibi/hybridops.studio
+    name: HybridOps.Studio on GitHub
+  - icon: fontawesome/brands/linkedin
+    link: https://www.linkedin.com/in/jeleel-muibi/
+    name: LinkedIn — Jeleel Muibi
+
+plugins:
+- search
+
+# docs_dir and site_dir are set per variant by build_mkdocs_trees.py
+docs_dir: deployment/build/docs/public
+site_dir: deployment/build/site/public
+
+nav:
+- "Docs": README.md
+
+- Quickstart:
+  - "Prerequisites": prerequisites/PREREQUISITES.md
+  - "Bring Up HybridOps.Studio": guides/quickstart.md
+
+- Showcases:
+  - Catalogue: showcases/README.md
+  - By audience:
+    - "__SHOWCASE_BY_AUDIENCE__"
+
+- Proof and Evidence:
+  - Evidence Map: evidence_map.md
+  - Proof Archive: proof/README.md
+
+- Concepts:
+  - "HybridOps.Studio in a Nutshell": guides/concepts/hybridops-overview.md
+  - "Environments and Guardrails": guides/concepts/environments-and-guardrails.md
+  - "Topology: On-Prem, Cloud, and GitOps": guides/concepts/topology.md
+  - "Decision Service and Signals": guides/concepts/decision-service.md
+  - "Evidence-First Automation": guides/concepts/evidence-first-automation.md
+
+- Platform Guardrails:
+  - Platform Cost Model: guides/cost-model.md
+  - OS Baseline Rationale: guides/os_baseline_rationale.md
+  - SecOps Roadmap: guides/secops-roadmap.md
+
+- How-To:
+  - Overview: howto/README.md
+  - All HOWTOs (index): howto/000-INDEX.md
+  - By Topic:
+    - "__HOWTO_TOPICS__"
+
+- Runbooks:
+  - Overview: runbooks/README.md
+  - Runbook catalog (index): runbooks/000-INDEX.md
+  - By Category:
+    - "__RUNBOOK_CATEGORIES__"
+
+- Architecture Decisions:
+  - Overview: adr/README.md
+  - By Domain:
+    - "__ADR_DOMAINS__"
+
+- CI/CD:
+  - Pipelines Overview: ci/README.md
+  - Pipelines Index: ci/000-INDEX.md
+
+- Platform Security:
+  - "Secrets Lifecycle": guides/secrets-lifecycle.md
+
+- Reference:
+  - "Repository & Module Map": guides/reference/repo-and-modules-map.md
+  - "Ansible Role & Collection Index": guides/reference/ansible-role-index.md
+  - "Terraform Modules Reference": guides/reference/terraform-modules.md
+  - "Python Libraries (libhybridops)": guides/reference/python-libhybridops.md
+  - "PowerShell Modules (HybridOps.Common)": guides/reference/powershell-hybridops-common.md
+  - "Documentation Index": guides/reference/docs-index.md
+
+- Briefing Pack:
+  - Executive Summary: briefings/executive_summary.md
+  - Project Overview: briefings/project_overview.md
+  - Technical Architecture: briefings/technical_architecture.md
+
+- For Learners (YouTube Series):
+  - Series Roadmap: tutorials/series-roadmap.md
+  - Lab Setup Guide: tutorials/lab-setup.md
+
+- HybridOps Academy / Consulting:
+  - "HybridOps Academy Overview": guides/academy/overview.md
+  - Bootcamp Syllabus: guides/academy/syllabus.md
+  - Pricing & Packages: guides/academy/pricing.md
+  - Contact & Booking: guides/academy/contact.md

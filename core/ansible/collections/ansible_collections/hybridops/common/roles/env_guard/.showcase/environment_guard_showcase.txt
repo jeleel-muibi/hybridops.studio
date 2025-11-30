@@ -1,0 +1,92 @@
+
+==============================
+ENVIRONMENT GUARD SHOWCASE
+==============================
+
+
+VIDEO SCRIPT: Environment Guard Framework Showcase
+Author: Jeleel Muibi | hybridops.studio
+
+[00:00] INTRODUCTION
+Welcome to HybridOps.Studio — where homelab meets enterprise automation. I'm Jeleel Muibi, and today I'm showcasing the Environment Guard Framework, a production-ready governance system for Ansible deployments.
+
+[00:45] WHAT IS ENVIRONMENT GUARD?
+Environment Guard enforces deployment governance, risk scoring, and audit compliance — all within Ansible. It prevents unauthorized production deployments while enabling developer velocity.
+
+[02:00] ARCHITECTURE DEEP DIVE
+- main.yml: Interactive protection logic
+- main copy.yml: Environment profiles and RBAC
+- audit_logging.yml: Structured logs and Markdown reports
+- test_env_validation.yml: CI validation and artifact copying
+
+[04:30] SECURITY & COMPLIANCE
+- Manual approval for production
+- Maintenance window enforcement
+- CID tracking and structured audit logs
+
+[06:00] CI INTEGRATION
+- GitHub Actions integration
+- make ci-test CI_ENV=staging
+- Artifact validation in test/output
+
+[07:00] REAL-WORLD USE CASE
+Simulate a production deployment with justification and manual approval.
+
+[08:30] METRICS & IMPACT
+- Deployment accuracy: 100%
+- Risk scoring: <1s
+- Audit compliance: full traceability
+
+[09:00] WRAP-UP
+Subscribe to HybridOps.Studio for more enterprise-grade automation tutorials.
+
+
+==============================
+YOUTUBE DESCRIPTION
+==============================
+
+
+TITLE: Ansible Governance Masterclass | HybridOps.Studio
+
+DESCRIPTION:
+🚀 Welcome to HybridOps.Studio! In this video, Jeleel Muibi walks you through the Environment Guard Framework — a production-grade governance system for Ansible deployments.
+
+🔐 WHAT YOU'LL LEARN:
+- Interactive environment validation
+- Risk-based approval workflows
+- Structured audit logging with correlation IDs
+- CI integration using GitHub Actions
+- Real-world deployment simulation
+
+📦 COMPONENTS:
+- main.yml
+- main copy.yml
+- audit_logging.yml
+- test_env_validation.yml
+
+📁 ARTIFACTS:
+- env_guard_audit.log
+- env_guard_report_<timestamp>_<cid8>.md
+
+🔗 RESOURCES:
+- GitHub: https://github.com/uelcn6035
+- Docs: docs/ci_integration.md, docs/egf_pipeline.md
+
+#Ansible #DevOps #AuditLogging #CI #HybridOpsStudio #Governance #Automation #InfrastructureAsCode
+
+
+==============================
+VIDEO CHAPTERS
+==============================
+
+
+VIDEO CHAPTERS
+===============
+00:00 - Introduction
+00:45 - What is Environment Guard?
+02:00 - Architecture Deep Dive
+04:30 - Security & Compliance
+06:00 - CI Integration
+07:00 - Real-World Use Case
+08:30 - Metrics & Impact
+09:00 - Wrap-Up

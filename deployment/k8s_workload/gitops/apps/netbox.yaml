@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: netbox
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/<you>/hybridops-studio.git
+    targetRevision: main
+    path: deployment/netbox/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: netbox
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

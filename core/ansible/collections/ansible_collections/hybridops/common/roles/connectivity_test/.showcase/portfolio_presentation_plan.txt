@@ -1,0 +1,40 @@
+
+✅ How to Present This in Your Portfolio
+
+README Highlights
+-----------------
+Use concise bullets under a section like "What This Demonstrates":
+- Dynamic environment mapping with zero hardcoded IPs.
+- Zero IP exposure: secure host resolution.
+- Preflight connectivity validation with JSON/CSV artifacts.
+- CI/CD integration with status badge.
+
+🎥 Demo Video (5–7 mins)
+------------------------
+Structure the flow for clarity:
+1. Show `hosts.ini` placeholders (no IPs).
+2. Run `ip_mapper` pre-play to resolve dynamic IPs.
+3. Execute `connectivity_test` and open `test_logs/*.{json,csv,jsonl}`.
+4. Show GitHub Actions run → download artifacts → highlight governance.
+
+📝 Blog Post
+-----------
+Title: "Enterprise‑Grade Connectivity Checks in Governed Pipelines"
+Include:
+- Why this matters in enterprise CI/CD.
+- Key snippets (Ansible tasks, JSON logs).
+- Diagrams: flow of IP mapping → connectivity test → artifact storage.
+
+📂 Evidence Pack
+---------------
+Bundle:
+- Repo link (with README).
+- CI/CD run screenshots or public badge.
+- Demo video link.
+- Sample artifacts (JSON, CSV).
+
+Why This Enhancement Works
+--------------------------
+- Action verbs make it portfolio-ready.
+- Recruiter-friendly framing: focuses on governance, security, and automation.
+- Evidence pack shows completeness (code + automation + proof).
