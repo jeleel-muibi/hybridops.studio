@@ -1,0 +1,42 @@
+pipeline {
+  agent any
+  environment {
+    TF_IN_AUTOMATION = 'true'
+    TF_TOKEN_app_terraform_io = credentials('TFC_TOKEN')
+  }
+  parameters {
+    string(name: 'STACK_PATH', defaultValue: 'infra/terraform/environments/cloud/azure/staging/10-platform/keyvault', description: 'Stack folder (must contain plan.out for plan hash)')
+    string(name: 'ENV', defaultValue: 'staging', description: 'env: dev/staging/prod')
+    choice(name: 'CLOUD', choices: ['onprem','azure','gcp'], description: 'cloud')
+    string(name: 'AKV_NAME', defaultValue: 'kv-hybridops-staging', description: 'AKV name (azure only)')
+    string(name: 'RG_NAME', defaultValue: 'rg-hybridops-secure-staging', description: 'AKV RG (azure only)')
+    string(name: 'SUBSCRIPTION_ID', defaultValue: '', description: 'Subscription ID (azure only)')
+    string(name: 'WORKSPACE_NAME', defaultValue: '', description: 'TFC workspace (metadata only)')
+    string(name: 'AKV_URL', defaultValue: 'https://kv-hybridops-staging.vault.azure.net', description: 'AKV URL (GCP connectivity probe)')
+  }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Tools') {
+      steps {
+        sh 'chmod +x infra/terraform/tools/make-evidence.sh'
+      }
+    }
+    stage('Collect Evidence') {
+      steps {
+        dir(params.STACK_PATH) {
+          sh '''
+            ENV="${ENV}" CLOUD="${CLOUD}" STACK="$(basename $(pwd -P))" \
+            KV_NAME="${AKV_NAME}" RG="${RG_NAME}" SUBSCRIPTION_ID="${SUBSCRIPTION_ID}" \
+            WORKSPACE_NAME="${WORKSPACE_NAME}" AKV_URL="${AKV_URL}" \
+            ../../../tools/make-evidence.sh
+          '''
+        }
+      }
+    }
+  }
+  post {
+    always {
+      archiveArtifacts artifacts: 'docs/proof/**', allowEmptyArchive: true
+    }
+  }
+}

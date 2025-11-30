@@ -1,0 +1,50 @@
+Project Title: Zero-Touch Provisioning with Ansible and Terraform
+
+Objective:
+Automate the provisioning of virtual machines using Terraform and PXE booting with Ansible to achieve zero-touch OS installation and configuration.
+
+Overview:
+- Use Terraform to provision VMs and configure networking.
+- Use Ansible to set up PXE infrastructure and automate OS installation.
+- Enable unattended installation using kickstart/preseed/autounattend files.
+- Post-install configuration using Ansible once the VM is accessible via SSH.
+
+Steps:
+
+1. VM Provisioning with Terraform:
+   - Create VM on hypervisor (e.g., Proxmox, ESXi).
+   - Attach VM to PXE-enabled network.
+   - Optionally leave disk blank or attach minimal ISO.
+
+2. PXE Infrastructure Setup with Ansible:
+   - Configure DHCP server to point to TFTP server.
+   - Set up TFTP server with boot files (e.g., iPXE).
+   - Host unattended install scripts (kickstart/preseed).
+   - Optionally configure iPXE for advanced booting.
+
+3. PXE Boot and OS Installation:
+   - Power on VM via Terraform.
+   - VM boots via PXE and installs OS automatically.
+   - Ansible monitors provisioning progress.
+
+4. Post-Provisioning Configuration:
+   - Ansible waits for SSH availability.
+   - Apply configuration (e.g., install packages, join domain).
+
+Tools:
+- Terraform
+- Ansible
+- iPXE
+- dnsmasq, tftpd-hpa
+- Cloud-init (optional)
+- Foreman or MAAS (optional)
+
+Example Workflow:
+terraform apply
+ansible-playbook setup_pxe.yml
+ansible-playbook post_install.yml -i dynamic_inventory.py
+
+Notes:
+- Ensure PXE infrastructure is correctly configured.
+- Use dynamic inventory for post-install automation.
+- Consider using Packer for pre-built images if PXE is slow.

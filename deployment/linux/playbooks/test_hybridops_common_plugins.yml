@@ -1,0 +1,43 @@
+---
+# file: deployment/linux/playbooks/test_hybridops_common_plugins.yml
+# purpose: Smoke test for HybridOps common collection plugins (filter, lookup, module, module_utils)
+# author: Jeleel Muibi
+# date: 2025-11-26
+
+- name: Test HybridOps common plugins
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    environment: dev
+    role: k3s-node
+
+  tasks:
+  - name: Use lookup plugin to read environment variable with default
+    ansible.builtin.set_fact:
+      hybridops_secret: >-
+        {{ lookup('hybridops.common.hybridops_env_default',
+                  'HYBRIDOPS_DEMO_SECRET',
+                  'default-secret') }}
+
+  - name: Show value returned by lookup plugin
+    ansible.builtin.debug:
+      msg: "Lookup returned: {{ hybridops_secret }}"
+
+  - name: Use filter plugin to build standard env/role tag
+    ansible.builtin.set_fact:
+      hybridops_tag: "{{ environment | hybridops_env_tag(role) }}"
+
+  - name: Show value returned by filter plugin
+    ansible.builtin.debug:
+      msg: "Filter produced tag: {{ hybridops_tag }}"
+
+  - name: Call custom module hybridops_info
+    hybridops.common.hybridops_info:
+      environment: "{{ environment }}"
+      role: "{{ role }}"
+    register: hybridops_info_result
+
+  - name: Show custom module result
+    ansible.builtin.debug:
+      var: hybridops_info_result

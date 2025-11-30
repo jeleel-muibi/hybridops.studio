@@ -1,0 +1,3 @@
+# Shared defaults for bootstrap runs (safe placeholders)
+netbox_url: "https://netbox.local"
+netbox_token: "__INJECT_AT_RUNTIME__"

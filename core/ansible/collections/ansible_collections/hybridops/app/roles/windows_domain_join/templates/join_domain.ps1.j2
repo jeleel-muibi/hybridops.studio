@@ -1,0 +1,13 @@
+Param(
+  [Parameter(Mandatory=$true)][string]$Domain,
+  [Parameter(Mandatory=$true)][string]$User,
+  [Parameter(Mandatory=$true)][string]$Password,
+  [Parameter(Mandatory=$false)][string]$OU
+)
+$secpasswd = ConvertTo-SecureString $Password -AsPlainText -Force
+$creds = New-Object System.Management.Automation.PSCredential ($User, $secpasswd)
+if ($OU -and $OU.Length -gt 0) {
+  Add-Computer -DomainName $Domain -OUPath $OU -Credential $creds -ErrorAction Stop
+} else {
+  Add-Computer -DomainName $Domain -Credential $creds -ErrorAction Stop
+}

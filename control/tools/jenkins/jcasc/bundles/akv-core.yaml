@@ -1,0 +1,34 @@
+# JCasC — Core (security, location, AKV plugin, SP credentials)
+jenkins:
+  systemMessage: "HybridOps.Studio — AKV-first (JCasC)"
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+      - id: "admin"
+        password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    globalMatrix:
+      grantedPermissions:
+      - "Overall/Read:authenticated"
+      - "Overall/Administer:admin"
+
+unclassified:
+  location:
+    url: "http://localhost:8080/"
+  azureKeyVault:
+    keyVaultURL: "${AZURE_KEYVAULT_URL}"
+    credentialID: "az-sp-hybridops"
+
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - azureServicePrincipal:
+          id: "az-sp-hybridops"
+          description: "AKV bootstrap SP (read secrets)"
+          subscriptionId: "${AZURE_SUBSCRIPTION_ID}"
+          clientId: "${AZURE_CLIENT_ID}"
+          clientSecret: "${AZURE_CLIENT_SECRET}"
+          tenant: "${AZURE_TENANT_ID}"

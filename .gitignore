@@ -12,6 +12,11 @@ etc/local/
 .config/
 plan/
 
+
+# drafts run
+move.sh
+deployment/.misc
+
 # secrets
 control/secrets.env
 

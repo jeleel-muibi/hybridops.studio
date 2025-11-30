@@ -1,0 +1,86 @@
+Impressive Ansible Roles for Job Applications
+---------------------------------------------
+
+Core Infrastructure Roles
+-------------------------
+  - int_config – Interface configuration for routers/switches
+  - vlan – VLAN creation and assignment
+  - ospf / bgp / eigrp – Dynamic routing protocol configuration
+  - ntp – Time synchronization across devices
+  - dns_config – DNS server setup and zone management
+  - dhcp_config – DHCP scopes and reservations
+  - syslog_config – Centralized logging setup
+  - snmp_config – Network monitoring and alerts
+
+Security & Access Roles
+-----------------------
+  - firewall_rules – Automate ACLs or firewall policies
+  - ssh_hardening – Key-based access, disable root login, etc.
+  - aaa_config – Authentication, Authorization, Accounting
+  - rbac_linux / rbac_windows – Role-based access control
+  - fail2ban / ufw / selinux – Linux security hardening
+
+Server & OS Roles
+-----------------
+  - windows_baseline – Configure Windows Server baseline (PowerShell)
+  - linux_baseline – Harden Linux servers (Ansible + Bash)
+  - active_directory – Automate AD setup and GPOs
+  - sccm_install – Deploy and configure SCCM
+  - sql_server_install – Automate SQL Server installation
+
+Container & Cloud Roles
+-----------------------
+  - docker_manager – Setup Docker Swarm manager
+  - k8_nodes – Configure Kubernetes worker/master nodes
+  - terraform_provision – Use Terraform to provision infrastructure
+  - ansible_facts_gathering – Collect and report device facts
+
+Storage & High Availability Roles
+---------------------------------
+  - iscsi_storage – Setup and mount iSCSI targets
+  - dfs_config – Configure DFS namespace and replication
+  - vrrp / hsrp – Redundancy protocols for routers
+  - cluster_windows – Windows Server clustering
+  - backup_config – Automate backup jobs (e.g., Veeam, rsync)
+
+Monitoring & Observability Roles
+--------------------------------
+  - prometheus_node_exporter – Install and configure exporters
+  - grafana_dashboard – Deploy and customize dashboards
+  - elk_stack – Elasticsearch, Logstash, Kibana setup
+  - zabbix_agent – Install and configure Zabbix agents
+
+Portfolio-Boosting Roles
+------------------------
+  - homelab_reporter – Generate HTML/Markdown reports of the lab
+  - youtube_demo_prep – Prepare configs/scripts for video tutorials
+  - global_talent_evidence – Role to collect and format evidence for visa applications
+
+HybridOps Collections & Plugins (Reminder)
+------------------------------------------
+Collections:
+  - hybridops.app       – Application and platform roles (Jenkins, NetBox, RKE2, Linux/Windows app config)
+  - hybridops.common    – Cross-cutting helpers and shared plugins
+  - hybridops.helper    – Glue roles (evidence collection, NetBox inventory integration)
+  - hybridops.network   – Network automation (base config, routing, VLANs, compliance)
+
+Plugins in hybridops.common:
+  - filter:
+      - hybridops_env_tag – Build standard labels/tags like "env-dev_role-k3s-node"
+  - lookup:
+      - hybridops_env_default – Read environment variables with defaults (CI/secret-friendly)
+  - modules:
+      - hybridops_info – Example custom module returning environment/role info
+  - module_utils:
+      - hybridops_common.build_standard_result – Shared helper for consistent module results
+
+How plugins help the roles:
+  - Filters standardise tags/labels across Terraform, NetBox, Jenkins and k8s.
+  - Lookups pull config/secret values from the environment or CI safely.
+  - Module_utils centralise common logic (result formatting, evidence metadata).
+  - Custom modules expose HybridOps-specific behaviour as first-class Ansible modules.
+
+Mental model:
+  - Collections = where the reusable logic lives (roles + plugins).
+  - Deployment/  = where scenarios and environments use those collections.
+  - Plugins = make Ansible "speak HybridOps": consistent tagging, evidence, and inventory behaviour.

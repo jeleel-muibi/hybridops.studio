@@ -1,0 +1,75 @@
+# JCasC — Jobs (Job DSL)
+jobs:
+- script: >
+    folder('ci') {
+      displayName('CI Pipelines')
+      description('Folder for pipelines-as-code')
+    }
+
+- script: >
+    pipelineJob('ci/akv-smoke') {
+      description('AKV smoke: fetch secret and validate plumbing')
+      definition {
+        cpsScm {
+          scm {
+            git {
+              remote { url('https://github.com/jeleel-muibi/hybridops.studio.git') }
+              branches { branchSpec('*/main') }
+            }
+          }
+          scriptPath('ci/pipelines/akv-smoke/Jenkinsfile')
+        }
+      }
+      logRotator { daysToKeep(14); numToKeep(30) }
+    }
+
+- script: >
+    pipelineJob('ci/packer-build') {
+      description('Build immutable base image with Packer (stub)')
+      definition {
+        cpsScm {
+          scm {
+            git {
+              remote { url('https://github.com/jeleel-muibi/hybridops.studio.git') }
+              branches { branchSpec('*/main') }
+            }
+          }
+          scriptPath('ci/pipelines/packer-build/Jenkinsfile')
+        }
+      }
+      logRotator { daysToKeep(14); numToKeep(30) }
+    }
+
+- script: >
+    pipelineJob('ci/terraform-plan-apply') {
+      description('Terraform plan + optional apply (stub)')
+      definition {
+        cpsScm {
+          scm {
+            git {
+              remote { url('https://github.com/jeleel-muibi/hybridops.studio.git') }
+              branches { branchSpec('*/main') }
+            }
+          }
+          scriptPath('ci/pipelines/terraform-plan-apply/Jenkinsfile')
+        }
+      }
+      logRotator { daysToKeep(14); numToKeep(30) }
+    }
+
+- script: >
+    pipelineJob('ci/ansible-apply') {
+      description('Ansible apply (stub)')
+      definition {
+        cpsScm {
+          scm {
+            git {
+              remote { url('https://github.com/jeleel-muibi/hybridops.studio.git') }
+              branches { branchSpec('*/main') }
+            }
+          }
+          scriptPath('ci/pipelines/ansible-apply/Jenkinsfile')
+        }
+      }
+      logRotator { daysToKeep(14); numToKeep(30) }
+    }

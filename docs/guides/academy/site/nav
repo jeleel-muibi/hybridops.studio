@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="site-header-inner">
+    <div class="site-brand">
+      <a href="/">HybridOps.Studio</a>
+    </div>
+    <nav class="site-nav" aria-label="Main navigation">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/docs">Docs</a></li>
+        <li><a href="/academy">Academy</a></li>
+        <li><a href="/consulting">Consulting</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+    <div class="site-cta">
+      <a class="btn-primary" href="/consulting#contact">Work with me</a>
+    </div>
+  </div>
+</header>

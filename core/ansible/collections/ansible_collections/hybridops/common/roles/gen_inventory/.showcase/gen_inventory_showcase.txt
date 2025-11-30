@@ -1,0 +1,87 @@
+VIDEO SCRIPT:
+
+
+[INTRO - 00:00]
+Welcome to HybridOps.Studio. In this video, we showcase the Gen Inventory Role — a powerful Ansible automation tool designed for hybrid cloud environments. If you're managing multi-site infrastructure and care about governance, security, and compliance, you're in the right place.
+
+[WHY IT MATTERS - 00:30]
+Manual inventory management is error-prone and risky. This role automates inventory generation with zero IP exposure, consistent host naming, and full audit compliance. It's part of the Environment Guard Framework pipeline.
+
+[QUICK START - 01:00]
+To get started, run:
+```bash
+ansible-playbook -i localhost, tests/test_role.yml -e env=dev
+```
+This generates a dynamic inventory for your environment using placeholder IPs.
+
+[ARCHITECTURE - 01:30]
+The role scans your project root, validates the environment, and loads IP mappings dynamically. It supports global deployments — Tokyo, Lagos, and beyond — with redundancy awareness.
+
+[FEATURES - 02:00]
+- Governance integration
+- Security abstraction
+- Multi-site support
+- Redundancy awareness
+- Zero IP leakage
+
+[SECURITY MODEL - 02:30]
+Inventories use placeholder IPs like XX.XX.XX.00. Real IPs are resolved at runtime, ensuring no sensitive data is stored in Git.
+
+[DEMO - 03:00]
+Let’s run the role test and inspect the output:
+```bash
+ansible-playbook -i localhost, tests/test_role.yml
+```
+You’ll see generated files like:
+```ini
+[cisco_routers]
+coreR-1-Tok ansible_host=XX.XX.XX.00
+```
+
+[PIPELINE CONTEXT - 04:00]
+This role integrates with:
+- env_guard
+- ip_mapper
+- host_selector
+- connectivity_test
+
+[WRAP-UP - 04:30]
+With Gen Inventory, you get scalable, secure, and compliant automation. Subscribe to HybridOps.Studio for more DevSecOps content.
+
+
+YOUTUBE DESCRIPTION:
+
+
+Learn how to automate Ansible inventory generation with governance and security using the Gen Inventory Role from HybridOps.Studio. This tutorial covers quick start, architecture, features, and a live demo.
+
+✅ Keywords:
+Ansible automation, dynamic inventory, hybrid cloud, governance, security, compliance, DevSecOps, HybridOps.Studio, multi-site infrastructure, IP abstraction, audit-ready automation
+
+🔗 Role: https://github.com/hybridops/gen_inventory
+🌐 Website: https://hybridops.studio
+📦 License: MIT-0
+
+#Ansible #DevSecOps #HybridCloud #Automation #HybridOpsStudio
+
+
+VIDEO CHAPTERS:
+
+00:00 - Intro
+00:30 - Why It Matters
+01:00 - Quick Start
+01:30 - Architecture
+02:00 - Features
+02:30 - Security Model
+03:00 - Live Demo
+04:00 - Pipeline Context
+04:30 - Wrap-Up
+
+THUMBNAIL DESIGN:
+
+
+Thumbnail Design:
+- Title: "Secure Ansible Inventory Automation"
+- Subtitle: "HybridOps.Studio | Zero IP Exposure"
+- Visuals: Lock icon, cloud infrastructure, Ansible logo
+- Colors: HybridOps branding (dark blue, white, accent orange)
+- Format: 1280x720 PNG

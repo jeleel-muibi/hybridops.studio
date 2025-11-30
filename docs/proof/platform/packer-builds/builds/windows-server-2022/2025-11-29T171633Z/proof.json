@@ -1,0 +1,31 @@
+{
+  "type": "build",
+  "timestamp_utc": "2025-11-29T171633Z",
+  "host": "U-Dock-Managr-1",
+  "chain_id": "CHAIN-20251129T171057Z-windows-server-2022",
+  "template": "windows-server-2022",
+  "vmid": "9100",
+  "build_duration": "4 minutes 52 seconds",
+  "proxmox_url": "https://192.168.0.27:8006/api2/json",
+  "proxmox_node": "hybridhub",
+  "vm_facts": {
+    "name": "windows-server-2022-template",
+    "template_flag": "1",
+    "cores": "4",
+    "sockets": "1",
+    "memory_mb": "8192",
+    "os_type": "win10",
+    "disk_scsi0": "local-lvm:base-9100-disk-0,cache=none,replicate=0,size=60G",
+    "cdrom": "local-lvm:vm-9100-cloudinit,media=cdrom",
+    "net0": "virtio=62:5B:B2:FD:72:37,bridge=vmbr0"
+  },
+  "validation_test": {
+    "status": "passed",
+    "guest_agent": "working",
+    "connectivity": "working",
+    "network": "working"
+  },
+  "log_file": "packer.log",
+  "log_sha256": "76dfe0d092a3b0f9547699eda4b0ece8180a9f1cd043b6864ad978c29fb943a1",
+  "log_bytes": 23101
+}
