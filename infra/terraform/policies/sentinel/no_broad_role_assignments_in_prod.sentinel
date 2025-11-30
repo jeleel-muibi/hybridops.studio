@@ -1,0 +1,10 @@
+
+import "tfplan"
+workspace = env.TFE_WORKSPACE_NAME
+bad = rule {
+  any tfplan.resources.azurerm_role_assignment as _, r {
+    workspace contains "-prod-" and
+    (r.applied.principal_id is null or r.applied.scope == "/")
+  }
+}
+main = rule { not bad }

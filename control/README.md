@@ -2,59 +2,89 @@
 
 ```mermaid
 graph LR
-  A[Operators] --> B[Control Wrappers]
-  B --> C[Canonical Playbooks / Terraform Modules]
-  C --> D[Outputs & Evidence under out/]
+  A[Operators] --> B[Control Layer]
+  B --> C[Wrappers & Make Targets]
+  C --> D[Canonical Playbooks & Terraform Modules]
+  D --> E[Outputs & Evidence under out/]
 ```
 
-Thin, reproducible entry points for day‑to‑day operations.  
-These wrappers invoke canonical playbooks, Terraform, and GitOps manifests so runs are consistent across on‑premises and cloud targets.
+Operator-facing entry points for day-to-day HybridOps.Studio operations.  
+The control layer provides thin, reproducible wrappers around canonical Ansible playbooks, Terraform modules, and related tooling so runs are consistent across on-premises and cloud targets.
 
-> **Context:** Executed primarily from `ctrl‑01`, the zero‑touch control VM that orchestrates hybrid operations and drives evidence collection.
+> **Context:** Commands here are typically executed from `ctrl-01`, the automation controller that orchestrates hybrid operations and drives evidence collection.
 
-- **Scope:** orchestration wrappers, shared utilities, and decision logic used in DR/burst flows.  
-- **Outputs:** human‑readable logs and artifacts under `out/` (created by `make env.setup`).
-
----
-
-## Intended Audience
-
-- **Operators** — perform DR tests, environment syncs, or bootstrap activities.  
-- **Auditors** — verify reproducibility and evidence artefacts under `out/`.  
-- **Contributors** — extend wrapper logic or improve orchestration consistency.
+- **Scope:** orchestration wrappers, shared utilities, and decision logic used in DR, burst, and baseline provisioning flows.  
+- **Outputs:** human-readable logs and artifacts under the repository-level `out/` directory (created on demand), suitable for auditors, assessors, and CI evidence.
 
 ---
 
-## Prerequisites
+## Directory Layout
 
-- **Runtime:** Python 3.10+, Terraform, Ansible, and GNU Make.  
-- **Environment:** initialized using `make env.setup`.  
-- **Configuration:** `.env` or environment variables defining `PROXMOX_HOST`, `CTRL_USER`, `SSH_KEY_PATH`, etc.
+```text
+control/
+├── Makefile        # Top-level operator targets
+├── setup/          # System prerequisites installers (Terraform, Packer, kubectl, cloud CLIs)
+└── tools/          # Provisioning, docs, and CI helper tooling
+```
+
+- `Makefile` exposes stable operator commands (e.g. environment setup, docs pipeline, and selected infrastructure workflows).  
+- `setup/` contains system prerequisites installers and validation logic for core tooling. See the dedicated setup README for details.  
+- `tools/` hosts implementation scripts and wrappers (e.g. Packer/Terraform/Ansible runners, documentation generators).  
+
+Evidence and logs produced by these workflows are written to the repository root `out/` directory (or its predecessor `output/` in earlier revisions).
 
 ---
 
-## Usage
+## Execution Model
 
-Typical commands from `ctrl‑01` or local dev workstation:
+The control layer is designed so operators rarely call low-level tools directly.
+
+- **Primary interface:** `make` targets defined in `control/Makefile`.  
+- **Consistency:** each target delegates to a wrapper script under `tools/` or `setup/` to keep parameters, logging, and evidence generation consistent.  
+- **Idempotency:** control workflows are designed to be safe to re-run, particularly for DR rehearsals and CI pipelines.
+
+Typical patterns:
+
+- Bootstrap an environment (e.g. controller, lab, or CI agent).  
+- Run image/template builds via Packer wrappers.  
+- Apply or destroy infrastructure stacks via Terraform wrappers.  
+- Trigger documentation builds and index generation for ADRs, runbooks, and how-to guides.  
+- Collect and archive evidence under `out/` for later reference.
+
+For an authoritative list of available commands, run:
 
 ```bash
-make list              # Show available targets
-make bootstrap.ctrl01  # Create or rebuild the control node
-make dr.failover       # Trigger controlled failover
-make dr.failback       # Return to on‑premise
-make evidence.collect  # Generate JSON/CSV proof artifacts
+cd control
+make help
 ```
 
-Each command is idempotent, logged, and produces structured outputs under `out/artifacts/`.
+(if implemented) or inspect `Makefile` directly.
 
 ---
 
-## Conventions
+## System Prerequisites
 
-- **Immutability:** no destructive actions by default; rollback always available.  
-- **Evidence‑First:** every execution emits JSON/CSV proof.  
-- **Consistency:** same flow for all environments (`dev`, `staging`, `prod`).  
-- **Extensibility:** add new targets under `control/make/` or `control/scripts/`.  
+System-level tooling (Terraform, Packer, kubectl, GitHub CLI, and cloud CLIs) is installed via the `setup/` subtree.
+
+- Installers and checks live under `control/tools/setup/`.  
+- They are designed to be idempotent and safe for use on both local machines and CI agents.  
+- For a detailed breakdown of tools, versions, and verification commands, see:
+
+- [Setup: System Prerequisites Installer](./setup/README.md)  
+- [Global Prerequisites Guide](../docs/prerequisites/PREREQUISITES.md)
+
+---
+
+## Outputs and Evidence
+
+All significant control workflows are expected to produce traceable output under the repository root `out/` directory, for example:
+
+- Tool versions and environment snapshots.  
+- Packer and Terraform logs with timestamps.  
+- Generated reports, manifests, and checksums.  
+- Links or pointers to external dashboards (Grafana, CI runs) where applicable.
+
+`out/` is treated as a working evidence area and should remain excluded from version control, with curated artifacts promoted into the main documentation and proof trees as needed.
 
 ---
 
@@ -67,6 +97,6 @@ Each command is idempotent, logged, and produces structured outputs under `out/a
 
 ---
 
-**Maintainer:** Jeleel Muibi  
-**Last Updated:** 2025‑10‑19 21:08 UTC  
-**License:** MIT‑0 / CC‑BY‑4.0  
+**Maintainer:** Jeleel Muibi  
+**Last Updated:** 2025-11-23  
+**License:** MIT-0 / CC-BY-4.0

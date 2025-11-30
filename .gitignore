@@ -1,70 +1,56 @@
-# files to delete
+# .gitignore - HybridOps.Studio
+# Purpose: Ignore local artifacts, secrets, and generated files.
+# Author: Jeleel Muibi | HybridOps.Studio
+# Date: 2025-11-17
+
 core/ansible/collections/ansible_collections/hybridops/common/roles/ansible_roles_for_job_applications.txt
 .mainBak/
 contrib/maintainer_guide.md
 .private_gists
-
-# Local overrides
 etc/local/
 **/cost_overrides.local.yaml
-
-# Ignore .config directory containing environment-specific settings
 .config/
-
-# planning Ideas and notes
 plan/
 
-# Python
+# secrets
+control/secrets.env
+
 __pycache__/
 *.pyc
 .venv/
 *.egg-info/
 
-# Inventories: never commit generated or sensitive files
 core/ansible/inventories/*/hosts.ini
 core/ansible/inventories/*/group_vars/all/ip_addresses.yml
 core/ansible/inventories/*/host_vars/*-secret*.yml
 
-# Ansible retries & logs
 *.retry
 output/
 *.logs
 
-# Terraform
 terraform-infra/**/.terraform/
 terraform-infra/**/.terraform.lock.hcl
 terraform-infra/**/terraform.tfstate
 terraform-infra/**/terraform.tfstate.backup
 terraform-infra/**/crash.log
-output/
-
-# Project-specific Terraform outputs
 core/terraform-infra/output/*.json
-
-# Scenario-specific TF outputs (now under showcases)
 showcases/**/terraform-scenarios/**/tf.plan
 showcases/**/terraform-scenarios/**/.terraform/
 
-# Variables (keep secrets out of git)
 *.tfvars
 *.tfvars.json
 *.auto.tfvars
 *.pkrvars.hcl
 
-# Packer
 packer_cache/
-
-# Node / Build
 node_modules/
 dist/
 build/
 
-# Env / Secrets
 .env*
 !.env.example
 .secrets/
 
-# Editor / OS / IDE
 .DS_Store
 Thumbs.db
 .vscode/
@@ -72,20 +58,24 @@ Thumbs.db
 *.swp
 *.swo
 
-# Archives & Logs
 *.zip
 *.log
 
-# Generated JSON (targeted; safe defaults)
 **/generated/*.json
 **/artifacts/*.json
-
-# uncomment if your pipelines emit JSON to these locations
-# **/outputs/*.json
-# **/reports/*.json
 deployment/netbox/volumes/*
 !deployment/netbox/volumes/.gitkeep
 
-# local runtime artifacts
-**/admin_credentials.txt
-/var/lib/ctrl01/
+infra/env/.env.proxmox
+
+# Generated Packer variables/config copied from shared (only shared/* is committed)
+infra/packer-multi-os/**/variables.pkr.hcl
+infra/packer-multi-os/**/config.plugins.pkr.hcl
+!infra/packer-multi-os/shared/variables*.pkr.hcl
+!infra/packer-multi-os/shared/config*.pkr.hcl
+
+infra/packer-multi-os/linux/ubuntu/http/user-data
+infra/packer-multi-os/linux/rocky/http/ks.cfg
+
+infra/packer-multi-os/packer_cache/
+infra/packer-multi-os/crash.log

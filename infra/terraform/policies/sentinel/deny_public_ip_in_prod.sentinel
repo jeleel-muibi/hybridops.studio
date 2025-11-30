@@ -1,0 +1,9 @@
+
+import "tfplan"
+# Deny any public IPs when workspace name contains '-prod-'
+workspace = env.TFE_WORKSPACE_NAME
+deny = rule {
+  workspace contains "-prod-"
+  and any tfplan.resources.azurerm_public_ip as _, r { true }
+}
+main = rule { not deny }

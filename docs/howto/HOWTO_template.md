@@ -1,83 +1,151 @@
 ---
 title: "HOWTO Template"
-category: "howto"
+category: "bootstrap"        # Logical bucket, e.g. bootstrap | dr | burst | ops | platform | networking | tooling.
 summary: "Template for authoring new HOWTO guides (excluded from index)."
-difficulty: "Intermediate"
-video: ""                # optional — YouTube demo link
-source: ""               # optional — GitHub or script reference
-draft: true              # ensures it’s skipped from the index
-template: true           # double assurance for filtering
-# tags: ["template", "skip"]
+difficulty: "Intermediate"   # Beginner | Intermediate | Advanced.
+
+topic: "example-topic"       # Short handle, e.g. netbox-bootstrap, docker-baseline, vpn-bringup.
+
+# Demo / source metadata.
+# Always populate when available; build tooling decides how to expose them.
+video: ""                    # Optional public demo URL, e.g. https://youtu.be/VIDEO_ID.
+source: ""                   # Optional GitHub or script reference for this HOWTO.
+
+draft: true                  # true => skip from generated HOWTO index.
+is_template_doc: true               # true => always skipped, even if draft=false.
+tags: ["template"]           # Optional labels, e.g. ["packer", "proxmox"].
+
+# Access / commercial model:
+# - public  : full HOWTO available in public docs and Academy.
+# - mixed   : full HOWTO available in public docs and Academy; used for positioning/pricing only.
+# - academy : public sees only a stub; Academy sees the full HOWTO when stub.enabled=true.
+access: public               # One of: public | mixed | academy.
+
+# Stub metadata.
+# Only meaningful when access: academy AND stub.enabled: true.
+# In that case:
+# - Public docs show content above <!-- STUB_BREAK --> plus stub.blurb/highlights.
+# - Academy docs see the full HOWTO body.
+# For public/mixed, build tooling ignores STUB_BREAK and publishes the full HOWTO.
+stub:
+  enabled: false
+  blurb: |
+    This HOWTO is part of the HybridOps Academy teaching material.
+
+    The full version typically includes:
+    - A step-by-step walkthrough of this scenario.
+    - Screenshots and timing notes for each major phase.
+    - Evidence patterns for validating objectives (for example service availability, performance, or DR targets) and “latest” runs where applicable.
+    - Common failure modes and recovery tactics used in the labs.
+
+    Code and automation for this scenario remain open in the main repository.
+    This document adds the guided, teaching-focused walkthrough used in the Academy.
+
+  highlights:
+    - "Example per-topic highlight describing what is unique about this HOWTO."
+    - "Replace or remove these lines in real HOWTOs. Omit the key entirely if not needed."
+
+  cta_url: "https://academy.hybridops.studio/courses/<course-key>/<howto-key>"
+  cta_label: "View full HOWTO on HybridOps Academy"
+
 ---
 
-# <Short, Descriptive Title>
+# <Short, descriptive HOWTO title>
 
-**Demo:** [Watch on YouTube](${video})  
-**Source:** [View Script on GitHub](${source})
-
-> This HOWTO is part of the **HybridOps.Studio Learning Series** — a collection of self-contained, reproducible guides that accompany the live demo and runbook library.
+**Purpose:** One or two sentences describing the outcome of this HOWTO.  
+**Difficulty:** <Beginner | Intermediate | Advanced>  
+**Prerequisites:** Required accounts, access, tools, or lab state.
 
 ---
 
-## Objective
+## Demo (optional)
 
-Explain in one or two sentences what the reader will achieve and what problem this HOWTO solves.
+If this HOWTO has a public video, add it here.
 
-**Example:**  
-Deploy a zero-touch control plane (`ctrl-01`) on Proxmox and validate that it self-configures from Git within 10 minutes.
+- Demo: [Watch on YouTube](https://youtu.be/VIDEO_ID)  
+- Source: [View script or module on GitHub](https://github.com/<org>/<repo>/<path>)
+
+Optional embedded player for public HOWTOs:
+
+<details>
+  <summary><strong>Show embedded demo</strong></summary>
+
+  <iframe
+    width="100%"
+    height="400"
+    src="https://www.youtube.com/embed/VIDEO_ID"
+    frameborder="0"
+    allowfullscreen>
+  </iframe>
+
+</details>
 
 ---
 
 ## Context
 
-- This HOWTO complements the operational [Runbook: bootstrap-ctrl01-node](../runbooks/bootstrap/bootstrap-ctrl01-node.md).  
-- It is suitable for workshops, public demos, and reviewers exploring the automation flow.  
-- No prior environment is required beyond SSH access to a Proxmox host.
+Explain when and why to use this HOWTO:
+
+- Problem or task it addresses.  
+- Where it fits in the wider HybridOps flow (bootstrap, DR drill, burst, administration).  
+- Assumptions about environment, scale, or prior steps.
 
 ---
 
 ## Steps
 
-1. **Prepare the Proxmox environment**
-   ```bash
-   ssh root@<proxmox-host>
-   apt install -y qemu-guest-agent curl jq
-   ```
-   > Verify: network and storage ready for VM creation.
+### 1. <Step heading>
 
-2. **Fetch and run the control node provisioner**
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/jeleel-muibi/hybridops.studio/main/control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh      -o /root/provision-ctrl01.sh && sudo bash /root/provision-ctrl01.sh
-   ```
-   > Observe: VM spins up and cloud-init bootstraps Day-1 automatically.
+- Describe what is done and why.  
+- Show example commands or configuration:
+  ```bash
+  # replace with real commands
+  some-cli --flag value
+  ```
+- State the expected result and how to confirm it.
 
-3. **Verify the outcome**
-   ```bash
-   ssh ubuntu@172.16.10.5
-   sudo tail -n 100 /var/log/ctrl01_bootstrap.log
-   ```
-   > Jenkins should be online and emitting audit evidence.
+### 2. <Step heading>
+
+- Explanation.  
+- Commands or configuration.  
+- Expected result.
+
+(Add additional step sections as required. Keep steps atomic and verifiable.)
 
 ---
 
-## Expected Outcome
+## Validation
 
-By the end of this HOWTO, you should see:
-- Jenkins controller operational (`ctrl-01`)  
-- Evidence logs in `/var/log/ctrl01_bootstrap.log`  
-- Git-synced Day-1 configuration complete  
+Describe how to confirm success:
+
+- Checks to run (CLI, UI, dashboards).  
+- Key metrics or conditions (pods ready, services reachable, VPN up, etc.).  
+- Where to capture evidence (for example `docs/proof/...`, `output/artifacts/...`).
 
 ---
+
+## Troubleshooting
+
+List common issues and resolutions:
+
+- Symptom → likely cause → fix.  
+- When to escalate or fall back to a DR/runbook.
+
+---
+
+<!-- STUB_BREAK: content below may be academy-only when access: academy and stub.enabled=true -->
 
 ## References
 
-- [Runbook: bootstrap-ctrl01-node](../runbooks/bootstrap/bootstrap-ctrl01-node.md)  
-- [Evidence Map](../evidence_map.md)  
-- [YouTube Demo](${video})  
-- [HybridOps.Studio Repository](https://github.com/jeleel-muibi/hybridops.studio)
+Update to match the topic:
+
+- Related runbooks: `../runbooks/...`  
+- Evidence Map: `../evidence_map.md`  
+- ADRs influencing this HOWTO: `../adr/ADR-XXXX-something.md`  
+- Source code or modules: `https://github.com/<org>/<repo>/<path>`
 
 ---
 
 **Author:** Jeleel Muibi  
-**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
-**License:** MIT-0 / CC-BY-4.0
+**Project:** HybridOps.Studio  
+**License:** MIT-0 for code, CC-BY-4.0 for documentation

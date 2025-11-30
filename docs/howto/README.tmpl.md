@@ -1,51 +1,36 @@
-# HybridOps.Studio — HOWTO Library
+# HOWTOs — Task-Oriented Guides
 
-> This directory contains educational, reproducible HOWTOs that complement the operational runbooks under `docs/runbooks/`.  
-> Each HOWTO is designed to teach — not just execute — and often pairs with YouTube videos, live demos, or guided workshops.
+HOWTOs describe concrete tasks in HybridOps.Studio: build images, provision infrastructure, configure services, validate DR, and operate the platform day to day.
 
----
+Each HOWTO focuses on a single workflow and is written to be reproducible from a clean starting point. Where relevant, it links to ADRs, runbooks, and proof artefacts so implementation and reasoning stay connected.
 
-## 🎓 Learning Tracks
-
-| Track | Description |
-|--------|--------------|
-| **Bootstrap** | Day-0 / Day-1 provisioning and control-plane automation. |
-| **Networking** | VPNs, BGP, and NCC hybrid connectivity patterns. |
-| **Kubernetes & GitOps** | RKE2 clusters, Argo CD / Flux, and Git-driven infrastructure. |
-| **Data & DR** | PostgreSQL HA, WAL-G replication, cloud promotion, and DR runbooks. |
-| **CI/CD & Automation** | Jenkins pipelines, GitHub Actions, evidence collectors, and zero-touch workflows. |
-| **Observability** | Prometheus Federation, Grafana dashboards, and cross-site metrics federation. |
+> Access flags (`public`, `academy`, `mixed`) follow the documentation access model in [ADR-0021](../adr/ADR-0021-docs-access-model.md).
 
 ---
 
-## HOWTO Catalog
+## Using these HOWTOs
 
-> The section below is generated automatically from the HOWTOs in this folder.  
-> For contribution or update details, see the [Maintenance Guide](../maintenance.md#howto-index-generation).
+If you are working through the platform as an engineer:
 
-<!-- HOWTO:INDEX START -->
+- Start with image build and platform bootstrap topics.
+- Move on to burst, DR, and observability once the base platform is healthy.
+- Use links into runbooks and ADRs when you need deeper operational or design context.
+
+If you are reviewing HybridOps.Studio (for example as an assessor or hiring manager), the index below gives a structured view of how the platform is operated in practice, including which areas are taught in HybridOps Academy.
+
+---
+
+## Topics
+
+<!-- HOWTO:TOPICS START -->
 <!-- Populated by generator -->
-<!-- HOWTO:INDEX END -->
-
----
-
-## 🧭 Relation to Runbooks
-
-- Each HOWTO links to at least one **Runbook** for its operational equivalent.  
-- Runbooks are **machine-actionable**; HOWTOs are **human-readable**.  
-- Together, they form the **HybridOps Knowledge Loop** — *learn → run → verify → document.*
+<!-- HOWTO:TOPICS END -->
 
 ---
 
 ### Related
-- [Runbooks](../runbooks/README.md)
-- [ADRs](../adr/README.md)
-- [Evidence Map](../evidence_map.md)
 
----
-
-**Maintainer:** Jeleel Muibi  
-**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
-**License:** MIT-0 / CC-BY-4.0  
+- [Runbooks — Operational Procedures](../runbooks/README.md)
+- [ADRs — Design Decisions](../adr/README.md)
 
 [Back to Docs Home](../README.md)

@@ -12,40 +12,39 @@
 
 ## Highlights
 
-- **Zero‑Touch Control Plane:** Provisions a Jenkins controller (`ctrl-01`) on Proxmox in ~10 minutes via cloud‑init Day‑0/Day‑1 automation — fully Git‑driven and evidence‑backed.  
-- **Source of Truth:** NetBox‑driven inventory with Ansible dynamic discovery.  
-- **GitOps Everywhere:** Argo CD / Flux manage desired state across clusters; Rancher optional for fleet access.  
-- **Resilient Data:** PostgreSQL remains authoritative on‑prem; WAL‑G backups to cloud storage; fast promotion for DR.  
-- **Networking Backbone:** Google Network Connectivity Center (NCC) as hub; on‑prem and cloud VNets/VPCs as spokes.  
-- **Observability First:** Prometheus Federation across sites; shared Grafana views.  
-- **Policy‑Driven DR/Burst:** Decision Service evaluates federation metrics plus Azure/GCP monitor signals and available credits.  
-- **Operator Workflow:** No click‑ops — Make, Terraform, Ansible, and thin shell wrappers power everything.  
-- **Evidence‑Backed:** Every claim maps to logs, outputs, screenshots, or dashboards.  
+- **Zero-touch control plane:** Provisions a Jenkins controller (`ctrl-01`) on Proxmox in ~10 minutes via cloud-init Day-0/Day-1 automation—fully Git-driven and evidence-backed.  
+- **Image factory (Packer):** Golden images for Ubuntu 22.04/24.04, Rocky 9, and Windows Server 2022 feed ctrl-01 and ephemeral agents.  
+- **Source of truth:** NetBox-driven inventory with Ansible dynamic discovery.  
+- **GitOps everywhere:** Argo CD / Flux manage desired state across clusters; Rancher optional for fleet access.  
+- **Resilient data:** PostgreSQL remains authoritative on-prem; WAL-G backups to cloud storage; fast promotion for DR.  
+- **Networking backbone:** Google Network Connectivity Center (NCC) as hub; on-prem and cloud VNets/VPCs as spokes.  
+- **Observability first:** Prometheus federation across sites; shared Grafana views.  
+- **Policy-driven DR/burst:** Decision Service evaluates federation metrics plus Azure/GCP monitor signals and available credits.  
+- **Operator workflow:** No click-ops—Make, Terraform, Ansible, and thin shell wrappers power everything.  
+- **Evidence-backed:** Every claim maps to logs, outputs, screenshots, or dashboards.
 
-**Target KPIs:** RTO ≤ 15 m · RPO ≤ 5 m · Packer ≤ 12 m · Terraform ≤ 10 m · Autoscale +2 @ 70% (scale‑in < 40%).
+**Target KPIs:** RTO ≤ 15 m · RPO ≤ 5 m · Packer ≤ 12 m · Terraform ≤ 10 m · Autoscale +2 @ 70% (scale-in < 40%).
 
 ---
 
-## Cost & Telemetry (Evidence‑Backed)
+## Cost & Telemetry (evidence-backed)
 
-Cost is a first‑class signal in HybridOps.Studio. Pipelines emit verifiable cost artifacts and enforce budget guardrails before burst/DR actions. The same artifacts power dashboards and reports.
+Cost is a first-class signal in HybridOps.Studio. Pipelines emit verifiable cost artifacts and enforce budget guardrails before burst/DR actions. The same artifacts power dashboards and reports.
 
 - Guide: [Cost & Telemetry](./docs/guides/cost-model.md)  
-- Evidence: [Proof Archive → cost](./docs/proof/cost/)  
+- Evidence: [Proof archive → cost](./docs/proof/cost/)  
 - Policy hooks: [Decision Service](./control/tools/decision)
 
 ---
 
 ## Control Plane Context
 
-The control plane (`ctrl-01`) is the foundation of HybridOps.Studio — it is the first proof of zero‑touch automation. The section below provides a deep dive into how it bootstraps itself, generates evidence, and drives the rest of the platform.
+The control plane (`ctrl-01`) anchors HybridOps.Studio—auto-provisioned from Packer-built golden images, parameterised by Terraform via cloud-init, and continuously evidenced by Jenkins from build through runtime.
 
 <details>
-<summary><strong>Deep Dive: Zero‑Touch Control Plane (ctrl‑01)</strong></summary>
+<summary><strong>Deep Dive: Zero-Touch Control Plane (ctrl-01)</strong></summary>
 
 <p align="right"><sub><em>Click again to collapse this section</em></sub></p>
-
----
 
 # HybridOps Studio — Control Plane (ctrl‑01) Strategy
 
@@ -114,54 +113,80 @@ Day-2+ → Jenkins pipelines provision infra + collect evidence
 
 ---
 
-## Quickstart — Try It Yourself
+## Quickstart — Try It Yourself (no credentials required)
 
 <details>
-<summary><strong>🟢 Run it yourself or try the live demo (click to expand)</strong></summary>
+<summary><strong>🟢 Option A — Zero-auth look-only (fastest)</strong></summary>
 
-<p align="right"><sub><em>Click again to collapse this section</em></sub></p>
+Review pre-generated artifacts (no installs, no accounts):
 
-### Option 1 — Live Demo (recommended)
+- [AKV evidence](docs/proof/akv/) — soft-delete, purge protection, RBAC snapshot, private endpoint status
+- [Packer evidence](docs/proof/platform/packer-builds/) — template build proofs (artifacts, proof.json, full logs)
+- [Terraform evidence](docs/proof/terraform/) — plan JSON hashes, non-destructive plan outputs
+- [Pipeline logs](docs/proof/pipelines/) — Jenkins/Terragrunt logs (secrets masked)
+- [Screenshots](docs/screens/) — pipelines, dashboards
+- [Runbooks](docs/runbooks/) — short “how it works” guides
 
-Prefer a walkthrough? [Watch the YouTube demo](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
-
-You can SSH into a live demo environment and watch the control plane and its apps come online in real time.  
-Jenkins pipelines automatically trigger RKE2, NetBox, and monitoring stacks — all visible as they build.
-
-> Demo access is read-only. Sessions are announced for specific time windows.  
-> One-time credentials expire automatically; destructive actions are not permitted.
-
-```bash
-ssh demo@hybridops.studio
-# password: TryHybridOps!
-```
-
-To follow the build visually, use the Proxmox web viewer (read-only) to watch VMs boot, pipelines run, and dashboards populate:
-
-https://demo.hybridops.studio/viewer
-
-*Demo sessions are read-only and reset hourly to ensure a clean environment.*
-
----
-
-### Option 2 — Run on your own Proxmox host
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jeleel-muibi/hybridops.studio/main/control/tools/provision/provision-ctrl01-proxmox-ubuntu.sh   -o /root/provision-ctrl01-proxmox-ubuntu.sh && chmod +x /root/provision-ctrl01-proxmox-ubuntu.sh && sudo JENKINS_ADMIN_PASS='<secret>' /root/provision-ctrl01-proxmox-ubuntu.sh
-```
-
-This Day-0 script:
-- Builds the **ctrl-01** VM  
-- Injects cloud-init payloads for Day-1 automation  
-- Produces logs under `/var/log/ctrl01_provision.log`
-
-See the full guide: [HOWTO: ctrl-01 Provisioner](./docs/howto/HOWTO_ctrl01_provisioner.md)
-
+This shows outcomes and governance without any tokens.
 </details>
 
----
+<details>
+<summary><strong>🟡 Option B — Local smoke (no Terraform Cloud, no cloud creds)</strong></summary>
 
-<sub>*If the demo server is under maintenance, follow the HOW-TO above to replicate the flow locally.*</sub>
+Tokenless validation of repo structure & Terragrunt wiring. Does **not** touch cloud or remote state.
+
+```bash
+# 0) Get the repo
+git clone https://github.com/jeleel-muibi/hybridops.studio.git
+cd hybridops.studio
+
+# 1) (If needed) install Terragrunt (Linux x86_64)
+TG_VER="v0.67.4"
+curl -fsSL -o terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/${TG_VER}/terragrunt_linux_amd64"
+chmod +x terragrunt && sudo mv terragrunt /usr/local/bin/terragrunt
+
+# 2) Run the tokenless smoke (no backend, no providers)
+cd infra/terraform/live/_smoke/tfc-backend
+terragrunt hclfmt || true
+terraform init -backend=false
+terraform validate
+```
+</details>
+
+<details>
+<summary><strong>🔵 Option C — Remote backend plan with <em>your</em> Terraform Cloud token (non-destructive)</strong></summary>
+
+Use your own free TFC user token to see remote backend + workspace wiring. No provider creds; **no resources created**.
+
+```bash
+# 0) Get the repo
+git clone https://github.com/jeleel-muibi/hybridops.studio.git
+cd hybridops.studio
+
+# 1) Authenticate to Terraform Cloud (opens browser)
+terraform login
+
+# 2) Safe plan against TFC (no resources created)
+cd infra/terraform/live/_smoke/tfc-backend
+terragrunt init
+terragrunt plan -refresh-only -no-color
+```
+
+Expected: init mentions `app.terraform.io`; plan shows **no changes** and prints an output.
+</details>
+
+<details>
+<summary><strong>🟣 Option D — Provision ctrl-01 on your Proxmox (optional, real infra)</strong></summary>
+
+**Secrets are pulled from AKV via [`control/tools/secrets/secrets.sh`](control/tools/secrets/secrets.sh)** (per
+[ADR-0015](docs/adr/ADR-0015_secrets-strategy_akv-now_sops-fallback_vault-later.md)).
+Follow **[HOWTO: ctrl-01 Provisioner](docs/howto/HOWTO_ctrl01_provisioner.md)** for the exact steps and prerequisites (AKV stack applied via Terragrunt/TFC, then ctrl-01 bootstrap reads Jenkins admin password from AKV).  
+No credentials are published here; bring your own infra and token.
+</details>
+
+> **Why no shared tokens?** For security and auditability, this project never distributes reusable credentials.  
+> Options A–B need none; Option C uses your TFC token for a non-destructive plan; Option D is bring-your-own infra with AKV-based secret retrieval.  
+> For read-only demo sessions with one-time credentials, see **[contact](CONTRACTING.md#contact)**.
 
 ## Architecture (executive view)
 
@@ -265,7 +290,7 @@ flowchart TB
 ### KPIs
 - **RTO ≤ 15m** — [Grafana DR panel](./docs/proof/observability/images) · [Runbook timings](./docs/proof/others/assets)
 - **RPO ≤ 5m** — [SQL read-only promotion / log shipping](./docs/proof/sql-ro/images)
-- **Image build ≤ 12m** — [CI logs: image builds](./docs/proof/images-runtime/images)
+- **Image build ≤ 12m** — [Packer builds (proofs)](./docs/proof/platform/packer-builds/README.md)
 - **Terraform ≤ 10m** — [CI logs: plan/apply](./docs/proof/others/assets)
 - **Autoscale +2@70%** — [Alert → scale event trace](./docs/proof/observability/images)
 
@@ -309,10 +334,10 @@ This section provides hands-on demonstrations of HybridOps.Studio capabilities. 
   - [control/tools/](./control/tools/) — repo utilities (index generators, provisioners)  
   - [control/decision/](./control/decision/README.md) — burst/DR policy, signals, and actions
 
-- [**Packer**](./packer/README.md) — immutable base images (Linux, Windows, RKE2, Jenkins agents)  
+- [**Packer**](./infra/packer/README.md) — immutable base images (Linux, Windows, RKE2, Jenkins agents)  
   - `templates/`, `scripts/`, `vars/` — uploads to object storage or hypervisor templates
 
-- [**Terraform**](./terraform/README.md) — modules and environment stacks (on-prem / Azure / GCP)  
+- [**Terraform**](./infra/terraform/README.md) — modules and environment stacks (on-prem / Azure / GCP)  
   - `modules/`, `envs/` — remote state and policy gates
 
 - [**Core**](./core/README.md) — reusable Ansible roles, shared libraries, and helpers

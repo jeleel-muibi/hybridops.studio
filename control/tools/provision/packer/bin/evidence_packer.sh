@@ -90,10 +90,10 @@ token_secret_redacted=""
 
 if [[ -n "${ENV_FILE}" && -f "${ENV_FILE}" ]]; then
   source "${ENV_FILE}" 2>/dev/null || true
-  proxmox_url="${PKR_VAR_proxmox_url:-}"
-  proxmox_node="${PKR_VAR_proxmox_node:-}"
-  token_id="${PKR_VAR_proxmox_token_id:-}"
-  token_secret_redacted="$(redact_secret "${PKR_VAR_proxmox_token_secret:-}")"
+  proxmox_url="${PROXMOX_URL:-}"
+  proxmox_node="${PROXMOX_NODE:-}"
+  token_id="${PROXMOX_TOKEN_ID:-}"
+  token_secret_redacted="$(redact_secret "${PROXMOX_TOKEN_SECRET:-}")"
 fi
 
 mkdir -p "${OUT_ROOT}" || { echo "ERR : Cannot create ${OUT_ROOT}" >&2; exit 1; }
@@ -147,14 +147,14 @@ pve_memory=""
 pve_ostype=""
 
 enrich_proxmox() {
-  [[ -n "${VMID}" && -n "${proxmox_url}" && -n "${proxmox_node}" && -n "${PKR_VAR_proxmox_token_id:-}" && -n "${PKR_VAR_proxmox_token_secret:-}" ]] || return 0
+  [[ -n "${VMID}" && -n "${proxmox_url}" && -n "${proxmox_node}" && -n "${PROXMOX_TOKEN_ID:-}" && -n "${PROXMOX_TOKEN_SECRET:-}" ]] || return 0
 
   command -v curl >/dev/null 2>&1 || return 0
 
-  local AUTH="Authorization: PVEAPIToken=${PKR_VAR_proxmox_token_id}=${PKR_VAR_proxmox_token_secret}"
+  local AUTH="Authorization: PVEAPIToken=${PROXMOX_TOKEN_ID}=${PROXMOX_TOKEN_SECRET}"
   local base="${proxmox_url}/nodes/${proxmox_node}/qemu/${VMID}"
   local curl_opts="-sf"
-  [[ "${PKR_VAR_proxmox_skip_tls_verify:-true}" == "true" ]] && curl_opts="-k ${curl_opts}"
+  [[ "${PROXMOX_SKIP_TLS_VERIFY:-true}" == "true" ]] && curl_opts="-k ${curl_opts}"
 
   curl ${curl_opts} -H "${AUTH}" "${base}/config" >/dev/null 2>&1 || return 0
 

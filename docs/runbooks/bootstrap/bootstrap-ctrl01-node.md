@@ -4,7 +4,7 @@ category: "bootstrap"
 summary: "Validate that the control node self-bootstraps and is ready for CI/CD and platform tooling."
 severity: "P2"
 draft: false
-template: false
+is_template_doc: false
 tags: ["proxmox", "cloud-init", "jenkins", "terraform", "packer", "kubernetes"]
 ---
 

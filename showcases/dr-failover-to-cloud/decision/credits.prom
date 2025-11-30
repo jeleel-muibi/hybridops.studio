@@ -1,4 +1,0 @@
-
-# Example Prometheus textfile
-azure_available_credit 120
-gcp_available_credit 80

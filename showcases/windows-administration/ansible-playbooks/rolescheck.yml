@@ -1,9 +1,0 @@
----
-- name: Governed run
-  hosts: all
-  gather_facts: false
-  roles:
-  - hybridops.common.env_guard
-  - hybridops.common.gen_inventory
-  - hybridops.common.host_selector
-  - hybridops.common.ip_mapper

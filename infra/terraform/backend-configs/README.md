@@ -1,13 +1,13 @@
-# Backend Configs
-This folder contains Terraform backend configuration files for different environments.
-Each file defines a remote backend pointing to a specific Terraform Cloud workspace:
+# OPTIONAL FALLBACK — Terraform Cloud Backend (Manual Only)
 
-Initialize Terraform with:
+Primary flow uses **Terragrunt**, which auto-generates the TFC backend (see `live/terragrunt.hcl`).  
+This folder is **only** for rare, manual `terraform init` runs (e.g., day-0 bootstrap before Jenkins).
 
 ```bash
-# Azure
-terraform -chdir=../../environments/cloud/azure init -reconfigure -backend-config=$(pwd)/azure.backend.hcl
+export TF_TOKEN_app_terraform_io=<your_tfc_token>
+WS="cloud-azure-staging-10-platform-keyvault"   # example workspace name
 
-# GCP
-terraform -chdir=../../environments/cloud/gcp init -reconfigure -backend-config=$(pwd)/gcp.backend.hcl
-```
+terraform init \
+  -backend-config=infra/terraform/backend-configs/tfc.remote.tfbackend \
+  -backend-config="organization=YOUR_TFC_ORG" \
+  -backend-config="workspaces.name=${WS}"

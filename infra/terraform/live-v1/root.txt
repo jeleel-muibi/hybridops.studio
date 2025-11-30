@@ -1,0 +1,51 @@
+// purpose: Root Terragrunt configuration for HybridOps Studio live-v1
+// author: Jeleel Muibi
+// date: 2025-11-29
+
+locals {
+  proxmox_endpoint        = get_env("PROXMOX_URL", "")
+  proxmox_token_id        = get_env("PROXMOX_TOKEN_ID", "")
+  proxmox_token_secret    = get_env("PROXMOX_TOKEN_SECRET", "")
+  proxmox_node            = get_env("PROXMOX_NODE", "")
+  proxmox_datastore_vm    = get_env("PROXMOX_STORAGE_VM", "local-lvm")
+  proxmox_skip_tls_verify = (get_env("PROXMOX_SKIP_TLS_VERIFY", "true") == "true")
+}
+
+# Generate provider configuration for all child modules
+generate "provider" {
+  path      = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+provider "proxmox" {
+  endpoint  = "${local.proxmox_endpoint}"
+  api_token = "${local.proxmox_token_id}=${local.proxmox_token_secret}"
+  insecure  = ${local.proxmox_skip_tls_verify}
+
+  ssh {
+    agent    = true
+    username = "root"
+  }
+}
+EOF
+}
+
+# Common inputs for all Proxmox modules
+inputs = {
+  proxmox_endpoint        = local.proxmox_endpoint
+  proxmox_token_id        = local.proxmox_token_id
+  proxmox_token_secret    = local.proxmox_token_secret
+  proxmox_api_token       = "${local.proxmox_token_id}=${local.proxmox_token_secret}"
+  proxmox_skip_tls_verify = local.proxmox_skip_tls_verify
+  proxmox_node            = local.proxmox_node
+}
+
+remote_state {
+  backend = "local"
+  config = {
+    path = "${get_repo_root()}/infra/terraform/live-v1/.terragrunt-state/${path_relative_to_include()}.tfstate"
+  }
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite_terragrunt"
+  }
+}

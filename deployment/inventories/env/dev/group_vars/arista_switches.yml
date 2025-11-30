@@ -1,8 +1,0 @@
----
-# Arista switch group variables
-# Credentials are sourced from Ansible Vault (see vault_default_* in all.yml)
-
-ansible_user: "{{ vault_default_username }}"
-ansible_password: "{{ vault_default_password }}"
-ansible_network_os: eos
-ansible_connection: network_cli

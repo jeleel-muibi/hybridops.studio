@@ -1,0 +1,9 @@
+# infra/terraform/backend-configs/tfc.remote.tfbackend
+
+hostname     = "app.terraform.io"
+organization = "YOUR_TFC_ORG"
+
+workspaces {
+  # You can leave this as-is and set via CLI instead
+  name = "REPLACE_WITH_WORKSPACE_NAME"
+}

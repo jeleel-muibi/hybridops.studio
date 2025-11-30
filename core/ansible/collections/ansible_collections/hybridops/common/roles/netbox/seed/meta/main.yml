@@ -1,6 +1,0 @@
-galaxy_info:
-  author: Jeleel Muibi
-  description: Seed minimal objects in NetBox (skeleton; replace with netbox.netbox modules)
-  license: MIT-0
-  min_ansible_version: "2.12"
-dependencies: []

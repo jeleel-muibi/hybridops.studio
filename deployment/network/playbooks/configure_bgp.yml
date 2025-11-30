@@ -1,8 +1,0 @@
----
-- name: Configure BGP
-  hosts: routers
-  gather_facts: false
-  tasks:
-  - name: Placeholder
-    ansible.builtin.debug:
-      msg: "configure bgp"

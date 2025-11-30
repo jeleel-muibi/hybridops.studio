@@ -1,4 +1,0 @@
-device_os: "ios"   # ios | nxos | eos | junos
-asn: 65010
-neighbors: []      # list of { ip: "x.x.x.x", remote_as: 65020, description: "uplink" }
-vrf: "default"

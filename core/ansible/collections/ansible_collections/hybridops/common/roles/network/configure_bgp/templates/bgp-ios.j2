@@ -1,7 +1,0 @@
-router bgp {{ asn }}
- bgp log-neighbor-changes
-{% if vrf != 'default' %} address-family ipv4 vrf {{ vrf }}{% endif %}
-{% for n in neighbors %}
- neighbor {{ n.ip }} remote-as {{ n.remote_as }}
- {% if n.description %} description {{ n.description }}{% endif %}
-{% endfor %}

@@ -1,0 +1,95 @@
+HybridOps.Studio – Infra / Inventory / Jenkins Decisions
+Author: Jeleel Muibi
+Note type: Design reminders
+Date: 2025-11-25
+
+1) Tool responsibilities by layer
+
+- Ansible:
+  - Proxmox host baseline:
+    - Host networking (bridges, VLANs, /etc/network/interfaces via ifupdown2).
+    - Storage pools and content types.
+    - Proxmox policy: users, roles, tokens, tags, backup jobs.
+  - Jenkins installation and initial bootstrap using a static inventory.
+- Packer:
+  - Build OS templates/images (Windows, Rocky, Ubuntu, etc.) with cloud-init enabled.
+  - Templates assume a working mgmt bridge (e.g. vmbr10 with DHCP).
+- Terraform / Terragrunt:
+  - Azure and GCP networking (VNets / VPCs and subnets).
+  - Proxmox VMs (and optional SDN overlay later, not host bridges).
+  - Guest networking via cloud-init (IP, gateway, DNS) – NOT editing host network files.
+
+2) NetBox’s role
+
+- NetBox is the source of truth for PERSISTENT infrastructure:
+  - Proxmox VMs.
+  - Cloud IaaS VMs (Azure / GCP) if and when I add them.
+- AKS and GKE:
+  - Do NOT sync individual AKS/GKE nodes into NetBox.
+  - Optionally represent clusters at a high level in NetBox later (one object per cluster), but this is not required.
+- Inventory pipeline:
+  - Terraform modules expose a unified `vm_inventory` output:
+    - Example fields: name, fqdn, ipv4_address, role, environment, provider, os_family, os_name, template.
+  - A script runs `terraform output -json` and exports `vm_inventory` to CSV.
+  - NetBox imports the CSV and becomes the single inventory / source of truth.
+  - Ansible uses NetBox as its dynamic inventory for OS configuration and ongoing management.
+
+3) Cloud-init strategy
+
+- Host network (bridges, VLANs) is ALWAYS handled by Ansible on the Proxmox hosts.
+- Terraform only:
+  - Attaches VMs to the correct bridge/VLAN.
+  - Supplies cloud-init data (network + user-data) so the guest OS configures its own NICs.
+- No Terraform automation touches `/etc/network/interfaces` directly.
+
+4) AKS / GKE handling
+
+- AKS and GKE are treated as managed control-plane services:
+  - Terraform manages cluster creation and configuration.
+  - Observability/logging stacks (Prometheus/Grafana, cloud-native logs) handle cluster/node telemetry.
+- For now:
+  - Skip syncing AKS/GKE node details into NetBox.
+  - If needed later, only cluster-level metadata is synced (not nodes), to avoid overengineering and noise.
+
+5) Jenkins and ephemeral agents
+
+- Jenkins controller:
+  - Deployed and configured via Ansible, using a static inventory at Day 0.
+- Ephemeral Jenkins agents:
+  - Can be Proxmox VMs, cloud VMs, or AKS/GKE pods, depending on the agent strategy.
+  - They are NOT added to NetBox as persistent devices.
+- Audit strategy for ephemeral agents:
+  - Maintain an append-only “agent audit log” (CSV or JSON) separate from NetBox.
+  - For each agent lifecycle event or build, capture:
+    - Timestamp(s).
+    - Agent name / label.
+    - Template or image used (e.g. rocky-9, ubuntu-24.04, windows-server-2022).
+    - Provider (proxmox / azure / gcp / aks / gke).
+    - Jenkins job name.
+    - Jenkins build number / ID.
+    - Lifecycle event: created / used / terminated.
+  - Store this in an evidence location (e.g. deployment/evidence/jenkins-agents/).
+  - This demonstrates auditability of ephemeral compute without polluting NetBox.
+
+6) Updated high-level order of operations
+
+- 00 – Host and base services (Ansible)
+  - 00-network (host layer): bridges, VLANs, routing.
+  - 01-storage: pools and content types.
+  - 02-proxmox policy: users, roles, tokens, tags, backup jobs.
+
+- 03 – Templates (Packer)
+  - Build OS templates with cloud-init, assuming mgmt network is ready.
+
+- 04 – Infra and guests (Terraform/Terragrunt)
+  - Cloud networking (Azure VNets, GCP VPCs).
+  - Proxmox SDN overlay if needed (but not host NICs).
+  - Proxmox VMs, cloud VMs, AKS/GKE clusters.
+  - Guest networking configured via cloud-init.
+
+- 05 – Inventory and config
+  - Export Terraform vm_inventory → CSV → NetBox.
+  - Ansible uses NetBox as dynamic inventory to configure OS, agents, k3s, Longhorn, etc.
+  - Jenkins later uses this infrastructure for builds; ephemeral agent audit is logged separately.
+
+This is the working model to stick to while building out the infra and before going deep into Jenkins design.

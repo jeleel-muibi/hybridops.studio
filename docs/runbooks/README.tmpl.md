@@ -1,20 +1,19 @@
 # Runbooks — Operational Procedures
 
-Concise, reproducible procedures for DR, burst, bootstrap, DNS cutover, VPN, secrets rotation, and more.  
+Concise, reproducible procedures for DR, burst, bootstrap, DNS cutover, VPN, secrets rotation, and related operations.  
 Each runbook is outcome-focused and linked to supporting evidence.
 
-> The list below is generated automatically from the runbooks in this folder.  
-> For update details, see the [Maintenance Guide](../maintenance.md#runbooks-index-generation).
+> Access flags (`public`, `premium`, `mixed`) follow the documentation access model in [ADR-0021](../adr/ADR-0021-docs-access-model.md).
 
 ---
 
 ## Conventions (applies to all runbooks)
+
 - **Pre-checks** — prerequisites and environment sanity.
 - **Execute** — ordered steps and commands.
 - **Verify** — success criteria and dashboards to check.
-- **Artifacts** — logs/exports to capture under `output/`.
+- **Artifacts** — logs and exports to capture under `output/`.
 - **Rollback** — safe, minimal reversal steps.
-- **See also** — [Evidence Map](../evidence_map.md) · [Proof Archive](../proof/README.md) · [Related runbooks](./by-category/)
 
 ---
 
@@ -26,7 +25,8 @@ Each runbook is outcome-focused and linked to supporting evidence.
 
 ---
 
-### 📂 Related
+### Related
+
 - [HOWTOs](../howto/README.md)
 - [ADRs](../adr/README.md)
 

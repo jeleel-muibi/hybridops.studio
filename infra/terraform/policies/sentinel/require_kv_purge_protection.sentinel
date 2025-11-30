@@ -1,0 +1,7 @@
+
+import "tfplan"
+main = rule {
+  all tfplan.resources.azurerm_key_vault as _, r {
+    r.applied.purge_protection_enabled is true
+  }
+}
