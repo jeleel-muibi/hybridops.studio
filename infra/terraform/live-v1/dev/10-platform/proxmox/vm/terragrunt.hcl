@@ -17,8 +17,8 @@ dependency "sdn" {
     }
     subnet_details = {
       vnetdev1 = {
-        gateway = "10.20.0. 1"
-        cidr    = "10.20. 0.0/24"
+        gateway = "10.20.0.1"
+        cidr    = "10.20.0.0/24"
       }
     }
   }

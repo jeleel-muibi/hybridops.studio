@@ -31,6 +31,14 @@ locals {
     }
   }
 
+  # Helper: group offsets by VLAN for duplicate detection
+  offsets_by_vlan = {
+    for vlan in keys(var.subnet_map) : vlan => [
+      for hostname, allocation in var.allocations :
+      allocation.offset if allocation.vlan == vlan
+    ]
+  }
+
   # Validation checks
   allocation_checks = var.validate_requests ? {
     # Check all offsets are within allowed range
@@ -47,13 +55,8 @@ locals {
 
     # Check for duplicate offsets within same VLAN
     no_duplicate_offsets = alltrue([
-      for vlan in keys(var.subnet_map) : length([
-        for hostname, allocation in var.allocations :
-        allocation.offset if allocation.vlan == vlan
-        ]) == length(distinct([
-          for hostname, allocation in var.allocations :
-          allocation.offset if allocation.vlan == vlan
-      ]))
+      for vlan, offsets in local.offsets_by_vlan :
+      length(offsets) == length(distinct(offsets))
     ])
 
     # Total allocations

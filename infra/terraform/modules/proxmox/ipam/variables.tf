@@ -9,8 +9,8 @@ variable "allocations" {
   }))
 
   validation {
-    condition     = alltrue([for k, v in var.allocations : v.offset >= 0])
-    error_message = "All offsets must be non-negative integers."
+    condition     = alltrue([for k, v in var.allocations : v.offset >= 1])
+    error_message = "All offsets must be positive integers (>= 1). Offset 0 represents the network address."
   }
 }
 
