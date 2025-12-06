@@ -1,31 +1,22 @@
 # Paste outputs.tf content here
-output "assigned_ips" {
-  description = "List of assigned IP addresses"
-  value       = local.assigned_ips
+# Hostname-keyed IPAM module outputs
+
+output "ipv4_addresses" {
+  description = "Map of hostname to IPv4 address"
+  value       = local.ipv4_addresses
 }
 
-output "ip_with_cidr" {
-  description = "List of IPs with CIDR notation (e.g., 10.20.0.10/24)"
-  value       = local.ip_with_cidr
+output "gateways" {
+  description = "Map of VLAN string to gateway IP address"
+  value       = local.gateways
 }
 
-output "ip_cidr_map" {
-  description = "Map of index to IP/CIDR"
-  value = {
-    for idx, ip_cidr in local.ip_with_cidr :
-    idx => ip_cidr
-  }
+output "allocated_by_vlan" {
+  description = "Allocations grouped by VLAN with hostnames and IPs"
+  value       = local.allocated_by_vlan
 }
 
-output "allocation_summary" {
-  description = "Summary of IP allocations"
-  value = {
-    total_available = local.range_size
-    allocated       = var.vm_count
-    remaining       = local.range_size - var.vm_count
-    cidr           = var.cidr
-    range_start    = cidrhost(var.cidr, var.ip_range_start)
-    range_end      = cidrhost(var.cidr, var.ip_range_end)
-    assigned_ips   = local.assigned_ips
-  }
+output "allocation_checks" {
+  description = "Validation check results for allocations"
+  value       = local.allocation_checks
 }
