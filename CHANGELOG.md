@@ -2,8 +2,8 @@
 
 All notable changes to the HybridOps Studio project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog. com/en/1.0. 0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2. 0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.0-sdn] - 2025-12-06
 
@@ -17,10 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2. 0.
 ### Environments
 - Management (VLAN 10): 10.10.0.0/24 - Infrastructure management plane
 - Observability (VLAN 11): 10.11.0.0/24 - Monitoring and metrics platform
-- Development (VLAN 20): 10. 20.0.0/24 - Development workloads
+- Development (VLAN 20): 10.20.0.0/24 - Development workloads
 - Staging (VLAN 30): 10.30.0.0/24 - Pre-production testing
 - Production (VLAN 40): 10.40.0.0/24 - Production workloads
-- Network Lab (VLAN 50): 10. 50.0.0/24 - EVE-NG and network testing
+- Network Lab (VLAN 50): 10.50.0.0/24 - EVE-NG and network testing
 
 ### Technical Details
 - Terraform version: >= 1.5.0
