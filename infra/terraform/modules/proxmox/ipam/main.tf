@@ -1,45 +1,93 @@
 # Paste main.tf content here
+# Hostname-keyed IPAM module - computation only with state tracking
 terraform {
   required_version = ">= 1.0"
 }
 
 locals {
-  # Parse the CIDR to get network details
-  network_parts = split("/", var.cidr)
-  network_addr  = local.network_parts[0]
-  prefix_length = local.network_parts[1]
+  # Compute IPv4 addresses for each hostname
+  ipv4_addresses = {
+    for hostname, allocation in var.allocations :
+    hostname => cidrhost(var.subnet_map[allocation.vlan], allocation.offset)
+  }
 
-  # Calculate total available IPs in range
-  range_size = var.ip_range_end - var.ip_range_start + 1
+  # Compute gateways (first usable IP in each subnet)
+  gateways = {
+    for vlan, cidr in var.subnet_map :
+    vlan => cidrhost(cidr, 1)
+  }
 
-  # Generate list of available IPs
-  available_ips = [
-    for i in range(var.ip_range_start, var.ip_range_end + 1) :
-    cidrhost(var.cidr, i)
-  ]
+  # Group allocations by VLAN
+  allocated_by_vlan = {
+    for vlan in keys(var.subnet_map) : vlan => {
+      hostnames = [
+        for hostname, allocation in var.allocations :
+        hostname if allocation.vlan == vlan
+      ]
+      ips = [
+        for hostname, allocation in var.allocations :
+        local.ipv4_addresses[hostname] if allocation.vlan == vlan
+      ]
+    }
+  }
 
-  # Assign IPs sequentially based on count
-  assigned_ips = slice(local.available_ips, 0, var.vm_count)
+  # Validation checks
+  allocation_checks = var.validate_requests ? {
+    # Check all offsets are within allowed range
+    offsets_in_range = alltrue([
+      for hostname, allocation in var.allocations :
+      allocation.offset >= var.offset_min && allocation.offset <= var.offset_max
+    ])
 
-  # Create IP/CIDR combinations
-  ip_with_cidr = [
-    for ip in local.assigned_ips : "${ip}/${local.prefix_length}"
-  ]
+    # Check all VLANs in allocations exist in subnet_map
+    vlans_exist = alltrue([
+      for hostname, allocation in var.allocations :
+      contains(keys(var.subnet_map), allocation.vlan)
+    ])
+
+    # Check for duplicate offsets within same VLAN
+    no_duplicate_offsets = alltrue([
+      for vlan in keys(var.subnet_map) : length([
+        for hostname, allocation in var.allocations :
+        allocation.offset if allocation.vlan == vlan
+        ]) == length(distinct([
+          for hostname, allocation in var.allocations :
+          allocation.offset if allocation.vlan == vlan
+      ]))
+    ])
+
+    # Total allocations
+    total_allocations = length(var.allocations)
+
+    # Summary message
+    summary = "Validated ${length(var.allocations)} allocation(s) across ${length(var.subnet_map)} VLAN(s)"
+  } : {}
 }
 
-# Track IP allocations in state
-resource "terraform_data" "ip_allocations" {
-  for_each = toset(local.assigned_ips)
-
-  input = {
-    ip          = each.key
-    environment = var.environment
-    site        = var.site
-    cidr        = var.cidr
-    allocated_at = timestamp()
+# Track allocations in state and surface validation checks
+resource "null_resource" "ipam_allocations" {
+  triggers = {
+    allocations       = jsonencode(var.allocations)
+    subnet_map        = jsonencode(var.subnet_map)
+    ipv4_addresses    = jsonencode(local.ipv4_addresses)
+    allocation_checks = jsonencode(local.allocation_checks)
+    timestamp         = timestamp()
   }
 
   lifecycle {
-    create_before_destroy = true
+    precondition {
+      condition     = !var.validate_requests || local.allocation_checks.offsets_in_range
+      error_message = "One or more offsets are outside the allowed range (${var.offset_min}-${var.offset_max})."
+    }
+
+    precondition {
+      condition     = !var.validate_requests || local.allocation_checks.vlans_exist
+      error_message = "One or more VLANs in allocations do not exist in subnet_map."
+    }
+
+    precondition {
+      condition     = !var.validate_requests || local.allocation_checks.no_duplicate_offsets
+      error_message = "Duplicate offsets detected within the same VLAN."
+    }
   }
 }
