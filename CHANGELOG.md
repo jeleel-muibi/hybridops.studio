@@ -36,6 +36,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gateway configuration for future routing
 - DNS server placeholders for each network
 
+## [1.0.0] - 2025-12-05
+
+### Added
+- Initial project structure
+- Packer image building configuration
+- Base documentation (README, CONTRIBUTING, CONTRACTING)
+- Pre-commit hooks for code quality
+
 ## [Unreleased]
 
 ### Planned
