@@ -42,6 +42,10 @@ core/terraform-infra/output/*.json
 showcases/**/terraform-scenarios/**/tf.plan
 showcases/**/terraform-scenarios/**/.terraform/
 
+# Terraform module development artifacts
+infra/terraform/modules/**/.terraform/
+infra/terraform/modules/**/.terraform.lock.hcl
+
 *.tfvars
 *.tfvars.json
 *.auto.tfvars
