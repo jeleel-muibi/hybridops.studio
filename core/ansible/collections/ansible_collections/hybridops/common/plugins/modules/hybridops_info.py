@@ -1,6 +1,6 @@
 # file: hybridops_info.py
 # purpose: Custom module returning basic HybridOps info
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 from ansible.module_utils.basic import AnsibleModule
@@ -23,8 +23,8 @@ options:
     description: Logical role for the host or service.
     type: str
     required: false
-author:
-  - Jeleel Muibi
+Maintainer:
+  - HybridOps.Studio
 """
 
 EXAMPLES = r"""

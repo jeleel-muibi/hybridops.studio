@@ -97,6 +97,6 @@ All significant control workflows are expected to produce traceable output under
 
 ---
 
-**Maintainer:** Jeleel Muibi  
+**Maintainer:** HybridOps.Studio
 **Last Updated:** 2025-11-23  
-**License:** MIT-0 / CC-BY-4.0
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

@@ -31,7 +31,7 @@ inputs = {
       gateway = "10.20.0.1"
       dns     = ["10.20.0.10"]
       mtu     = 1500
-      comment = "${title(local.environment)} Linux segment"
+      comment = "Dev Linux segment"
     }
   }
 }

@@ -2,7 +2,7 @@
 # ==============================================================================
 # Environment Guard Framework - Role Test (ipmapper)
 # Tests IP Mapper role logic for a selected environment; validates mapping and CID logging.
-# Author: Jeleel Muibi | Last Updated: 2025-09-10 22:25:00 UTC
+# Maintainer: HybridOps.Studio
 # ==============================================================================
 # SPDX-License-Identifier: MIT-0
 

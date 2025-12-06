@@ -13,7 +13,7 @@ Use this table as your “I am X → start here” router.
 
 | I am a…                     | Start here                                                                 | What you will see                                                  |
 |-----------------------------|----------------------------------------------------------------------------|--------------------------------------------------------------------|
-| Global Talent Visa assessor | [Assessors — Start Here](guides/assessors/how-to-review.md)         | Ten-minute tour, criteria mapping, curated evidence links.         |
+| Global Talent Visa assessor | [Assessors — Start Here](briefings/gtv/how-to-review.md)                   | Ten-minute tour, criteria mapping, curated evidence links.         |
 | Hiring manager              | [What This Demonstrates](guides/hiring-managers/what-this-demonstrates.md) | Skills, design thinking, trade-offs, and delivery patterns.        |
 | Learner / practitioner      | [Series Roadmap](tutorials/series-roadmap.md)                             | YouTube and lab journey mapped to real code and artefacts.         |
 | Engineer exploring the repo | [Quickstart: Bring Up HybridOps.Studio](guides/quickstart.md)             | Hands-on bootstrap in a homelab or cloud environment.              |

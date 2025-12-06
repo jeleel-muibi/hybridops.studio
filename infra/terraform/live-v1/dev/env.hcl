@@ -1,5 +1,5 @@
 // file: infra/terraform/live-v1/dev/env.hcl
-// purpose: Environment-level settings for dev
+// purpose: Development environment configuration
 
 locals {
   environment = "dev"

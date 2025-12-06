@@ -132,16 +132,24 @@ List follow-up work:
 
 ## References
 
-Update to match the topic:
+Update this section to match the topic and use **markdown links**, not bare paths. Typical patterns:
 
-- Related HOWTOs: `../howto/000-INDEX.md` or specific HOWTO paths.  
-- Related runbooks: category index under `docs/runbooks/by-category/`.  
-- Evidence Map: `../evidence_map.md`  
-- ADRs influencing this runbook: `../adr/ADR-XXXX-something.md`  
-- Source code or automation: `https://github.com/<org>/<repo>/<path>`
+- Related HOWTOs:  
+  - [HOWTO – <descriptive name>](../howtos/HOWTO_<slug>.md)
+- Related runbooks:  
+  - [Runbook index by category](../runbooks/by-category/README.md)  
+  - [Runbook – <descriptive name>](../runbooks/<category>/runbook-<slug>.md)
+- Evidence map and proof folders:  
+  - [Evidence Map](../evidence_map.md)  
+  - [`docs/proof/<topic>/`](../../docs/proof/<topic>/)
+- ADRs influencing this runbook:  
+  - [ADR-XXXX – <short title>](../adr/ADR-XXXX-<slug>.md)
+- Source code or automation:  
+  - [GitHub – relevant module or script](https://github.com/<org>/<repo>/<path>)
+
+Replace the placeholders above with the concrete paths for this runbook.
 
 ---
 
-**Author:** Jeleel Muibi  
-**Project:** HybridOps.Studio  
+**Maintainer:** HybridOps.Studio  
 **License:** MIT-0 for code, CC-BY-4.0 for documentation

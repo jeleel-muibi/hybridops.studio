@@ -2,7 +2,7 @@
 
 Automated provisioning/configuration: **AD**, **GPO**, **SCCM** app deployment, optional PXE workflows using Ansible + PowerShell.
 
-- **Author:** Jeleel Muibi
+- **Maintainer:** HybridOps.Studio
 - **Last Updated:** 2025-09-18
 - **SPDX-License-Identifier:** MIT
 

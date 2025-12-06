@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # HybridOps Studio — Unified Secret Access Layer
 # -----------------------------------------------------------------------------
-# Author: jeleel-muibi
+# Maintainer: HybridOps.Studio
 # Date: 2025-10-23 16:57:31
 #
 # Description:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # HybridOps.Studio - Python Environment Installer
-# Author: jeleel-muibi
+# Maintainer: HybridOps.Studio
 # Last Modified: 2025-01-23
 
 set -euo pipefail

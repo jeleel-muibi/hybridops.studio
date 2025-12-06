@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # HybridOps.Studio - Azure Prerequisites Installer
-# Author: jeleel-muibii
+# Maintainer: HybridOps.Studio
 # Last Modified: 2025-11-23
 
 set -euo pipefail

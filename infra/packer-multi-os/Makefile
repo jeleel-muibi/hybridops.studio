@@ -1,6 +1,6 @@
 # Makefile
 # Build automation for Packer multi-OS templates on Proxmox
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Created: 2025-11-17
 
 SHELL := /bin/bash

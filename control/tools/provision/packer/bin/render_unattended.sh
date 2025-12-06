@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # render_unattended.sh - Render unattended installation templates by injecting SSH public key
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Created: 2025-11-17
 
 set -euo pipefail

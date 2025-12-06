@@ -34,4 +34,4 @@
 
 ---
 
-**Author:** jeleel-muibi | [MIT-0 License](https://opensource.org/licenses/MIT-0)
+**Maintainer:** HybridOps.Studio

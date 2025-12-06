@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # chain-lib.sh - Chain ID tracking and logging utilities for Packer automation
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Created: 2025-11-17
 
 set -euo pipefail

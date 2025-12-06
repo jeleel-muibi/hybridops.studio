@@ -2,7 +2,7 @@
 # =============================================================================
 # Environment Guard Framework - Role Test (gen_inventory)
 # Tests the gen_inventory role; prompts for env when not set (skips in CI).
-# Author: Jeleel Muibi | Last Updated: 2025-01-09 19:05:54 UTC
+# Maintainer: HybridOps.Studio
 # =============================================================================
 # SPDX-License-Identifier: MIT
 

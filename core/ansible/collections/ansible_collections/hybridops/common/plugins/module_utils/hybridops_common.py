@@ -1,6 +1,6 @@
 # file: hybridops_common.py
 # purpose: Shared helpers for HybridOps custom modules
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 

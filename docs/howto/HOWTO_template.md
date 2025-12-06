@@ -8,11 +8,11 @@ topic: "example-topic"       # Short handle, e.g. netbox-bootstrap, docker-basel
 
 # Demo / source metadata.
 # Always populate when available; build tooling decides how to expose them.
-video: ""                    # Optional public demo URL, e.g. https://youtu.be/VIDEO_ID.
+video: "https://www.youtube.com/watch?v=VIDEO_ID"   # Public demo URL (required for real HOWTOs).
 source: ""                   # Optional GitHub or script reference for this HOWTO.
 
 draft: true                  # true => skip from generated HOWTO index.
-is_template_doc: true               # true => always skipped, even if draft=false.
+is_template_doc: true        # true => always skipped, even if draft=false.
 tags: ["template"]           # Optional labels, e.g. ["packer", "proxmox"].
 
 # Access / commercial model:
@@ -58,27 +58,31 @@ stub:
 
 ---
 
-## Demo (optional)
+## Demo
 
-If this HOWTO has a public video, add it here.
+Every HOWTO in HybridOps.Studio is expected to have a short demo or walkthrough video.
+
+Update the `video:` field in the frontmatter above with the final YouTube URL, then update the placeholders below:
 
 - Demo: [Watch on YouTube](https://youtu.be/VIDEO_ID)  
-- Source: [View script or module on GitHub](https://github.com/<org>/<repo>/<path>)
+- Source (optional): [View script or module on GitHub](https://github.com/<org>/<repo>/<path>)
 
-Optional embedded player for public HOWTOs:
+Embedded player (used by MkDocs Material):
 
-<details>
-  <summary><strong>Show embedded demo</strong></summary>
+??? info "▶ Show embedded demo"
 
-  <iframe
-    width="100%"
-    height="400"
-    src="https://www.youtube.com/embed/VIDEO_ID"
-    frameborder="0"
-    allowfullscreen>
-  </iframe>
+    <iframe
+      width="100%"
+      height="400"
+      src="https://www.youtube.com/embed/VIDEO_ID"
+      title="<HOWTO title> – HybridOps.Studio"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
 
-</details>
+    If the embed does not load, use the direct link:  
+    [Open on YouTube](https://www.youtube.com/watch?v=VIDEO_ID){ target=_blank rel="noopener" }
 
 ---
 
@@ -137,15 +141,22 @@ List common issues and resolutions:
 
 ## References
 
-Update to match the topic:
+Update this section to match the topic and use **markdown links**, not bare paths. Typical patterns:
 
-- Related runbooks: `../runbooks/...`  
-- Evidence Map: `../evidence_map.md`  
-- ADRs influencing this HOWTO: `../adr/ADR-XXXX-something.md`  
-- Source code or modules: `https://github.com/<org>/<repo>/<path>`
+- Related runbooks:  
+  - [Runbook – <descriptive name>](../runbooks/<category>/runbook-<slug>.md)
+- ADRs influencing this HOWTO:  
+  - [ADR-0001 – ADR Process and Conventions](../adr/ADR-0001-adr-process-and-conventions.md)  
+  - [ADR-0601 – Nornir + Ansible Hybrid Automation](../adr/ADR-0601-nornir-ansible-hybrid-automation.md)
+- Evidence map and proof folders:  
+  - [Evidence Map](../evidence_map.md)  
+  - [`docs/proof/<topic>/`](../../docs/proof/<topic>/)
+- Source code or modules:  
+  - [GitHub – relevant module or script](https://github.com/<org>/<repo>/<path>)
+
+Replace the placeholders above with the concrete paths for this HOWTO.
 
 ---
 
-**Author:** Jeleel Muibi  
-**Project:** HybridOps.Studio  
+**Maintainer:** HybridOps.Studio  
 **License:** MIT-0 for code, CC-BY-4.0 for documentation

@@ -4,7 +4,7 @@
 
 **Description:** Determines whether to fail over to Azure or GCP based on higher available credits, with thresholds and tie‑breakers.
 
-**Author:** Jeleel Muibi
+**Maintainer:** HybridOps.Studio
 **Last Updated:** 2025-09-25
 
 <!-- SPDX-License-Identifier: MIT -->

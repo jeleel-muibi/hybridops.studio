@@ -4,7 +4,6 @@ title: "HPC Extension Strategy for HybridOps.Studio"
 status: Proposed
 date: 2025-10-10
 domains: ["platform", "hpc", "infra"]
-owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
@@ -14,7 +13,7 @@ links:
   diagrams: ["../diagrams/hpc_extension_architecture.png"]
 ---
 
-# ADR-0100 — HPC Extension Strategy for HybridOps.Studio
+# HPC Extension Strategy for HybridOps.Studio
 
 ## Status
 Proposed — a forward-looking design to extend the HybridOps.Studio control plane toward **HPC (High-Performance Computing)** workloads and research environments.
@@ -62,6 +61,5 @@ Introduce a **modular HPC extension layer** leveraging existing HybridOps primit
 
 ---
 
-**Author / Maintainer:** Jeleel Muibi  
-**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
-**License:** MIT-0 / CC-BY-4.0
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

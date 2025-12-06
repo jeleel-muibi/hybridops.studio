@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # test-template.sh - Validate Proxmox VM template functionality (flash test)
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-16
 
 set -euo pipefail

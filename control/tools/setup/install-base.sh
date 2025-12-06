@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# HybridOps.Studio - Base Prerequisites Installer
 # Installs core infrastructure tools required for all operations
-# Author: jeleel-muibii
+# Maintainer: HybridOps.Studio
 # Last Modified: 2025-11-23
 
 set -euo pipefail

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # file: export_tf_to_inventory_csv.py
 # purpose: Merge Terraform inventory JSON into a single NetBox-ready CSV while preserving non-Terraform rows
-# author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # date: 2025-11-29
 
 import argparse

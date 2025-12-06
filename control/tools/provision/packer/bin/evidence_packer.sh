@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # evidence_packer.sh - Collect Packer init/build evidence for Proxmox templates
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-16
 
 set -uo pipefail

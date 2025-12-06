@@ -1,6 +1,6 @@
 # HybridOps.Studio - Root Makefile
 # Orchestrates multi-domain infrastructure, DR workflows, and showcase deployments
-# Author: jeleel-muibii
+# Maintainer: HybridOps.Studio
 # Last Modified: 2025-01-23
 
 SHELL := /bin/bash

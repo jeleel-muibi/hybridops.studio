@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# HybridOps.Studio - GCP Prerequisites Installer
-# Author: jeleel-muibii
+# Install GCP SDK prerequisites
+# Maintainer: HybridOps.Studio
 # Last Modified: 2025-11-23
 
 set -euo pipefail

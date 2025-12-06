@@ -12,11 +12,11 @@ Project-wide decision log for HybridOps.Studio. Each ADR captures context, optio
 
 ---
 
-## Domains
+## Categories
 
-<!-- ADR:DOMAINS START -->
+<!-- ADR:CATEGORIES START -->
 <!-- Populated by generator -->
-<!-- ADR:DOMAINS END -->
+<!-- ADR:CATEGORIES END -->
 
 ---
 

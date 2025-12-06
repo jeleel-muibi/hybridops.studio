@@ -6,7 +6,7 @@
 [![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0)
 [![Ansible](https://img.shields.io/badge/ansible-2.9+-red.svg)](https://ansible.com)
 
-**Author:** Jeleel Muibi
+**Maintainer:** HybridOps.Studio
 **Version:** 2.1.0
 **Updated:** 2025-09-01
 **Compatibility:** Ansible 2.9+ | Tested on Linux and macOS

@@ -1,6 +1,6 @@
 # file: New-HybridOpsTag.ps1
 # purpose: Build a standard environment/role tag string
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 function New-HybridOpsTag {

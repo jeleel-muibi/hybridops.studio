@@ -1,6 +1,6 @@
 # file: HybridOps.Common.psm1
 # purpose: Entry module for HybridOps.Common PowerShell utilities
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 $script:ModuleRoot = Split-Path -Parent $PSCommandPath

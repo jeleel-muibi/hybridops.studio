@@ -3,7 +3,7 @@ set -euo pipefail
 
 # init-azure-env.sh - Generate Azure Terraform tfvars
 # Purpose: Combine azure.conf and control/secrets.env into azure.auto.tfvars.json
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-28
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

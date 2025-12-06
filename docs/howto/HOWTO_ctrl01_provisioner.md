@@ -134,7 +134,5 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 
 ---
 
-**Maintainer:** Jeleel Muibi  
-**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
-**License:** MIT-0 / CC-BY-4.0  
-**Category:** Bootstrap HOWTO
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

@@ -1,6 +1,6 @@
 # file: hybridops_env_default.py
 # purpose: Lookup plugin for environment variables with defaults
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 import os

@@ -204,3 +204,8 @@ pipeline {
 
 - [ADR-0015 — Secrets strategy: AKV now; SOPS fallback; Vault later](../adr/ADR-0015_secrets-strategy_akv-now_sops-fallback_vault-later.md)
 - Runbook — [Zero-Touch Secrets with AKV (Jenkins)](../runbooks/ops/ops_rotate_jenkins_sp_secret_akv.md)
+
+---
+
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

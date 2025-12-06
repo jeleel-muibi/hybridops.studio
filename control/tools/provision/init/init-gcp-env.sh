@@ -3,7 +3,7 @@ set -euo pipefail
 
 # init-gcp-env.sh - Generate GCP Terraform tfvars
 # Purpose: Combine gcp.conf and control/secrets.env into gcp.auto.tfvars.json
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-28
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

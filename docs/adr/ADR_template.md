@@ -3,8 +3,19 @@ id: ADR-XXXX
 title: "<Concise, action-oriented title — e.g., 'Adopt Rocky Linux 9 for RKE2 Base Image'>"
 status: Proposed              # Proposed | Accepted | Deprecated | Superseded.
 date: 2025-10-15              # ISO format; used by ADR index generators.
+category: "<CC-name>"           # One of:
+                                # "00-governance"
+                                # "01-networking"
+                                # "02-platform"
+                                # "03-security"
+                                # "04-observability"
+                                # "05-data-storage"
+                                # "06-cicd-automation"
+                                # "07-disaster-recovery"
+                                # "08-cost-optimisation"
+                                # "09-compliance"
 
-domains: ["platform"]         # e.g. ["networking", "platform", "sre"].
+domains: ["networking"]       # Optional: free-form tags like "proxmox", "azure", "netops"
 owners: ["HybridOps.Studio"]  # ADR maintainer(s) or owning team.
 supersedes: []                # e.g. ["ADR-0007"].
 superseded_by: []             # e.g. ["ADR-0021"].
@@ -56,10 +67,8 @@ stub:
 
 # <Concise, action-oriented title>
 
-**Status:** Proposed | Accepted | Deprecated | Superseded  
-**Domain(s):** platform | networking | sre | security | cost | observability | other  
-**Owner(s):** names or roles responsible for this decision  
-**Last updated:** YYYY-MM-DD  
+## Status
+Proposed | Accepted | Deprecated | Superseded — <very short human summary of the decision and its impact>.
 
 ---
 
@@ -151,17 +160,25 @@ Describe day-to-day impact and validation:
 
 ## 8. References
 
-Update using the `links` block and any additional sources:
+Update this section using the `links` block and any additional sources.
 
-- Related runbooks: entries under `docs/runbooks/by-category/` or direct paths.  
-- Related HOWTOs: entries under `docs/howto/`.  
-- Evidence: paths under `docs/proof/` and `output/`.  
-- Diagrams: `docs/diagrams/...` or `showcases/.../diagrams/...`.  
-- Pull requests or commits.  
-- External references (vendor docs, standards, articles) if relevant.
+Use **markdown links**, not bare paths. Typical patterns:
+
+- Other ADRs, for example:  
+  - [ADR-0001 – ADR Process and Conventions](../adr/ADR-0001-adr-process-and-conventions.md)  
+  - [ADR-0601 – Nornir + Ansible Hybrid Automation](../adr/ADR-0601-nornir-ansible-hybrid-automation.md)
+- Runbooks:  
+  - [Runbook – <descriptive name>](../runbooks/<category>/runbook-<slug>.md)
+- HOWTOs:  
+  - [HOWTO – <descriptive name>](../howtos/HOWTO_<slug>.md)
+- Evidence folders:  
+  - [`docs/proof/<area>/`](../../docs/proof/<area>/)
+- External documentation:  
+  - [Vendor or standards documentation](https://example.com/docs)
+
+Replace the placeholders above with the concrete paths for this decision.
 
 ---
 
-**Author / Maintainer:** Jeleel Muibi  
-**Project:** HybridOps.Studio  
-**License:** MIT-0 for code, CC-BY-4.0 for documentation
+**Maintainer:** HybridOps.Studio  
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

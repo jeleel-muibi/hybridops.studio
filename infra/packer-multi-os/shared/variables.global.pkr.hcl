@@ -1,6 +1,6 @@
 # variables.global.pkr.hcl
 # Purpose: Centralized variable definitions shared across all OS builds
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-08
 
 # Proxmox connection

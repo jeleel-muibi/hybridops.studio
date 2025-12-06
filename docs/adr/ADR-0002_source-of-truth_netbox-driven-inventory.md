@@ -4,7 +4,6 @@ title: "Source of Truth: NetBox-Driven Inventory"
 status: Accepted
 date: 2025-10-06
 domains: ["platform", "infra", "governance"]
-owners: ["jeleel"]
 supersedes: []
 superseded_by: []
 links:
@@ -14,7 +13,7 @@ links:
   diagrams: ["../diagrams/netbox_sot_overview.png"]
 ---
 
-# ADR-0002 — Source of Truth: NetBox-Driven Inventory
+# Source of Truth: NetBox-Driven Inventory
 
 ## Status
 Accepted — NetBox is the single source of truth (SoT) for infrastructure topology, device metadata, and automation inventory.
@@ -60,6 +59,5 @@ Key principles:
 
 ---
 
-**Author / Maintainer:** Jeleel Muibi  
-**Project:** [HybridOps.Studio](https://github.com/jeleel-muibi/hybridops.studio)  
-**License:** MIT-0 / CC-BY-4.0
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

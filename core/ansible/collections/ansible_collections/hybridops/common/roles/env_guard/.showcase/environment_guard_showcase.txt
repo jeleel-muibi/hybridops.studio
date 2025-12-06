@@ -5,7 +5,7 @@ ENVIRONMENT GUARD SHOWCASE
 
 
 VIDEO SCRIPT: Environment Guard Framework Showcase
-Author: Jeleel Muibi | hybridops.studio
+Maintainer: HybridOps.Studio
 
 [00:00] INTRODUCTION
 Welcome to HybridOps.Studio — where homelab meets enterprise automation. I'm Jeleel Muibi, and today I'm showcasing the Environment Guard Framework, a production-ready governance system for Ansible deployments.

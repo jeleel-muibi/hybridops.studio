@@ -1,6 +1,6 @@
 ---
 title: "Build Your First Proxmox VM Template with Packer"
-category: "howto"
+category: "platform"
 summary: "Step-by-step guide to build production-ready VM templates on Proxmox VE using Packer and cloud-init."
 difficulty: "Intermediate"
 source: "infra/packer-multi-os"
@@ -329,5 +329,5 @@ Integrate these into a monthly or quarterly maintenance window, and capture new 
 
 ---
 
-**Author:** jeleel-muibi  
-**Last Updated:** 2025-11-17 21:58 UTC
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

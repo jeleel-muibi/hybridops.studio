@@ -3,7 +3,7 @@
 [![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0)
 [![Ansible](https://img.shields.io/badge/ansible-2.9%2B-red.svg)](https://ansible.com)
 
-**Author:** Jeleel Muibi · **Version:** 2.2.0 · **Updated:** 2025‑09‑24
+**Maintainer:** HybridOps.Studio· **Version:** 2.2.0 · **Updated:** 2025‑09‑24
 
 > **Status:** Bridge role. In NetBox‑first deployments, this role becomes **optional** or a **fallback**.
 > It remains for environments still migrating from file/TF outputs to NetBox as the single source of truth.

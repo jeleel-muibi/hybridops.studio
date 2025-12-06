@@ -280,5 +280,5 @@ See [Toolkit README — Evidence Output](../../../control/tools/provision/packer
 
 ---
 
-**Maintainer:** jeleel-muibi  
+**Maintainer:** HybridOps. Studio  
 **Last Updated:** 2025-11-17 22:00 UTC

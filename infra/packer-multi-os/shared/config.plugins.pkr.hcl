@@ -2,7 +2,7 @@
 # Global Packer plugin configuration
 # Shared by all OS families (Ubuntu, Rocky, Windows)
 #
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-01-06
 
 packer {

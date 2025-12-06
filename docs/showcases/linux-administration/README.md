@@ -2,7 +2,7 @@
 
 Linux automation for user management, service hardening, backups, and monitoring (Prometheus/Grafana).
 
-- **Author:** Jeleel Muibi
+- **Maintainer:** HybridOps.Studio
 - **Last Updated:** 2025-09-18
 - **SPDX-License-Identifier:** MIT
 

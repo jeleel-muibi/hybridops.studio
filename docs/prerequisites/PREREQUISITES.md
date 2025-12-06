@@ -135,3 +135,8 @@ Upgrade if needed:
 ```bash
 sudo apt update && sudo apt install -y python3.10
 ```
+
+---
+
+**Maintainer:** HybridOps.Studio  
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

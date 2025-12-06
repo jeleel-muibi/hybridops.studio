@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# HybridOps.Studio - Complete Prerequisites Installer
 # Installs all system dependencies in one operation
-# Author: jeleel-muibii
+# Maintainer: HybridOps.Studio
 # Last Modified: 2025-11-23
 
 set -euo pipefail

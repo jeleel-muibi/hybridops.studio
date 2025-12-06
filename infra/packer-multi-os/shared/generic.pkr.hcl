@@ -2,7 +2,7 @@
 # Universal VM template builder for Proxmox
 # Supports Linux (Ubuntu, Rocky, Debian) and Windows
 #
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Created: 2025-11-08
 # Updated: 2025-11-13
 

@@ -1,5 +1,5 @@
 HybridOps.Studio – Infra / Inventory / Jenkins Decisions
-Author: Jeleel Muibi
+Maintainer: HybridOps.Studio
 Note type: Design reminders
 Date: 2025-11-25
 

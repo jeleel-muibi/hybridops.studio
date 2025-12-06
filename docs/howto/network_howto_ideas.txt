@@ -1,0 +1,47 @@
+Network HOWTO ideas derived from ADR-0101..0105, ADR-0201, ADR-0401 and network-architecture.md
+Generated: 20251130T135759Z
+
+Priority HOWTOs
+----------------
+1) HOWTO: Configure Dual Uplink (Ethernet/WiFi) on Proxmox
+   - Audience: Homelab and platform engineers.
+   - Scope: WiFi driver/firmware, wpa_supplicant, /etc/network/interfaces layout, validation.
+   - References: ADR-0105, docs/prerequisites/network-architecture.md, ethernet-wifi-failover runbook.
+
+2) HOWTO: Implement VLAN-Aware Bridge and VLAN Subinterfaces on Proxmox
+   - Audience: Networking and platform engineers.
+   - Scope: vmbr0 creation, bridge-vlan-aware, vmbr0.<vlan> gateways, validation commands.
+   - References: ADR-0101, ADR-0102, Add VLAN Gateway runbook.
+
+3) HOWTO: Configure Inter-VLAN Firewall Baseline with iptables
+   - Audience: Security and platform engineers.
+   - Scope: Translating ADR-0103 policy matrix into iptables rules, persistence, dry-run in staging.
+   - References: ADR-0103, firewall-baseline runbook.
+
+4) HOWTO: Build Static IP Allocation with Terraform IPAM
+   - Audience: Terraform practitioners.
+   - Scope: IPAM module design, allocations map, gateway outputs, integration with Proxmox VM module and cloud-init.
+   - References: ADR-0104, infra/terraform/modules/proxmox/ipam (once implemented).
+
+5) HOWTO: Deploy Observability Stack (Prometheus/Grafana/Loki) in VLAN 11
+   - Audience: SRE / observability engineers.
+   - Scope: VM layout, scrape configs per environment, firewall rules, sample dashboards.
+   - References: ADR-0401, ADR-0103.
+
+6) HOWTO: Bootstrap EVE-NG Network Lab in VLAN 50
+   - Audience: Network engineers.
+   - Scope: EVE-NG VM provisioning, VLAN 50 isolation, optional trunking for hybrid scenarios.
+   - References: ADR-0201, ADR-0103.
+
+7) HOWTO: Add a New Environment (e.g. QA) to the VLAN Scheme
+   - Audience: Platform / networking engineers.
+   - Scope: Extending VLAN ranges, updating ADR-0101, Proxmox interfaces, firewall matrix, IPAM ranges.
+
+8) HOWTO: Validate Network Architecture End-to-End
+   - Audience: Assessors, SREs, platform engineers.
+   - Scope: Systematic checklist to verify routing, NAT, firewall, observability, and lab isolation using the topology diagram.
+
+Notes
+-----
+- Runbooks above should stay terse and incident-focused; these HOWTOs carry the teaching narrative and deeper rationale.
+- All HOWTOs should use the standard HOWTO template (docs/howtos/HOWTO_template.md) and cross-link back to ADRs.

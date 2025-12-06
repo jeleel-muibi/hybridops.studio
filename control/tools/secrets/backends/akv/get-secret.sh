@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # HybridOps Studio — Azure Key Vault Secret Retrieval
 # -----------------------------------------------------------------------------
-# Author: jeleel-muibi
+# Maintainer: HybridOps.Studio
 # Date: 2025-10-23 14:11:17
 #
 # Description:

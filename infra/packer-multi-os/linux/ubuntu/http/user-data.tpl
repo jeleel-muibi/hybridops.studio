@@ -6,7 +6,7 @@
 # Template variables (replaced during rendering):
 #   __VAR_SSH_PUBLIC_KEY__  - Authorized SSH public key
 #
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-13
 
 autoinstall:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # validate-all.sh - Run packer validate for all templates
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-16
 
 set -euo pipefail

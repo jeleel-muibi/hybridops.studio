@@ -2,7 +2,7 @@
 # =============================================================================
 # Environment Guard Framework - CI Test (non-interactive)
 # Runs the env_guard role without prompts. Target env from CI_ENV (default: dev).
-# Author: Jeleel Muibi | Last Updated: 2025-09-10 21:20:00 UTC
+# Maintainer: HybridOps.Studio
 # =============================================================================
 # SPDX-License-Identifier: MIT-0
 

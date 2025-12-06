@@ -2,7 +2,7 @@
 # ==============================================================================
 # Environment Guard Framework - Role Test (host_selector)
 # Smoke-tests the host_selector role with interactive or automated environment input.
-# Author: Jeleel Muibi | Last Updated: 2025-09-10 21:55:00 UTC
+# Maintainer: HybridOps.Studio
 # ==============================================================================
 # SPDX-License-Identifier: MIT-0
 

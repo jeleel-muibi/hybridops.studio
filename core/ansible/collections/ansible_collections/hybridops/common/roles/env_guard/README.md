@@ -6,7 +6,7 @@
 [![Ansible](https://img.shields.io/badge/ansible-2.9+-red.svg)](https://ansible.com)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 
-**Author:** jeleel-muibi
+**Maintainer:** HybridOps.Studio
 **Updated:** 2025-09-10 20:55 UTC
 **Version:** 2.1.3
 
@@ -228,4 +228,4 @@ Related roles:
 
 ---
 
-**MIT-0 License** | [hybridops.studio](https://hybridops.studio) | **jeleel-muibi**
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

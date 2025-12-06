@@ -130,4 +130,4 @@ make python.env
 ---
 
 Last Modified: 2025-11-23  
-Author: jeleel-muibi
+Maintainer: HybridOps.Studio

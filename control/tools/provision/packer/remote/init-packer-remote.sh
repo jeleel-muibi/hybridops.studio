@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # init-packer-remote.sh - Bootstrap Proxmox for Packer API access
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-28
 
 set -euo pipefail

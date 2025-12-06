@@ -3,18 +3,40 @@ id: ADR-0016
 title: "Adopt Packer + Cloud-Init for VM Template Standardization"
 status: Accepted
 date: 2025-01-09
+category: "06-cicd-automation"
+
 domains: ["platform", "virtualization"]
-owners: ["jeleel-muibi"]
+owners: ["HybridOps.Studio"]
+supersedes: []
+superseded_by: []
+
 links:
-  runbooks: ["../../runbooks/platform/packer-proxmox-template-build.md"]
-  howtos: ["../../howtos/HOWTO_packer_proxmox_template.md"]
-  evidence: ["../proof/platform/packer-builds/"]
+  prs: []
+  runbooks:
+    - "../runbooks/platform/packer-proxmox-template-build.md"
+  howtos:
+    - "../howtos/HOWTO_packer_proxmox_template.md"
+  evidence:
+    - "../proof/platform/packer-builds/"
+  diagrams: []
   related_docs:
     - "./ADR-0015-network-infrastructure-assumptions.md"
     - "../prerequisites/NETWORK_INFRASTRUCTURE.md"
+
+draft: false
+is_template_doc: false
+tags: ["packer", "proxmox", "cloud-init", "templates", "automation"]
+access: public
+
+stub:
+  enabled: false
+  blurb: ""
+  highlights: []
+  cta_url: ""
+  cta_label: ""
 ---
 
-# ADR-0016 — Adopt Packer + Cloud-Init for VM Template Standardization
+# Adopt Packer + Cloud-Init for VM Template Standardization
 
 ## Status
 **Accepted** — Packer is the standard for building immutable VM templates on Proxmox; cloud-init is the default initialization system.
@@ -105,4 +127,5 @@ Templates are version-controlled in Git and rebuilt on a monthly cadence or when
 
 ---
 
-**Last Updated:** 2025-11-17 20:24 UTC
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # HybridOps Studio — SOPS Encryption Setup
 # -----------------------------------------------------------------------------
-# Author: jeleel-muibi
+# Maintainer: HybridOps.Studio
 # Date: 2025-10-23 14:11:17
 #
 # Description:
@@ -55,7 +55,7 @@ AGE_PUBLIC_KEY=$(grep "public key:" "${AGE_KEY_FILE}" | cut -d ' ' -f 4)
 cat > "${SOPS_CONFIG}" <<EOF
 # SOPS configuration file
 # Created: $(date -u +"%Y-%m-%d %H:%M:%S") UTC
-# Author: jeleel-muibi
+# Maintainer: HybridOps.Studio
 creation_rules:
   - path_regex: .*\.sops\.ya?ml
     age: "${AGE_PUBLIC_KEY}"

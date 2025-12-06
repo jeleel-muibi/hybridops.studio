@@ -281,8 +281,8 @@ flowchart TB
 
 ## Evidence
 
-- [**Evidence Map**](./docs/evidence_map.md) — claim → proof index
-- [**Proof Archive**](./docs/proof/README.md) — curated screenshots and exports
+- [**Evidence Map**](./docs/evidence_map.md) — main index mapping claims (DR, cost, images, SoT, networking) to proof folders and runbooks.
+- [**Proof Archive**](./docs/proof/README.md) — curated screenshots, exports and logs grouped by theme.
 
 <details>
 <summary><strong>🔎 Evidence Map (click to expand)</strong> — claim → proof links</summary>
@@ -309,22 +309,26 @@ flowchart TB
 
 This section provides hands-on demonstrations of HybridOps.Studio capabilities. Each showcase includes documentation, runnable examples, and evidence of successful execution.
 
-> **Quick Start:** Use `make showcase.avd-zerotouch-deployment.demo` to launch the AVD Zero-Touch showcase  
-> Each showcase generates evidence and diagrams automatically. The [root Makefile](./Makefile) routes all showcase targets.
+> **Quick start:** Use `make showcase.avd-zerotouch-deployment.demo` to launch the AVD Zero-Touch showcase.  
+> The [root Makefile](./Makefile) routes all showcase targets and ensures each run emits evidence.
 
-- [AVD Zero-Touch](./showcases/avd-zerotouch-deployment/README.md) - *Also available with advanced networking: `make showcase.avd-zerotouch-deployment.advanced-networking`*
-- [CI/CD Pipeline](./showcases/ci-cd-pipeline/README.md)
-- [DR Failover to Cloud](./showcases/dr-failover-to-cloud/README.md)
-- [Migrate On-Prem to Cloud](./showcases/migrate-onprem-to-cloud/README.md)
-- [Kubernetes Autoscaling](./showcases/kubernetes-autoscaling/README.md)
-- [Linux Administration](./showcases/linux-administration/README.md)
-- [Windows Administration](./showcases/windows-administration/README.md)
-- [Network Automation (Programmatic, Nornir)](./showcases/network-automation/programmatic-nornir/README.md)
-- [Network Automation (Declarative, Ansible)](./showcases/network-automation/declarative-ansible/README.md)
-- [DR Failback to On-Prem](./showcases/dr-failback-to-onprem/README.md)
-- [Scale Workload to Cloud](./showcases/scale-workload-to-cloud/README.md)
-- **HPC groundwork (planned):** Slurm-based lab to demonstrate job scheduling and observability integration — see [ADR-0100](./docs/adr/ADR-0100-HPC-Extension-Strategy-for-HybridOps-Studio.md)
-- [YouTube Assets](./showcases/youtube/README.md)
+Authoritative showcase index:
+
+- **Showcases overview:** [docs/showcases/README.md](./docs/showcases/README.md)
+
+Representative scenarios documented there include:
+
+- AVD zero-touch deployment (with an advanced networking variant).  
+- CI/CD pipeline from image factory (Packer) through Terraform/Ansible into Kubernetes.  
+- DR failover and failback between on-prem and cloud.  
+- Kubernetes autoscaling and controlled burst to cloud.  
+- Network automation using Nornir (programmatic) and Ansible (declarative).  
+
+Each showcase page links to:
+
+- The relevant runbooks under `docs/runbooks/`  
+- Proof artefacts under `docs/proof/...`  
+- Supporting ADRs and HOWTOs
 
 ---
 
@@ -420,6 +424,7 @@ control/bin/dr-dns-cutover.sh azure
 - Backup/DR (WAL-G, RPO/RTO) — **[Evidence Map](./docs/evidence_map.md)**
 
 ### Briefing Pack
+- **Global Talent assessors:** [How to review HybridOps.Studio](./docs/briefings/gtv/how-to-review.md)
 - **[Executive Summary](./docs/briefings/executive_summary.md)** — high-level goals and value
 - **[Project Overview](./docs/briefings/project_overview.md)** — repo structure & navigation
 - **[Technical Architecture](./docs/briefings/technical_architecture.md)** — components & flows with proof links

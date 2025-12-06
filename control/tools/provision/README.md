@@ -273,5 +273,5 @@ grep -R "${CHAIN_ID}" docs/proof/platform/packer-builds
 
 ---
 
-**Maintainer:** jeleel-muibi  
+**Maintainer:** HybridOps. Studio  
 **Last Updated:** 2025-11-28

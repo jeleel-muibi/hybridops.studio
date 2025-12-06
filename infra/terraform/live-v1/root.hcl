@@ -1,24 +1,48 @@
 // file: infra/terraform/live-v1/root.hcl
-// purpose: Root Terragrunt configuration for HybridOps Studio live-v1
-// author: Jeleel Muibi
-// date: 2025-11-29
+// purpose: Root configuration shared across all environments in the on-premises deployment
 
 locals {
-  proxmox_endpoint        = get_env("PROXMOX_URL", "")
-  proxmox_token_id        = get_env("PROXMOX_TOKEN_ID", "")
-  proxmox_token_secret    = get_env("PROXMOX_TOKEN_SECRET", "")
-  proxmox_skip_tls_verify = (get_env("PROXMOX_SKIP_TLS_VERIFY", "true") == "true")
+  # Global configuration
+  site_name        = "onprem"
+  organization     = "hybridops"
+
+  # Terraform state backend (local for on-prem, can be S3/GCS for cloud)
+  state_base_path  = "${get_repo_root()}/infra/terraform/live-v1/.terragrunt-state"
 }
 
+# Generate backend configuration for local state
+generate "backend" {
+  path      = "backend.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+terraform {
+  backend "local" {
+    path = "${local.state_base_path}/${path_relative_to_include()}.tfstate"
+  }
+}
+EOF
+}
+
+# Generate provider configuration
 generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
-provider "proxmox" {
-  endpoint  = "${local.proxmox_endpoint}"
-  api_token = "${local.proxmox_token_id}=${local.proxmox_token_secret}"
-  insecure  = ${local.proxmox_skip_tls_verify}
+terraform {
+  required_version = ">= 1.5.0"
 
+  required_providers {
+    proxmox = {
+      source  = "bpg/proxmox"
+      version = "~> 0.87.0"
+    }
+  }
+}
+
+provider "proxmox" {
+  endpoint  = var.proxmox_url
+  api_token = var.proxmox_token
+  insecure  = var.proxmox_insecure
   ssh {
     agent    = true
     username = "root"
@@ -27,13 +51,20 @@ provider "proxmox" {
 EOF
 }
 
-remote_state {
-  backend = "local"
-  config = {
-    path = "${get_repo_root()}/infra/terraform/live-v1/.terragrunt-state/${path_relative_to_include()}.tfstate"
-  }
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite_terragrunt"
+# Common variables for all modules
+inputs = {
+  proxmox_url      = get_env("PROXMOX_URL", "")
+  proxmox_token    = format("%s=%s",
+                       get_env("PROXMOX_TOKEN_ID", ""),
+                       get_env("PROXMOX_TOKEN_SECRET", ""))
+  proxmox_insecure = get_env("PROXMOX_SKIP_TLS_VERIFY", "false") == "true"
+  proxmox_node     = get_env("PROXMOX_NODE", "")
+
+  # Global tags
+  tags = {
+    managed_by  = "terraform"
+    project     = "hybridops-blueprint"
+    site        = local.site_name
+    organization = local.organization
   }
 }

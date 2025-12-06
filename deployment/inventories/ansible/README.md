@@ -1,7 +1,6 @@
 # Inventories — Single Source of Truth (SSOT)
 
 **SPDX-License-Identifier: MIT-0**
-**Project:** HybridOps.Studio · **Last Updated:** 2025-09-25 17:30 UTC
 
 ---
 

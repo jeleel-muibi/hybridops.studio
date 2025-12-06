@@ -1,6 +1,6 @@
 # .gitignore - HybridOps.Studio
 # Purpose: Ignore local artifacts, secrets, and generated files.
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-17
 
 core/ansible/collections/ansible_collections/hybridops/common/roles/ansible_roles_for_job_applications.txt

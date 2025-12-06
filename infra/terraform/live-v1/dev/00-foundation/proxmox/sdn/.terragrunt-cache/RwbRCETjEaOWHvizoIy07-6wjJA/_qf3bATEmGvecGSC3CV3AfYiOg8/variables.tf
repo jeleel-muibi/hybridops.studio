@@ -1,5 +1,3 @@
-# File: ~/hybridops-studio/infra/terraform/modules/proxmox/sdn/variables.tf
-
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
@@ -31,5 +29,34 @@ variable "vnets" {
     mtu     = optional(number, 1500)
     comment = optional(string, "")
   }))
-  default = {}
+}
+
+# Provider configuration variables (passed from root.hcl)
+variable "proxmox_url" {
+  description = "Proxmox API endpoint URL"
+  type        = string
+}
+
+variable "proxmox_token" {
+  description = "Proxmox API token in format 'id=secret'"
+  type        = string
+  sensitive   = true
+}
+
+variable "proxmox_insecure" {
+  description = "Skip TLS verification for Proxmox API"
+  type        = bool
+  default     = false
+}
+
+variable "proxmox_node" {
+  description = "Proxmox node name"
+  type        = string
+  default     = ""
+}
+
+variable "tags" {
+  description = "Global tags for resources"
+  type        = map(string)
+  default     = {}
 }

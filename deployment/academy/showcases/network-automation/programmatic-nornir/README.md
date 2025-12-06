@@ -4,7 +4,7 @@
 
 This case study documents the BSc project showcasing multi-vendor automation with **Nornir** over an **EVE‑NG** topology hosted on **Proxmox**.
 
-- **Author:** Jeleel Muibi
+- **Maintainer:** HybridOps.Studio
 - **Last Updated:** 2025-09-18
 - **SPDX-License-Identifier:** MIT
 

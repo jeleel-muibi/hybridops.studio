@@ -1,6 +1,6 @@
 # file: Test-HybridOpsWinRM.ps1
 # purpose: Test WinRM connectivity to a remote host
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 function Test-HybridOpsWinRM {

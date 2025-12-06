@@ -14,7 +14,7 @@ Hook (0:05–0:20)
   • Presenter (to camera): "Can your playbook target only the right hosts, every time? Today I’ll show you a Host Selector that adds governance, validation, and four selection methods to your Ansible workflows."
 
 Intro & Value (0:20–0:50)
-  • Lower-third: "Jeleel Muibi — hybridops.studio"
+  • Lower-third: "hybridops.studio"
   • Key points:
     – 4 selection methods: Manual, Group-based, Hierarchical, All Hosts.
     – Governance-aware: uses validated environment & correlation ID from the EGF pipeline.

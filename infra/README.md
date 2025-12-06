@@ -116,5 +116,5 @@ From the repository root:
 
 This overview intentionally remains high-level. For precise inputs, outputs and evidence flows, refer to the README files inside each subdirectory and the linked HOWTOs ADRs and Runbooks.
 
-**Maintainer:** Jeleel Muibi  
+**Maintainer:** HybridOps.Studio
 **Last Updated:** 2025-11-29

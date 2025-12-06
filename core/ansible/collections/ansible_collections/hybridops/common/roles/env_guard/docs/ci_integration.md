@@ -32,4 +32,4 @@ jobs:
 
 ---
 
-Maintained by jeleel-muibi
+Maintained by HybridOps.Studio

@@ -1,6 +1,6 @@
 # ks-rocky.cfg.tpl
 # Purpose: Shared Kickstart template for Rocky Linux 9/10 Packer builds
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-15
 # Compatible: Rocky Linux 9.x, 10.x
 

@@ -66,7 +66,7 @@ graph TD
 
 - **ADRs**
   - [ADR Index](./adr/README.md)  
-    Selected: [ADR-0001 — ADR process](./adr/ADR-0001_adr-process-and-conventions.md) · [ADR-0002 — NetBox SoT](./adr/ADR-0002_source-of-truth_netbox-driven-inventory.md) · [ADR-0003 — Secrets via External Secrets + KMS](./adr/ADR-0003_secrets-management_k8s-external-secrets-kms.md) · [ADR-0012 — Control node as a VM](./adr/ADR-0012_control-node-as-vm.md)
+    Selected: [ADR-0001 — ADR process](./adr/ADR-0001-adr-process-and-conventions.md) · [ADR-0002 — NetBox SoT](./adr/ADR-0002_source-of-truth_netbox-driven-inventory.md) · [ADR-0003 — Secrets via External Secrets + KMS](./adr/ADR-0003_secrets-management_k8s-external-secrets-kms.md) · [ADR-0012 — Control node as a VM](./adr/ADR-0012_control-node-as-vm.md)
 
 - **Diagrams**
   - [Architecture (rendered)](./diagrams/flowcharts/renders/architecture-overview.png)

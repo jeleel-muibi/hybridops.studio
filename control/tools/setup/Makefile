@@ -1,6 +1,6 @@
 # File: Makefile - System Prerequisites Installer
 # Purpose: Install core tooling and Python environment for HybridOps.Studio
-# Author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # Date: 2025-01-23
 
 SHELL := /bin/bash

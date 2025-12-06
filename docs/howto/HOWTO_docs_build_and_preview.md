@@ -239,6 +239,5 @@ For formal evidence, capture:
 
 ---
 
-**Author:** Jeleel Muibi  
-**Project:** HybridOps.Studio  
-**License:** MIT-0 for code, CC-BY-4.0 for documentation
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

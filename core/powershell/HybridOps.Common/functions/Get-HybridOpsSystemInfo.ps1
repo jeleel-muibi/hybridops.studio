@@ -1,6 +1,6 @@
 # file: Get-HybridOpsSystemInfo.ps1
 # purpose: Return basic system information for HybridOps evidence and troubleshooting
-# author: Jeleel Muibi
+# Maintainer: HybridOps.Studio
 # date: 2025-11-26
 
 function Get-HybridOpsSystemInfo {

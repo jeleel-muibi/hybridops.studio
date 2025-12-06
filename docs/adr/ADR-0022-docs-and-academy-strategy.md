@@ -26,11 +26,9 @@ stub:
   cta_label: ""
 ---
 
-# ADR-0022 — Documentation, Public Site, and Academy Strategy
-**Status:** Accepted  
-**Domain(s):** docs, academy, platform  
-**Owner(s):** HybridOps.Studio  
-**Last updated:** 2025-11-19  
+# Documentation, Public Site, and Academy Strategy
+
+**Status:** Accepted — Uses a single docs tree with access metadata plus dual MkDocs builds and Moodle gating to separate public reference docs from premium Academy material.
 
 ---
 
@@ -256,6 +254,9 @@ This allows HybridOps.Studio to function simultaneously as:
 
 ---
 
-**Author / Maintainer:** HybridOps.Studio (Jeleel Muibi)  
-**Project:** HybridOps.Studio  
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.
+
+
+
 **Licence:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

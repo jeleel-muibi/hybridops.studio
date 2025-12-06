@@ -142,16 +142,23 @@ This helps future changes stay consistent with the current design.
 
 ## 8. References
 
-Update to match the actual pipeline:
+Update this section to match the actual pipeline. Use **markdown links**, not bare paths. Typical patterns:
 
-- CI config: paths under `.github/workflows/`, `ci/jenkins/`, or similar.  
-- Related runbooks: `../runbooks/...`  
-- Related HOWTOs: `../howto/...`  
-- ADRs influencing this pipeline: `../adr/ADR-XXXX-something.md`  
-- Evidence folders: `../proof/...`  
+- CI config:  
+  - [GitHub Actions workflow](../../.github/workflows/<file>.yml)  
+  - [Jenkinsfile](../../ci/jenkins/<pipeline>/Jenkinsfile)
+- Related runbooks:  
+  - [Runbook – <descriptive name>](../runbooks/<category>/runbook-<slug>.md)
+- Related HOWTOs:  
+  - [HOWTO – <descriptive name>](../howtos/HOWTO_<slug>.md)
+- ADRs influencing this pipeline:  
+  - [ADR-XXXX – <short title>](../adr/ADR-XXXX-<slug>.md)
+- Evidence folders:  
+  - [`docs/proof/<topic>/`](../../docs/proof/<topic>/)
+
+Replace the placeholders above with the concrete paths for this pipeline.
 
 ---
 
-**Author:** Jeleel Muibi  
-**Project:** HybridOps.Studio  
+**Maintainer:** HybridOps.Studio  
 **License:** MIT-0 for code, CC-BY-4.0 for documentation

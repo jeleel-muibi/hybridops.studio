@@ -132,10 +132,10 @@ Examples:
   - `.github/workflows/<workflow>.yml` or Jenkins pipeline definitions if applicable.
 
 - **Evidence and proofs:**
-  - Evidence entries from the **Evidence Map**: `../../evidence_map.md`
-  - Proof archive paths under `docs/proof/...` if they exist for this scenario.
+  - Evidence entries from the **Evidence Map**: [Evidence Map](../../evidence_map.md)
+  - Proof archive paths, for example: [`docs/proof/<scenario>/`](../../docs/proof/<scenario>/)
 
-Use descriptive link text, not raw paths.
+Use descriptive link text, not raw paths in prose; use paths as link targets with clear link text.
 
 ---
 
@@ -178,6 +178,5 @@ Keep it short and grounded in what the demo actually shows.
 
 ---
 
-**Author:** Jeleel Muibi  
-**Project:** HybridOps.Studio Showcase  
-**License:** MIT-0 for code, CC-BY-4.0 for documentation
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

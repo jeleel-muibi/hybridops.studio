@@ -5,7 +5,7 @@
 [![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0)
 [![Ansible](https://img.shields.io/badge/ansible-2.9+-red.svg)](https://ansible.com)
 
-**Author:** jeleel-muibi | **Updated:** 2025-09-09 00:00:00 UTC | **Version:** 2.1.1
+**Maintainer:** HybridOps.Studio
 
 ---
 
@@ -147,4 +147,4 @@ Related roles:
 
 ---
 
-**MIT-0 License** | [hybridops.studio](https://hybridops.studio) | **jeleel-muibi**
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

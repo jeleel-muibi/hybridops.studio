@@ -22,10 +22,8 @@ links:
 
 # Secrets Strategy — Azure Key Vault primary; SOPS DR fallback; Vault optional later
 
-**Status:** Accepted  
-**Domain(s):** security, platform, governance  
-**Owner(s):** HybridOps.Studio  
-**Last updated:** 2025-11-28  
+**Status:** Accepted — Centralises all runtime secrets in Azure Key Vault with a minimal SOPS DR fallback, simplifying governance while keeping a clear, auditable DR path.
+
 
 Related guide: [Secrets lifecycle and responsibilities](../guides/secrets-lifecycle.md)
 
@@ -213,3 +211,8 @@ The guide: [Secrets lifecycle and responsibilities](../guides/secrets-lifecycle.
 - How-to: [Provision ctrl-01](../howto/HOWTO_ctrl01_provisioner.md)
 - Runbook: [ctrl-01 bootstrap / verification](../runbooks/bootstrap/bootstrap-ctrl01-node.md)
 - Related cost & telemetry considerations: [Cost & Telemetry](../guides/cost-model.md)
+
+---
+
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.

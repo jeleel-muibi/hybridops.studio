@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # prestage-iso.sh - Manage ISO file availability on Proxmox storage for Packer builds
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-16
 
 set -euo pipefail

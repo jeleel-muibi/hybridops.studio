@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # init-proxmox-env.sh - Initialize Packer environment for Proxmox builds
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Date: 2025-11-28
 
 set -euo pipefail

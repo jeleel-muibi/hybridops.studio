@@ -100,5 +100,5 @@ make clean-all                   # Deep clean (.env, cache)
 
 ---
 
-**Maintainer:** jeleel-muibi  
+**Maintainer:** HybridOps. Studio  
 **Last Updated:** 2025-11-17 21:58 UTC

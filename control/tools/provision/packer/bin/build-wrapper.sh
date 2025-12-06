@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # build-wrapper.sh - Orchestrate Packer template builds with logging and evidence
-# Author: Jeleel Muibi | HybridOps.Studio
+# Maintainer: HybridOps.Studio
 # Created: 2025-11-17
 
 set -euo pipefail

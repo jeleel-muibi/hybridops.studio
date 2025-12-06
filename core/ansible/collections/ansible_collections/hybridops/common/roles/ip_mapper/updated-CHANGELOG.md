@@ -67,4 +67,4 @@ _All notable changes to the **ip_mapper** role are documented here. This project
 
 ---
 
-**Author:** jeleel-muibi · **License:** MIT-0
+**Maintainer:** HybridOps.Studio

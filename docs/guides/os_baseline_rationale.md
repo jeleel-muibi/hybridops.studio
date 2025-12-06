@@ -1,6 +1,6 @@
 # OS Baseline Rationale
 **Document Type:** Technical Whitepaper  
-**Author:** Jeleel Muibi | HybridOps.Studio  
+**Maintainer:** HybridOps.Studio| HybridOps.Studio  
 **Date:** 2025-11-10  
 **Linked ADR:** [ADR-0017: Operating System Baseline](../../adr/ADR-0017-operating-system-baseline.md)
 

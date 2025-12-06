@@ -1,5 +1,5 @@
 // file: infra/terraform/live-v1/staging/env.hcl
-// purpose: Environment-level settings for staging
+// purpose: Staging environment configuration
 
 locals {
   environment = "staging"

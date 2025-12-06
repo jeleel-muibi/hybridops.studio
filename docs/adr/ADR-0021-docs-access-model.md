@@ -36,10 +36,7 @@ stub:
 
 # Documentation Access and Gating Model
 
-**Status:** Accepted  
-**Domain(s):** docs, platform, commercial  
-**Owner(s):** HybridOps.Studio  
-**Last updated:** 2025-11-19  
+**Status:** Accepted — Establishes a front-matter access model and build-time stubbing to separate public docs from Academy-only content without duplicating files.
 
 ---
 
@@ -196,6 +193,5 @@ Validation patterns include:
 
 ---
 
-**Author / Maintainer:** Jeleel Muibi  
-**Project:** HybridOps.Studio  
-**License:** MIT-0 for code, CC-BY-4.0 for documentation
+**Maintainer:** HybridOps.Studio
+**License:** MIT-0 for code, CC-BY-4.0 for documentation unless otherwise stated.
