@@ -1,0 +1,53 @@
+#cloud-config
+# ctrl-01 Jenkins Controller Bootstrap
+# Day-0 automation for control plane
+
+hostname: ctrl-01
+fqdn: ctrl-01.lab.local
+
+users:
+- name: sysadmin
+  groups: sudo
+  shell: /bin/bash
+  sudo: ['ALL=(ALL) NOPASSWD:ALL']
+  lock_passwd: false
+
+package_update: true
+package_upgrade: true
+
+packages:
+- git
+- curl
+- wget
+- vim
+- htop
+- net-tools
+- openjdk-17-jre
+- gnupg
+- ca-certificates
+
+runcmd:
+- curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+- echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+- apt-get update
+- apt-get install -y jenkins
+- systemctl enable jenkins
+- systemctl start jenkins
+- curl -fsSL https://get.docker.com -o get-docker.sh
+- sh get-docker.sh
+- usermod -aG docker jenkins
+- systemctl enable docker
+- systemctl start docker
+- mkdir -p /opt/evidence
+- chown jenkins:jenkins /opt/evidence
+- sleep 30
+- cat /var/lib/jenkins/secrets/initialAdminPassword > /opt/evidence/jenkins-initial-password.txt
+
+write_files:
+- path: /etc/profile.d/jenkins-env.sh
+  content: |
+    export JENKINS_HOME=/var/lib/jenkins
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+  permissions: '0644'
+
+final_message: "ctrl-01 Jenkins controller is ready after $UPTIME seconds"
