@@ -1,18 +1,19 @@
-# HybridOps.Studio — Hybrid Cloud Automation Platform
+# Hybrid Cloud Automation Platform
 
 [![License: MIT-0](https://img.shields.io/badge/License-MIT--0-blue.svg)](https://opensource.org/licenses/MIT-0)
 [![Terraform](https://img.shields.io/badge/terraform-1.5%2B-623CE4.svg)](https://terraform.io)
 [![Ansible](https://img.shields.io/badge/ansible-2.15%2B-red.svg)](https://ansible.com)
 [![Packer](https://img.shields.io/badge/packer-1.9%2B-02A8EF.svg)](https://developer.hashicorp.com/packer)
 
-**HybridOps.Studio** is a product-led blueprint for hybrid cloud operations:
+Part of the **HybridOps.Studio** project, this repository contains the **platform implementation** for a hybrid cloud automation blueprint:
 
 - On-prem Proxmox as the core site, with SDN-backed segmentation and local control.
 - Kubernetes clusters on-prem and in the cloud (AKS/GKE) driven by GitOps.
 - Cost- and signal-aware DR, failback, and burst into Azure and GCP.
 - NetBox as source of truth and Prometheus-first observability across sites.
 
-This repository contains the **platform implementation** – image factory, Terraform/Terragrunt stacks, CI/CD glue, control tooling, and run outputs. Narrative documentation, ADRs, runbooks, and showcases live on the docs site at [docs.hybridops.studio](https://docs.hybridops.studio).
+Narrative documentation, ADRs, runbooks, and showcases live on the docs site at  
+[docs.hybridops.studio](https://docs.hybridops.studio).
 
 ---
 
