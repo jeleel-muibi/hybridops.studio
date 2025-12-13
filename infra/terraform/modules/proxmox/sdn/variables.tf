@@ -1,62 +1,50 @@
-variable "environment" {
-  description = "Environment name (dev, staging, prod)"
-  type        = string
-}
-
-variable "site" {
-  description = "Site identifier"
-  type        = string
-}
-
-variable "uplink_bridge" {
-  description = "Uplink bridge for SDN zone"
-  type        = string
-  default     = "vmbr0"
-}
+# file: infra/terraform/modules/proxmox/sdn/variables.tf
 
 variable "zone_name" {
-  description = "Name of the SDN zone"
+  description = "SDN zone name"
+  type        = string
+}
+
+variable "proxmox_node" {
+  description = "Proxmox node name"
+  type        = string
+}
+
+variable "proxmox_host" {
+  description = "Proxmox host IP for SSH"
   type        = string
 }
 
 variable "vnets" {
   description = "Map of VNets to create"
   type = map(object({
-    vlan_id = number
-    cidr    = string
-    gateway = string
-    dns     = optional(list(string), [])
-    mtu     = optional(number, 1500)
-    comment = optional(string, "")
+    vlan_id     = number
+    description = string
+    subnets = map(object({
+      cidr              = string
+      gateway           = string
+      dhcp_enabled      = bool
+      dhcp_range_start  = optional(string)
+      dhcp_range_end    = optional(string)
+      dhcp_dns_server   = optional(string)
+    }))
   }))
 }
 
-# Provider configuration variables (passed from root.hcl)
+# Provider configuration
 variable "proxmox_url" {
-  description = "Proxmox API endpoint URL"
+  description = "Proxmox API URL"
   type        = string
 }
 
 variable "proxmox_token" {
-  description = "Proxmox API token in format 'id=secret'"
+  description = "Proxmox API token"
   type        = string
   sensitive   = true
 }
 
 variable "proxmox_insecure" {
-  description = "Skip TLS verification for Proxmox API"
+  description = "Skip TLS verification"
   type        = bool
   default     = false
-}
-
-variable "proxmox_node" {
-  description = "Proxmox node name"
-  type        = string
-  default     = ""
-}
-
-variable "tags" {
-  description = "Global tags for resources"
-  type        = map(string)
-  default     = {}
 }

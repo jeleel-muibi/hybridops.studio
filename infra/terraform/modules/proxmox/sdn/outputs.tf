@@ -1,35 +1,28 @@
-output "zone_id" {
-  description = "ID of the SDN zone"
-  value       = proxmox_virtual_environment_sdn_zone_vlan.main.id
+# file: infra/terraform/modules/proxmox/sdn/outputs.tf
+
+output "zone_name" {
+  description = "SDN zone name"
+  value       = proxmox_virtual_environment_sdn_zone_vlan.zone.id
 }
 
-output "zone_bridge" {
-  description = "Bridge used by SDN zone"
-  value       = proxmox_virtual_environment_sdn_zone_vlan.main.bridge
-}
-
-output "vnet_details" {
-  description = "Details of VNets (VLAN tag, gateway, etc.)"
+output "vnets" {
+  description = "Created VNets"
   value = {
-    for k, v in proxmox_virtual_environment_sdn_vnet.vnets : k => {
+    for k, v in proxmox_virtual_environment_sdn_vnet.vnet : k => {
       id      = v.id
       zone    = v.zone
-      tag     = v.tag
-      gateway = var.vnets[k].gateway
-      cidr    = var.vnets[k].cidr
-      alias   = v.alias
+      vlan_id = v.tag
     }
   }
 }
 
-output "subnet_details" {
-  description = "Details of created subnets"
+output "subnets" {
+  description = "Created subnets with DHCP info"
   value = {
-    for k, v in proxmox_virtual_environment_sdn_subnet.subnets : k => {
+    for k, v in proxmox_virtual_environment_sdn_subnet.subnet : k => {
       vnet    = v.vnet
       cidr    = v.cidr
       gateway = v.gateway
-      snat    = v.snat
     }
   }
 }
