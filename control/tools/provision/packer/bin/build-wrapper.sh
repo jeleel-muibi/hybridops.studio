@@ -56,7 +56,7 @@ fi
 
 INFRA_DIR="${REPO_ROOT}/infra/packer-multi-os"
 OUTPUT_ROOT="${REPO_ROOT}/output/logs/packer/builds/${KEY}"
-PROOF_ROOT="${REPO_ROOT}/output/artifacts/packer-builds"
+PROOF_ROOT="${REPO_ROOT}/output/artifacts/platform/packer-builds"
 EVIDENCE_SCRIPT="${SCRIPT_DIR}/evidence_packer.sh"
 TEST_SCRIPT="${SCRIPT_DIR}/test-template.sh"
 

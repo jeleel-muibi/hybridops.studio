@@ -16,7 +16,7 @@ MODE=""
 LOG_FILE=""
 ENV_FILE=""
 TEMPLATE=""
-OUT_ROOT="output/artifacts/packer-builds"
+OUT_ROOT="output/artifacts/platform/packer-builds"
 VMID=""
 
 while [[ $# -gt 0 ]]; do

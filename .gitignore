@@ -56,8 +56,10 @@ node_modules/
 dist/
 build/
 
+# Secrets
 .env*
 !.env.proxmox.example
+control/secrets.env
 .secrets/
 
 .DS_Store

@@ -171,7 +171,7 @@ make build-windows-server-2022
 Build logs and proof bundles are written under:
 
 - `output/logs/packer/`
-- `output/artifacts/packer-builds/`
+- `output/artifacts/platform/packer-builds/`
 
 Further detail:
 
