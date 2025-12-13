@@ -9,7 +9,7 @@ exactly what to do when you come back, in the right order, without re‑thinking
 Scope
 -----
 - Budget Gate (phase 1) and Provider Selection (phase 2) under `control/decision/`
-- Cost evidence collection and publication into `docs/proof/cost/`
+- Cost evidence collection and publication into `output/artifacts/cost/`
 - Zero‑touch secrets via *one* chosen path (recommend: Azure Managed Identity + Key Vault)
 
 Phase 0 — Keep lights on (today)
@@ -58,8 +58,8 @@ Phase 3 — Gate & selection in pipeline
 Phase 4 — Evidence publication
 ------------------------------
 - After each run:
-  - Copy `signals/gate.json` and `signals/decision.json` into `docs/proof/decision/<run_id>/`.
-  - For cost artifacts, write normalized JSON to `docs/proof/cost/<run_id>/` and update `latest/` symlink.
+  - Copy `signals/gate.json` and `signals/decision.json` into `output/artifacts/decision/<run_id>/`.
+  - For cost artifacts, write normalized JSON to `output/artifacts/cost/<run_id>/` and update `latest/` symlink.
 - Update `docs/evidence_map.md` to include the **Decision** and **Cost** latest links.
 
 Phase 5 — Policy tuning

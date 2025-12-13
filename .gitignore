@@ -11,6 +11,7 @@ etc/local/
 **/cost_overrides.local.yaml
 .config/
 plan/
+infra/.ignore
 
 
 # drafts run
@@ -33,11 +34,14 @@ core/ansible/inventories/*/host_vars/*-secret*.yml
 output/
 *.logs
 
+# Terragrunt state and cache
 terraform-infra/**/.terraform/
 terraform-infra/**/.terraform.lock.hcl
 terraform-infra/**/terraform.tfstate
 terraform-infra/**/terraform.tfstate.backup
 terraform-infra/**/crash.log
+infra/terraform/live-v1/.terragrunt-state/
+**/.terragrunt-cache/
 core/terraform-infra/output/*.json
 showcases/**/terraform-scenarios/**/tf.plan
 showcases/**/terraform-scenarios/**/.terraform/

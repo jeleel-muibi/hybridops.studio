@@ -17,7 +17,7 @@ CONF_FILE="${SCRIPT_DIR}/.conf/proxmox.conf"
 SECRETS_FILE="${REPO_ROOT}/control/secrets.env"
 ENV_OUT="${REPO_ROOT}/infra/env/.env.proxmox"
 LOG_ROOT="${REPO_ROOT}/output/logs/packer/init"
-PROOF_ROOT="${REPO_ROOT}/docs/proof/platform/packer-builds"
+PROOF_ROOT="${REPO_ROOT}/output/artifacts/platform/packer-builds"
 EVIDENCE_SCRIPT="${BIN_DIR}/evidence_packer.sh"
 
 command -v ssh >/dev/null 2>&1 || { echo "ERR : ssh not found in PATH" >&2; exit 1; }

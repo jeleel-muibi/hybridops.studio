@@ -2,7 +2,7 @@
 
 VM template definitions for Proxmox VE using HashiCorp Packer. Build automation uses scripts from [`control/tools/provision/packer/`](../../control/tools/provision/packer/).
 
-> **Documentation:** [HOWTO](../../docs/howtos/HOWTO_packer_proxmox_template.md) · [Runbook](../../docs/runbooks/platform/packer-proxmox-template-build.md) · [Toolkit](../../control/tools/provision/packer/README.md) · [ADR-0016](../../docs/adr/ADR-0016-packer-cloudinit-vm-templates.md)
+> **Documentation:** [HOWTO](https://docs.hybridops.studio/howtos/HOWTO_packer_proxmox_template/) · [Runbook](https://docs.hybridops.studio/runbooks/platform/packer-proxmox-template-build/) · [Toolkit](../../control/tools/provision/packer/README.md) · [ADR-0016](https://docs.hybridops.studio/adr/ADR-0016-packer-cloudinit-vm-templates/)
 
 ---
 
@@ -57,7 +57,7 @@ infra/packer-multi-os/
 ```bash
 make init
 ```
-See [HOWTO Step 2](../../docs/howtos/HOWTO_packer_proxmox_template.md#step-2-initialize-proxmox-api) for details.
+See [HOWTO: Step 2](../../docs/howtos/HOWTO_packer_proxmox_template.md#step-2-initialize-proxmox-api) for details.
 
 ### Build
 ```bash
@@ -93,10 +93,10 @@ make clean-all                   # Deep clean (.env, cache)
 
 ## Documentation
 
-- **Learning:** [HOWTO — Build Your First Packer Template](../../docs/howtos/HOWTO_packer_proxmox_template.md)
-- **Operations:** [Runbook — Proxmox VM Template Build](../../docs/runbooks/platform/packer-proxmox-template-build.md)
+- **Learning:** [HOWTO — Build Your First Packer Template](https://docs.hybridops.studio/howtos/HOWTO_packer_proxmox_template/)
+- **Operations:** [Runbook — Proxmox VM Template Build](https://docs.hybridops.studio/runbooks/platform/packer-proxmox-template-build/)
 - **Toolkit:** [Packer Provisioning Toolkit](../../control/tools/provision/packer/README.md)
-- **Architecture:** [ADR-0016 — Packer + Cloud-Init VM Templates](../../docs/adr/ADR-0016-packer-cloudinit-vm-templates.md)
+- **Architecture:** [ADR-0016 — Packer + Cloud-Init VM Templates](https://docs.hybridops.studio/adr/ADR-0016-packer-cloudinit-vm-templates/)
 
 ---
 

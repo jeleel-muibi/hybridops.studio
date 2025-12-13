@@ -5,8 +5,7 @@ This component makes bursting/DR **auditable and predictable** by separating the
 1. **Budget Gate** — checks **cost & credits** against a policy and either *allows*, *warns*, or *denies* the action.
 2. **Provider Selection** — chooses **azure**, **gcp**, or **onprem** using live metrics (latency, error rate, cost/hour, SLO).
 
-It is deliberately **file‑based** so CLI and Jenkins runs are reproducible. Every run produces small JSON artifacts you can
-commit into the proof archive for assessors/reviewers.
+It is deliberately **file‑based** so CLI and Jenkins runs are reproducible. Every run produces small JSON artifacts suitable for inclusion under `output/artifacts/decision/` and for cross‑reference in documentation and evidence packs.
 
 ---
 
@@ -70,14 +69,14 @@ stage('Decide + Execute') { steps { dir('control/decision') {
 
     # publish decision artifacts into the proof archive
     RUN_ID="${BUILD_TAG// /_}"
-    mkdir -p "../../docs/proof/decision/${RUN_ID}"
-    cp -a signals/gate.json signals/decision.json "../../docs/proof/decision/${RUN_ID}/"
-    ln -sfn "${RUN_ID}" "../../docs/proof/decision/latest"
+    mkdir -p "../../output/artifacts/decision/${RUN_ID}"
+    cp -a signals/gate.json signals/decision.json "../../output/artifacts/decision/${RUN_ID}/"
+    ln -sfn "${RUN_ID}" "../../output/artifacts/decision/latest"
   '''
 }}}
 ```
 
-Artifacts then appear at `docs/proof/decision/<run_id>/` and are linked from the Evidence Map.
+Artifacts then appear at `output/artifacts/decision/<run_id>/` and are linked from the Evidence Map.
 
 ---
 
@@ -95,27 +94,25 @@ Start strict (mode=`"enforce"`) for demos that must not exceed budget; switch to
 
 ## Evidence links & cost alignment
 
-This directory is designed to mesh with your cost documentation and collectors:
+This directory is designed to integrate with the platform's cost documentation and collectors:
 
-- **Guide:** `docs/guides/cost-model.md` (how costs are tagged, queried, and summarized)
-- **Evidence:** `docs/proof/cost/` (normalized JSON + Markdown summaries)
-- **Policy hooks:** `control/decision/` (this folder; gate pulls credits/budgets, selection uses live metrics)
+- **Guide:** [Cost & telemetry overview](https://docs.hybridops.studio/cost/overview/) – how costs are tagged, queried, and summarised.
+- **Evidence:** `output/artifacts/cost/` – normalised JSON and Markdown summaries derived from decision and billing signals.
+- **Policy hooks:** `control/decision/` – this directory; the gate step consumes credits/budgets, and the selection step uses live metrics.
 
-> If your README mentions “Policy hooks: Decision Service”, prefer the path `./control/decision/` (not `./control/tools/decision`).
-
----
+In other READMEs, this component should be referenced as `control/decision/` rather than duplicating implementation details.
 
 ## Security notes
 
 - No secrets live here. Inject cloud auth at runtime (Vault/Key Vault/IAM) via Jenkins credentials or workload identity.
-- Keep `signals/` out of Git (except examples). Gate/decision JSON can be committed to the proof archive.
+- Keep `signals/` out of Git (except sanitised examples). Gate/decision JSON intended as evidence should be copied into `output/artifacts/decision/` or `output/artifacts/cost/` as appropriate.
 - Provider scripts should be **idempotent** and log to `out/` with timestamps for audit.
 
 ---
 
 ## Next steps
 
-1) Wire real collectors to write `signals/metrics.json` and `signals/credits.env`.  
-2) Tune `policy.json` to your budgets and SLOs.  
-3) Point provider scripts to your real cutover/failback entry points.  
-4) Add the copy‑to‑evidence step in Jenkins so every run leaves an auditable trail.
+1) Wire collectors to write `signals/metrics.json` and `signals/credits.env`.  
+2) Tune `policy.json` to reflect agreed budgets and SLOs.  
+3) Point provider scripts to the real cutover/failback entry points.  
+4) Add a copy‑to‑evidence step in CI so each run leaves an auditable trail under `output/artifacts/`.

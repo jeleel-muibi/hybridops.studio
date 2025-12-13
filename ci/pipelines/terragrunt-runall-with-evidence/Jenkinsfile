@@ -57,7 +57,7 @@ pipeline {
   }
   post {
     always {
-      archiveArtifacts artifacts: '**/plan.out,**/plan.json,docs/proof/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: '**/plan.out,**/plan.json,output/artifacts/**', allowEmptyArchive: true
     }
   }
 }

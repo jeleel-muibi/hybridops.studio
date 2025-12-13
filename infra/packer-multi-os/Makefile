@@ -179,7 +179,7 @@ clean-logs:
 	@read -p "Continue? (y/N): " -n 1 -r; echo; \
 	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
 		rm -rf $(REPO_ROOT)/output/logs/packer; \
-		rm -rf $(REPO_ROOT)/docs/proof/platform/packer-builds; \
+		rm -rf $(REPO_ROOT)/output/artifacts/platform/packer-builds; \
 		echo "Logs and evidence removed"; \
 	else \
 		echo "Cancelled"; \

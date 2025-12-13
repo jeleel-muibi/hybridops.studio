@@ -79,6 +79,20 @@ SSHDEOF
 
 # Enable services
 systemctl enable sshd.service
+# Enable cloud-init services (ensures they start on boot)
+systemctl enable cloud-init-local.service || true
+systemctl enable cloud-init.service || true
+systemctl enable cloud-config.service || true
+systemctl enable cloud-final.service || true
+echo "cloud-init services enabled" >> /root/ks-post. log
+
+# Verify cloud-init installation
+if rpm -q cloud-init >/dev/null 2>&1; then
+  echo "cloud-init installed successfully" >> /root/ks-post.log
+  rpm -qa | grep cloud >> /root/ks-post. log
+else
+  echo "ERROR: cloud-init NOT installed!" >> /root/ks-post. log
+fi
 
 # Configure NetworkManager fallback for eth0 (resilient to cloud-init failures)
 echo "Configuring NetworkManager fallback for eth0..." >> /root/ks-post.log

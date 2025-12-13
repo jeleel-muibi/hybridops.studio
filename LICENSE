@@ -16,3 +16,31 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+# Documentation License (CC BY 4.0)
+
+The documentation and diagrams in this repository (for example, content under
+`docs/` or separate documentation repositories, unless stated otherwise) are
+licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0)
+license.
+
+You are free to share and adapt the materials for any purpose, even
+commercially, under the following terms:
+
+- Attribution — Appropriate credit must be given, a link to the license
+  provided, and indication made if changes were made. Attribution may be
+  provided in any reasonable manner, but not in any way that suggests the
+  licensor endorses you or your use.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/
+
+# Branding & Trademarks
+
+- HybridOps.Studio name, wordmark, and associated branding assets (the
+  "Branding") are proprietary to Jeleel Muibi. The Branding is not licensed
+  under MIT-0 or CC BY 4.0. No rights to use the Branding are granted except
+  for nominative, descriptive references.
+- Third-party vendor names and logos (for example Microsoft Azure, Google
+  Cloud, Kubernetes, Proxmox, GitHub, and others) are trademarks of their
+  respective owners. Any references in this project are for descriptive
+  purposes only and do not imply endorsement or sponsorship.

@@ -23,7 +23,7 @@ infra/
 High-level responsibilities:
 
 - `env/` — Location where init scripts write environment and provider inputs.
-- `packer-multi-os/` — VM template build and validation for Proxmox.
+- `packer-multi-os` — VM template build and validation for Proxmox.
 - `terraform/` — Composition of those templates into full environments (`dev`, `staging`, `prod`).
 
 For detailed behaviour, refer to the README in each subdirectory.
@@ -50,11 +50,11 @@ Detailed formats and generation flows are documented in `infra/env/README.md`.
 - **Purpose:** Build reusable VM templates (Ubuntu, Rocky, Windows Server/Client) for Proxmox VE.
 - **Tooling:** HashiCorp Packer and the Proxmox plugin, orchestrated by the Makefile and provisioning toolkit under  
   `control/tools/provision/packer/`.
-- **Outputs:** Cloud-init-capable templates, with build evidence recorded under `docs/proof/platform/packer-builds`.
+- **Outputs:** Cloud-init-capable templates, with build evidence recorded under `output/artifacts/platform/packer-builds`.
 
-Related documentation:
+Operational details, evidence flows and Make targets are documented in
+[infra/packer-multi-os/README.md](./packer-multi-os/README.md), with deeper HOWTO/runbook coverage in:
 
-- `infra/packer-multi-os/README.md`
 - `docs/howtos/HOWTO_packer_proxmox_template.md`
 - `docs/runbooks/platform/packer-proxmox-template-build.md`
 - `docs/adr/ADR-0016-packer-cloudinit-vm-templates.md`
@@ -64,16 +64,17 @@ Related documentation:
 ## 4. `infra/terraform` — Terraform / Terragrunt
 
 - **Purpose:** Define and deploy complete environments across:
-  - Proxmox (SDN descriptors and VM clusters from templates)
-  - Azure (VNet and AKS)
-  - GCP (VPC and GKE)
+  - Proxmox (SDN descriptors and, later, VM clusters from templates)
+  - Azure (VNet and AKS – planned)
+  - GCP (VPC and GKE – planned)
 - **Pattern:**
   - `live-v1/` — Terragrunt live tree (`dev`, `staging`, `prod`) with `00-foundation` and `10-platform` layers.
   - `modules/` — Local Terraform modules for Proxmox, Azure and GCP.
   - `backend-configs/` — Optional backend definitions for state (local vs remote).
   - `policies/` — OPA / Sentinel policies for Terraform runs.
 
-Operational details, execution examples and Make targets are documented in `infra/terraform/README.md`.
+Operational details, execution examples and Make targets are documented in
+[infra/terraform/README.md](./terraform/README.md).
 
 ---
 
@@ -114,7 +115,14 @@ From the repository root:
    terragrunt run-all apply --terragrunt-working-dir live-v1/dev/10-platform
    ```
 
-This overview intentionally remains high-level. For precise inputs, outputs and evidence flows, refer to the README files inside each subdirectory and the linked HOWTOs ADRs and Runbooks.
+This overview intentionally remains high-level. For precise inputs, outputs and evidence flows, refer to the README files inside each subdirectory and the linked HOWTOs, ADRs and runbooks.
 
-**Maintainer:** HybridOps.Studio
-**Last Updated:** 2025-11-29
+---
+
+## License
+
+Code is licensed under **MIT-0 (MIT No Attribution)** unless otherwise stated.
+
+---
+
+Maintainer: **HybridOps.Studio**

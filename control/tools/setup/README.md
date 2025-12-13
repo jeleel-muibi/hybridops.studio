@@ -125,7 +125,7 @@ make python.env
 ## Documentation
 
 - System prerequisites (manual install commands, verification snippets, and additional notes):  
-  [Global Prerequisites Guide](../../docs/prerequisites/PREREQUISITES.md)
+  [Global Prerequisites Guide](https://docs.hybridops.studio/guides/getting-started/00-quickstart.md)
 
 ---
 
