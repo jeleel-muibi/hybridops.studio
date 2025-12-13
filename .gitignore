@@ -3,6 +3,9 @@
 # Maintainer: HybridOps.Studio
 # Date: 2025-11-17
 
+**/.misc
+
+# role-specific ignores
 core/ansible/collections/ansible_collections/hybridops/common/roles/ansible_roles_for_job_applications.txt
 .mainBak/
 contrib/maintainer_guide.md
@@ -11,15 +14,10 @@ etc/local/
 **/cost_overrides.local.yaml
 .config/
 plan/
-infra/.ignore
-
 
 # drafts run
 move.sh
 deployment/.misc
-
-# secrets
-control/secrets.env
 
 __pycache__/
 *.pyc
@@ -31,7 +29,9 @@ core/ansible/inventories/*/group_vars/all/ip_addresses.yml
 core/ansible/inventories/*/host_vars/*-secret*.yml
 
 *.retry
-output/
+output/logs/**
+output/tmp/**
+output/private/**
 *.logs
 
 # Terragrunt state and cache
@@ -57,7 +57,7 @@ dist/
 build/
 
 .env*
-!.env.example
+!.env.proxmox.example
 .secrets/
 
 .DS_Store
